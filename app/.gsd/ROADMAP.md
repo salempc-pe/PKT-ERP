@@ -60,10 +60,14 @@
 **Depends on**: Phase 2, Phase 3
 
 **Tasks**:
-- [ ] TBD (run /plan 4 to create)
+- [x] Crear capa de datos (hook `useSales`) compatible con Firebase y Mock Mode
+- [x] Desarrollar UI `SalesModule.jsx` y KPIs agregados interactivos
+- [x] Crear Modal interactivo e integrarlo con clientes (`useCrm`) y productos (`useInventory`)
+- [x] Integrar enlace a Ventas en navegación y rutas principal
 
 **Verification**:
-- TBD
+- [x] La pestaña de Ventas (Sales) está disponible en la app Client y redirige exitosamente.
+- [x] Se pueden consultar, registrar y visualizar ventas e interactuar con el stock.
 
 ---
 
@@ -73,14 +77,14 @@
 **Depends on**: Phase 2, Phase 3, Phase 4
 
 **Tasks**:
-- [ ] Implementar DashboardModule con KPIs agregados (CRM, Inventario, Ventas)
-- [ ] Crear SettingsModule para gestión de Perfil de Empresa
-- [ ] Integrar navegación y rutas para Dashboard y Settings
+- [x] Implementar DashboardModule con KPIs agregados (CRM, Inventario, Ventas)
+- [x] Crear SettingsModule para gestión de Perfil de Empresa
+- [x] Integrar navegación y rutas para Dashboard y Settings
 
 **Verification**:
-- Dashboard muestra datos reales de los módulos activos.
-- El perfil de empresa se persiste correctamente en Firestore.
-- El nombre de la empresa es dinámico en la interfaz.
+- [x] Dashboard muestra datos reales de los módulos activos.
+- [x] El perfil de empresa se persiste correctamente en Firestore.
+- [x] El nombre de la empresa es dinámico en la interfaz.
 
 ---
 
@@ -94,8 +98,8 @@
 - [x] Construir y enlazar `FinanceModule` (UI, KPIs, tabla interactiva)
 
 **Verification**:
-- Transacciones correctamente registradas en Firestore asociadas al orgId.
-- Dashboard de Finanzas muestra los agregados correctos (Ingresos/Gastos/Balance) según las transacciones.
+- [x] Transacciones correctamente registradas en Firestore asociadas al orgId.
+- [x] Dashboard de Finanzas muestra los agregados correctos (Ingresos/Gastos/Balance) según las transacciones.
 
 ---
 
@@ -105,10 +109,14 @@
 **Depends on**: Phase 2
 
 **Tasks**:
-- [ ] TBD (run /plan 7 to create)
+- [ ] Implementar capa de datos `useAppointments` para gestión reactiva
+- [ ] Desarrollar interfaz `CalendarModule.jsx` y modal de nueva cita
+- [ ] Integrar citas con clientes de CRM
+- [ ] Conectar módulo en menú principal de cliente
 
 **Verification**:
-- TBD
+- Es posible agendar una junta/cita enlazando al cliente existente.
+- Las citas se muestran en el entorno (calendario visual o lista).
 
 ---
 
