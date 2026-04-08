@@ -90,10 +90,12 @@
 **Depends on**: Phase 4
 
 **Tasks**:
-- [ ] TBD (run /plan 6 to create)
+- [ ] Implementar capa de persistencia `useFinance` para transacciones
+- [ ] Construir y enlazar `FinanceModule` (UI, KPIs, tabla interactiva)
 
 **Verification**:
-- TBD
+- Transacciones correctamente registradas en Firestore asociadas al orgId.
+- Dashboard de Finanzas muestra los agregados correctos (Ingresos/Gastos/Balance) según las transacciones.
 
 ---
 
