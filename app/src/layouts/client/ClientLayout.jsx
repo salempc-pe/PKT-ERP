@@ -1,13 +1,30 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../../services/firebase';
+
+const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
 export default function ClientLayout() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+  const [tenantName, setTenantName] = useState(user?.organizationName || 'Mi Empresa S.A.');
+
+  useEffect(() => {
+    if (!isFirebaseConfigured || !user?.organizationId) return;
+    
+    const unsub = onSnapshot(doc(db, 'tenants', user.organizationId), (configDoc) => {
+      if (configDoc.exists() && configDoc.data().name) {
+        setTenantName(configDoc.data().name);
+      }
+    });
+
+    return () => unsub();
+  }, [user]);
 
   return (
     <div className="bg-[#060e20] text-[#dee5ff] min-h-screen font-body flex relative overflow-hidden">
@@ -23,7 +40,7 @@ export default function ClientLayout() {
       <aside className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-50 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="px-6 mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">{user?.organizationName || 'Mi Empresa S.A.'}</h1>
+            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">{tenantName}</h1>
             <p className="text-xs text-[#a3aac4] font-bold mt-1">Suscripción Activa</p>
           </div>
         </div>
@@ -88,10 +105,10 @@ export default function ClientLayout() {
         </nav>
         
         <div className="px-4 pt-4 mt-auto border-t border-[#40485d]/10 space-y-2">
-          <button className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
+          <Link to="/client/settings" onClick={() => setIsSidebarOpen(false)} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all cursor-pointer">
             <Settings size={20} />
             <span className="font-semibold text-sm">Configuración</span>
-          </button>
+          </Link>
           <button onClick={logout} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
             <LogOut size={20} />
             <span className="font-semibold text-sm">Cerrar Sesión</span>

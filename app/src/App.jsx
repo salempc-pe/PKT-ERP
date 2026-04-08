@@ -9,6 +9,8 @@ import ClientDashboard from './modules/client/dashboard/ClientDashboard';
 import CRMModule from './modules/client/crm/CRMModule';
 import InventoryModule from './modules/client/inventory/InventoryModule';
 import SalesModule from './modules/client/sales/SalesModule';
+import SettingsModule from './modules/settings/SettingsModule';
+
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +25,7 @@ function App() {
             <Route path="crm" element={<CRMModule />} />
             <Route path="inventory" element={<InventoryModule />} />
             <Route path="sales" element={<SalesModule />} />
+            <Route path="settings" element={<SettingsModule />} />
           </Route>
           
           {/* Admin Routes */}
