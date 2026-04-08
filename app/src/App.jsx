@@ -10,6 +10,7 @@ import CRMModule from './modules/client/crm/CRMModule';
 import InventoryModule from './modules/client/inventory/InventoryModule';
 import SalesModule from './modules/client/sales/SalesModule';
 import SettingsModule from './modules/settings/SettingsModule';
+import FinanceModule from './modules/client/finance/FinanceModule';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="crm" element={<CRMModule />} />
             <Route path="inventory" element={<InventoryModule />} />
             <Route path="sales" element={<SalesModule />} />
+            <Route path="finance" element={<FinanceModule />} />
             <Route path="settings" element={<SettingsModule />} />
           </Route>
           

@@ -77,11 +77,12 @@ export default function ClientLayout() {
           </Link>
           
           <Link 
-            to="/client/accounting" 
-            className="flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all duration-300 opacity-50 cursor-not-allowed"
+            to="/client/finance" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/finance') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
+            onClick={() => setIsSidebarOpen(false)}
           >
             <Calculator size={20} />
-            <span className="text-sm font-semibold">Contabilidad</span>
+            <span className="text-sm border-0 font-semibold">Contabilidad</span>
           </Link>
           
           <Link 
