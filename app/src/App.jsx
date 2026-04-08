@@ -18,6 +18,7 @@ function App() {
           
           {/* Client Routes */}
           <Route path="/client" element={<ClientLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<ClientDashboard />} />
             <Route path="crm" element={<CRMModule />} />
             <Route path="inventory" element={<InventoryModule />} />

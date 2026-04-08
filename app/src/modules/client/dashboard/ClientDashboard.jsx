@@ -1,7 +1,40 @@
-import { ArrowRight, Users, Box, Calculator, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Users, Box, Calculator, CheckCircle2, DollarSign, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
+import { useCrm } from '../crm/useCrm';
+import { useInventory } from '../inventory/useInventory';
+import { useSales } from '../sales/useSales';
+import KpiCard from './components/KpiCard';
 
 export default function ClientDashboard() {
+  const { user } = useAuth();
+  const orgId = user?.organizationId || "default_org";
+  
+  const { contacts, leads, loading: loadingCrm } = useCrm(orgId);
+  const { products, loading: loadingInv } = useInventory(orgId);
+  const { sales, loading: loadingSales } = useSales(orgId);
+
+  // Calcula totales
+  const totalContacts = contacts.length + leads.length;
+  
+  // Total Inventory Value
+  const totalInventoryValue = products.reduce((acc, product) => {
+    // Some mock prices have $, some might be numbers
+    const priceStr = String(product.price).replace(/[^0-9.]/g, '');
+    const price = parseFloat(priceStr) || 0;
+    return acc + (price * (product.stock || 0));
+  }, 0);
+
+  // Low Stock Items
+  const lowStockCount = products.filter(p => ["Bajo Stock", "Agotado"].includes(p.status)).length;
+  
+  // Sales YTD / Total
+  const totalSalesRevenue = sales
+    .filter(s => s.status === 'Pagada' || s.status === 'Pagado')
+    .reduce((acc, s) => acc + (parseFloat(s.totalAmount) || 0), 0);
+
+  const pendingInvoices = sales.filter(s => s.status === 'Pendiente').length;
+
   return (
     <div className="animate-in fade-in duration-500 space-y-10">
       {/* Welcome Header */}
@@ -12,16 +45,8 @@ export default function ClientDashboard() {
             Bienvenido al <span className="text-[#85adff]">Panel de Control</span>.
           </h2>
           <p className="text-[#a3aac4] text-sm lg:text-lg leading-relaxed mb-8">
-            Tienes 2 módulos activos en el Plan Pro. Revisa el estado de tu negocio y módulos desde aquí.
+            Resumen visual en tiempo real de todos tus módulos.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/client/crm" className="bg-gradient-to-br from-[#85adff] to-[#6e9fff] px-8 py-3 rounded-full text-[#002150] font-bold text-sm shadow-xl shadow-[#85adff]/20">
-              Ir a CRM
-            </Link>
-            <Link to="/client/marketplace" className="bg-[#192540]/50 border border-[#40485d]/20 px-8 py-3 rounded-full text-[#dee5ff] font-bold text-sm hover:bg-[#192540] transition-colors">
-              Explorar Módulos
-            </Link>
-          </div>
         </div>
         
         {/* Abstract Architectural Background Elements */}
@@ -32,31 +57,92 @@ export default function ClientDashboard() {
         </div>
       </section>
 
+      {/* Unified KPIs */}
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <KpiCard 
+          title="Total Clientes & Leads" 
+          value={totalContacts} 
+          icon={Users}
+          loading={loadingCrm}
+          colorClass={{
+            border: "border-[#85adff]/20",
+            iconBg: "bg-[#85adff]/20",
+            iconText: "text-[#85adff]",
+          }}
+        />
+        <KpiCard 
+          title="Valor Inventario" 
+          value={`$${totalInventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} 
+          icon={Box}
+          loading={loadingInv}
+          colorClass={{
+            border: "border-[#e28ce9]/20",
+            iconBg: "bg-[#e28ce9]/20",
+            iconText: "text-[#e28ce9]",
+          }}
+        />
+        <KpiCard 
+          title="Ingresos Recibidos" 
+          value={`$${totalSalesRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} 
+          icon={DollarSign}
+          loading={loadingSales}
+          colorClass={{
+            border: "border-[#50e3c2]/20",
+            iconBg: "bg-[#50e3c2]/20",
+            iconText: "text-[#50e3c2]",
+          }}
+        />
+        <KpiCard 
+          title="Alertas / Pendientes" 
+          value={`${lowStockCount} Stock / ${pendingInvoices} Fac`}
+          icon={AlertTriangle}
+          loading={loadingInv || loadingSales}
+          colorClass={{
+            border: lowStockCount > 0 || pendingInvoices > 0 ? "border-[#ff6b6b]/40" : "border-[#40485d]/20",
+            iconBg: lowStockCount > 0 || pendingInvoices > 0 ? "bg-[#ff6b6b]/20" : "bg-[#40485d]/50",
+            iconText: lowStockCount > 0 || pendingInvoices > 0 ? "text-[#ff6b6b]" : "text-[#a3aac4]",
+            valueText: lowStockCount > 0 || pendingInvoices > 0 ? "text-[#ff6b6b]" : "text-[#dee5ff]"
+          }}
+        />
+      </section>
+
       {/* Modular Trial Cards Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* CRM Module (Active) */}
-        <div className="border border-[#85adff]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300">
+        <Link to="/client/crm" className="border border-[#85adff]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
           <div className="w-12 h-12 rounded-xl bg-[#85adff]/20 flex items-center justify-center mb-6 text-[#85adff] group-hover:scale-110 transition-transform">
             <Users size={24} />
           </div>
           <h3 className="text-xl font-bold text-[#dee5ff] mb-2">CRM y Ventas</h3>
           <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Gestiona clientes, prospectos y embudos de venta de manera visual.</p>
           <div className="bg-[#85adff]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#85adff] flex items-center justify-center gap-2">
-            <CheckCircle2 size={14} /> Módulo Activo
+            <CheckCircle2 size={14} /> Ir al Módulo
           </div>
-        </div>
+        </Link>
 
         {/* Inventory Module (Active) */}
-        <div className="border border-[#e28ce9]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300">
+        <Link to="/client/inventory" className="border border-[#e28ce9]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
           <div className="w-12 h-12 rounded-xl bg-[#e28ce9]/20 flex items-center justify-center mb-6 text-[#e28ce9] group-hover:scale-110 transition-transform">
             <Box size={24} />
           </div>
           <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Inventario</h3>
           <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Control de existencias y alertas de reabastecimiento en tiempo real.</p>
           <div className="bg-[#e28ce9]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#e28ce9] flex items-center justify-center gap-2">
-            <CheckCircle2 size={14} /> Módulo Activo
+            <CheckCircle2 size={14} /> Ir al Módulo
           </div>
-        </div>
+        </Link>
+        
+        {/* Sales Module (Active) */}
+        <Link to="/client/sales" className="border border-[#50e3c2]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
+          <div className="w-12 h-12 rounded-xl bg-[#50e3c2]/20 flex items-center justify-center mb-6 text-[#50e3c2] group-hover:scale-110 transition-transform">
+            <DollarSign size={24} />
+          </div>
+          <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Facturación</h3>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Emisión de cotizaciones y facturación ligada al inventario.</p>
+          <div className="bg-[#50e3c2]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#50e3c2] flex items-center justify-center gap-2">
+            <CheckCircle2 size={14} /> Ir al Módulo
+          </div>
+        </Link>
 
         {/* Finance Module (Inactive) */}
         <div className="bg-[#091328] border border-[#40485d]/20 p-6 rounded-2xl group hover:bg-[#141f38] transition-all duration-300 opacity-60">
@@ -71,68 +157,6 @@ export default function ClientDashboard() {
           </div>
         </div>
       </section>
-
-      {/* Content Row: CRM Quick Stats & Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#0f1930] p-6 lg:p-8 rounded-3xl h-full border border-[#40485d]/10">
-            <div className="flex justify-between items-start mb-10">
-              <div>
-                <h3 className="text-2xl font-extrabold text-[#dee5ff] tracking-tight">Cierre de Ventas CRM</h3>
-                <p className="text-[#a3aac4] text-sm">Resumen de proyecciones basadas en Oportunidades Ganadas.</p>
-              </div>
-            </div>
-            
-            {/* Faux Chart Visual */}
-            <div className="h-48 flex items-end gap-2 px-2">
-              <div className="bg-[#192540] w-full rounded-t-lg transition-all hover:bg-[#85adff]/50" style={{ height: '40%' }}></div>
-              <div className="bg-[#192540] w-full rounded-t-lg transition-all hover:bg-[#85adff]/50" style={{ height: '25%' }}></div>
-              <div className="bg-[#85adff]/80 w-full rounded-t-lg transition-all" style={{ height: '85%' }}></div>
-              <div className="bg-[#192540] w-full rounded-t-lg transition-all hover:bg-[#85adff]/50" style={{ height: '55%' }}></div>
-              <div className="bg-[#192540] w-full rounded-t-lg transition-all hover:bg-[#85adff]/50" style={{ height: '60%' }}></div>
-              <div className="bg-[#85adff]/80 w-full rounded-t-lg transition-all" style={{ height: '100%' }}></div>
-            </div>
-            
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-[#091328] p-4 rounded-2xl border border-[#40485d]/10">
-                <p className="text-[10px] uppercase font-bold text-[#a3aac4] tracking-widest mb-1">Leads</p>
-                <p className="text-2xl font-black text-[#dee5ff]">240</p>
-              </div>
-              <div className="bg-[#091328] p-4 rounded-2xl border border-[#40485d]/10">
-                <p className="text-[10px] uppercase font-bold text-[#a3aac4] tracking-widest mb-1">Cierre %</p>
-                <p className="text-2xl font-black text-[#85adff]">12%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Activity Feed */}
-        <div className="bg-[#091328] p-6 lg:p-8 rounded-3xl h-full border border-[#40485d]/10">
-          <h3 className="text-xl font-extrabold text-[#dee5ff] mb-6">Actividad Interna</h3>
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#141f38] flex items-center justify-center shrink-0">
-                <Users className="text-[#85adff] w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#dee5ff]">Nuevo lead: Zapatilas XR</p>
-                <p className="text-xs text-[#a3aac4] mb-1">Ingresado por Landing Page</p>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#192540] text-[#a3aac4]">Hace 1 hora</span>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#141f38] flex items-center justify-center shrink-0">
-                <Box className="text-[#e28ce9] w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#dee5ff]">Alerta de inventario</p>
-                <p className="text-xs text-[#a3aac4] mb-1">Stock mínimo alcanzado para SKU-012</p>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#192540] text-[#a3aac4]">Hace 3 horas</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
