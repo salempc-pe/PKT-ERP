@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-error-container: #9f0519;
+  --color-primary: #85adff;
+  --color-on-tertiary-fixed-variant: #681c73;
+  --color-inverse-surface: #faf8ff;
+  --color-surface-container-low: #091328;
+  --color-on-secondary-container: #c5ceff;
+  --color-inverse-on-surface: #4d556b;
+  --color-on-primary: #002c66;
+  --color-surface-bright: #1f2b49;
+  --color-secondary-dim: #8097ff;
+  --color-on-tertiary-container: #5e106a;
+  --color-primary-fixed-dim: #5391ff;
+  --color-tertiary-container: #f199f7;
+  --color-tertiary: #fbabff;
+  --color-secondary-container: #213da1;
+  --color-surface-tint: #85adff;
+  --color-on-secondary-fixed: #00278f;
+  --color-secondary: #8097ff;
+  --color-surface-container-high: #141f38;
+  --color-surface-dim: #060e20;
+  --color-on-tertiary-fixed: #3e0047;
+  --color-error: #ff716c;
+  --color-on-surface: #dee5ff;
+  --color-surface: #060e20;
+  --color-on-primary-fixed: #000000;
+  --color-tertiary-dim: #e28ce9;
+  --color-error-dim: #d7383b;
+  --color-on-background: #dee5ff;
+  --color-surface-variant: #192540;
+  --color-on-surface-variant: #a3aac4;
+  --color-on-secondary-fixed-variant: #2d48ac;
+  --color-on-tertiary: #691d74;
+  --color-on-error-container: #ffa8a3;
+  --color-on-error: #490006;
+  --color-tertiary-fixed-dim: #e28ce9;
+  --color-primary-dim: #699cff;
+  --color-primary-fixed: #6e9fff;
+  --color-primary-container: #6e9fff;
+  --color-surface-container: #0f1930;
+  --color-outline: #6d758c;
+  --color-surface-container-lowest: #000000;
+  --color-background: #060e20;
+  --color-tertiary-fixed: #f199f7;
+  --color-inverse-primary: #005bc4;
+  --color-on-primary-fixed-variant: #002a62;
+  --color-secondary-fixed: #c7cfff;
+  --color-on-secondary: #00175f;
+  --color-on-primary-container: #002150;
+  --color-outline-variant: #40485d;
+  --color-secondary-fixed-dim: #b4c1ff;
+  --color-surface-container-highest: #192540;
+  
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Manrope", sans-serif;
+}
+
+@utility architectural-glass {
+  background: linear-gradient(135deg, rgba(31, 43, 73, 0.8) 0%, rgba(25, 37, 64, 0.4) 100%);
+  backdrop-filter: blur(20px);
+}
+
+@utility text-on-surface {
+  color: var(--color-on-surface);
+}
+
+@utility bg-background {
+  background-color: var(--color-background);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+  }
+}

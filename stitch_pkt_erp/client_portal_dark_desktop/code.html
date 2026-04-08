@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ArchitectOS | Client Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error-container": "#9f0519",
+              "primary": "#85adff",
+              "on-tertiary-fixed-variant": "#681c73",
+              "inverse-surface": "#faf8ff",
+              "surface-container-low": "#091328",
+              "on-secondary-container": "#c5ceff",
+              "inverse-on-surface": "#4d556b",
+              "on-primary": "#002c66",
+              "surface-bright": "#1f2b49",
+              "secondary-dim": "#8097ff",
+              "on-tertiary-container": "#5e106a",
+              "primary-fixed-dim": "#5391ff",
+              "tertiary-container": "#f199f7",
+              "tertiary": "#fbabff",
+              "secondary-container": "#213da1",
+              "surface-tint": "#85adff",
+              "on-secondary-fixed": "#00278f",
+              "secondary": "#8097ff",
+              "surface-container-high": "#141f38",
+              "surface-dim": "#060e20",
+              "on-tertiary-fixed": "#3e0047",
+              "error": "#ff716c",
+              "on-surface": "#dee5ff",
+              "surface": "#060e20",
+              "on-primary-fixed": "#000000",
+              "tertiary-dim": "#e28ce9",
+              "error-dim": "#d7383b",
+              "on-background": "#dee5ff",
+              "surface-variant": "#192540",
+              "on-surface-variant": "#a3aac4",
+              "on-secondary-fixed-variant": "#2d48ac",
+              "on-tertiary": "#691d74",
+              "on-error-container": "#ffa8a3",
+              "on-error": "#490006",
+              "tertiary-fixed-dim": "#e28ce9",
+              "primary-dim": "#699cff",
+              "primary-fixed": "#6e9fff",
+              "primary-container": "#6e9fff",
+              "surface-container": "#0f1930",
+              "outline": "#6d758c",
+              "surface-container-lowest": "#000000",
+              "background": "#060e20",
+              "tertiary-fixed": "#f199f7",
+              "inverse-primary": "#005bc4",
+              "on-primary-fixed-variant": "#002a62",
+              "secondary-fixed": "#c7cfff",
+              "on-secondary": "#00175f",
+              "on-primary-container": "#002150",
+              "outline-variant": "#40485d",
+              "secondary-fixed-dim": "#b4c1ff",
+              "surface-container-highest": "#192540"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .architectural-gradient {
+            background: linear-gradient(135deg, #85adff 0%, #6e9fff 100%);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-[#091328] rounded-r-2xl fixed left-0 top-0 z-40 space-y-6 py-8 px-4 font-manrope text-sm font-semibold">
+<div class="flex items-center gap-3 mb-8 px-4">
+<div class="w-10 h-10 rounded-xl bg-surface-bright flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="architecture">architecture</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-[#dee5ff]">Studio Alpha</h2>
+<p class="text-xs text-on-surface-variant font-normal">Design &amp; Planning</p>
+</div>
+</div>
+<nav class="flex-1 space-y-3">
+<a class="flex items-center gap-3 bg-[#192540] text-[#85adff] rounded-lg px-4 py-3 shadow-inner transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+                Projects
+            </a>
+<a class="flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Clients
+            </a>
+<a class="flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                Payments
+            </a>
+<a class="flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="widgets">widgets</span>
+                Modules
+            </a>
+</nav>
+<div class="mt-auto space-y-2 border-t border-outline-variant/10 pt-6">
+<button class="w-full architectural-gradient text-on-primary-container font-bold py-3 rounded-xl mb-4 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                New Project
+            </button>
+<a class="flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 text-error px-4 py-3 hover:bg-error/10 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen overflow-y-auto hide-scrollbar">
+<!-- TopNavBar Component -->
+<header class="sticky top-0 z-50 bg-[#1f2b49]/80 backdrop-blur-xl flex justify-between items-center w-full px-8 py-4 shadow-[0_40px_40px_rgba(222,229,255,0.1)]">
+<div class="flex items-center gap-8">
+<h1 class="text-2xl font-black tracking-tighter text-[#dee5ff]">ArchitectOS</h1>
+<div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/10 min-w-[320px]">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full placeholder:text-on-surface-variant/50" placeholder="Search blueprints, assets, or clients..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-[#a3aac4]">
+<button class="hover:text-primary transition-colors duration-200 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:text-primary transition-colors duration-200 active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-outline-variant/20">
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface">Alex Mercer</p>
+<p class="text-[10px] uppercase tracking-widest text-primary font-bold">Lead Architect</p>
+</div>
+<img alt="Lead Architect Profile" class="w-10 h-10 rounded-full border-2 border-primary/30 object-cover" data-alt="Professional headshot of a focused male architect in a modern office setting with architectural drawings in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB97RtlwlCelA9jXpxkDAvgSvaNSvwR1NDZ1yQ36TR7k9IbGAVBJjRz9zDOUTdrC3XRvV7IbFO3VmYdH0OAgwp9XIoIUnGEoFKHMueHFLCJhvAzj0BRYaZSXPJGQMSNbyCbaONAbP7nkwamDAqqzMWNn4kFdEjdtQEx4fSwOV7jKJ_O-x5KsugebVlJnpCjlxBSRbyFUHlmDMjs7rDrhgdxHRg7EJauIwMmq5hSNBJLIyS2g0L5rBko0TjTkkfnEG97MrgavQ0Bli9"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 space-y-10">
+<!-- Welcome Header -->
+<section class="relative rounded-3xl overflow-hidden p-10 bg-surface-container-low">
+<div class="relative z-10 max-w-2xl">
+<span class="text-primary font-bold tracking-[0.2em] text-xs uppercase mb-4 block">System Status: Operational</span>
+<h2 class="text-5xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight">Welcome back to the <span class="text-primary">Studio Alpha</span> control center.</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed mb-8">Your resource utilization is optimized at 84%. You have 3 pending blueprint reviews for the "Summit Heights" project.</p>
+<div class="flex gap-4">
+<button class="architectural-gradient px-8 py-3 rounded-full text-on-primary-container font-bold text-sm shadow-xl shadow-primary/20">View Blueprints</button>
+<button class="bg-surface-variant/50 border border-outline-variant/20 px-8 py-3 rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant transition-colors">Resource Maps</button>
+</div>
+</div>
+<!-- Abstract Architectural Background Elements -->
+<div class="absolute right-0 top-0 h-full w-1/2 opacity-20 pointer-events-none">
+<div class="absolute inset-0 bg-gradient-to-l from-primary/40 to-transparent"></div>
+<div class="absolute right-10 top-1/2 -translate-y-1/2 w-64 h-64 border-2 border-primary/30 rounded-full"></div>
+<div class="absolute right-20 top-1/3 -translate-y-1/2 w-48 h-48 border border-primary/20 rotate-45"></div>
+</div>
+</section>
+<!-- Modular Trial Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- CRM Module -->
+<div class="bg-surface-container-high p-6 rounded-2xl group hover:bg-surface-bright transition-all duration-300">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="hub">hub</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">CRM</h3>
+<p class="text-sm text-on-surface-variant mb-6">Manage client relationships and project pipelines.</p>
+<div class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary">
+<span>Trial: 14 Days Left</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Finance Module -->
+<div class="bg-surface-container-high p-6 rounded-2xl group hover:bg-surface-bright transition-all duration-300">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary" data-icon="account_balance">account_balance</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Finance</h3>
+<p class="text-sm text-on-surface-variant mb-6">Real-time budget tracking and automated invoicing.</p>
+<div class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-tertiary">
+<span>Trial: Active</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Inventory Module -->
+<div class="bg-surface-container-high p-6 rounded-2xl group hover:bg-surface-bright transition-all duration-300">
+<div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary" data-icon="inventory_2">inventory_2</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Inventory</h3>
+<p class="text-sm text-on-surface-variant mb-6">Asset management and equipment procurement logs.</p>
+<div class="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-secondary">
+<span>Install Now</span>
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+<!-- Blueprints Module -->
+<div class="bg-surface-container-high p-6 rounded-2xl group hover:bg-surface-bright transition-all duration-300 border-2 border-primary/20">
+<div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="architecture" data-weight="fill" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Blueprints Pro</h3>
+<p class="text-sm text-on-surface-variant mb-6">Advanced CAD integration and version control.</p>
+<div class="bg-primary text-on-primary-container text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest">
+                        Standard Tool
+                    </div>
+</div>
+</section>
+<!-- Content Row: Resource Chart & Activity Feed -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<!-- Resource Utilization (Bento Style) -->
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-surface-container p-8 rounded-3xl h-full relative overflow-hidden">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h3 class="text-2xl font-extrabold text-on-surface tracking-tight">Resource Utilization</h3>
+<p class="text-on-surface-variant text-sm">Real-time performance metrics across all active nodes.</p>
+</div>
+<div class="bg-surface-container-highest px-4 py-2 rounded-xl text-on-surface text-xs font-bold">
+                                LAST 24 HOURS
+                            </div>
+</div>
+<!-- Faux Chart Visual -->
+<div class="h-64 flex items-end gap-2 px-2">
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 40%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 65%;"></div>
+<div class="bg-primary/80 w-full rounded-t-lg transition-all" style="height: 85%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 55%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 30%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 75%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 90%;"></div>
+<div class="bg-primary/80 w-full rounded-t-lg transition-all" style="height: 84%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 60%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 45%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 70%;"></div>
+<div class="bg-surface-container-highest w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 55%;"></div>
+</div>
+<div class="mt-10 grid grid-cols-3 gap-4">
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-widest mb-1">Peak Load</p>
+<p class="text-2xl font-black text-on-surface">92<span class="text-sm font-medium text-on-surface-variant">%</span></p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-widest mb-1">Avg Idle</p>
+<p class="text-2xl font-black text-on-surface">12<span class="text-sm font-medium text-on-surface-variant">%</span></p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-widest mb-1">Health</p>
+<p class="text-2xl font-black text-tertiary">Optimal</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="bg-surface-container-low p-8 rounded-3xl h-full border border-outline-variant/10">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-xl font-extrabold text-on-surface">Activity</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-widest hover:underline">View All</button>
+</div>
+<div class="space-y-8">
+<!-- Activity Item 1 -->
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="upload_file">upload_file</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Blueprint Revision V2.4</p>
+<p class="text-xs text-on-surface-variant mb-2">Uploaded by Sarah J. in Summit Heights</p>
+<span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">2 mins ago</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="payments">payments</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Invoice #84920 Paid</p>
+<p class="text-xs text-on-surface-variant mb-2">Modernism Loft - Phase 1 Complete</p>
+<span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">1 hour ago</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="person_add">person_add</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">New Client Onboarded</p>
+<p class="text-xs text-on-surface-variant mb-2">Nexus Development Group</p>
+<span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">3 hours ago</span>
+</div>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex gap-4">
+<div class="mt-1">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-sm" data-icon="warning">warning</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Resource Alert</p>
+<p class="text-xs text-on-surface-variant mb-2">Node #04 approaching 95% capacity</p>
+<span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">5 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / System Branding -->
+<footer class="pt-20 pb-10 flex flex-col items-center justify-center gap-4 text-on-surface-variant/40">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="verified">verified</span>
+<p class="text-xs font-bold uppercase tracking-[0.3em]">ArchitectOS Enterprise v4.2.0</p>
+</div>
+<p class="text-[10px]">Secure Encrypted Environment © 2024 Studio Alpha Digital Systems</p>
+</footer>
+</div>
+</main>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-bright/80 backdrop-blur-xl flex justify-around items-center py-4 z-50 border-t border-outline-variant/10">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+<span class="text-[10px] font-bold">Projects</span>
+</button>
+<button class="architectural-gradient -mt-10 w-14 h-14 rounded-full shadow-lg shadow-primary/40 flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] font-bold">Payments</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</nav>
+</body></html>
