@@ -104,7 +104,7 @@
 ---
 
 ### Phase 7: Agenda y Citas (Módulo Plus)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Sistema de calendario para reservas de clientes y recordatorios automatizados.
 **Depends on**: Phase 2
 
@@ -115,8 +115,8 @@
 - [ ] Conectar módulo en menú principal de cliente
 
 **Verification**:
-- Es posible agendar una junta/cita enlazando al cliente existente.
-- Las citas se muestran en el entorno (calendario visual o lista).
+- [x] Es posible agendar una junta/cita enlazando al cliente existente.
+- [x] Las citas se muestran en el entorno (calendario visual o lista).
 
 ---
 
