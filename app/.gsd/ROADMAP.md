@@ -85,13 +85,13 @@
 ---
 
 ### Phase 6: Contabilidad y Finanzas
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Registro de ingresos y gastos, flujo de caja y reportes financieros básicos (P&L).
 **Depends on**: Phase 4
 
 **Tasks**:
-- [ ] Implementar capa de persistencia `useFinance` para transacciones
-- [ ] Construir y enlazar `FinanceModule` (UI, KPIs, tabla interactiva)
+- [x] Implementar capa de persistencia `useFinance` para transacciones
+- [x] Construir y enlazar `FinanceModule` (UI, KPIs, tabla interactiva)
 
 **Verification**:
 - Transacciones correctamente registradas en Firestore asociadas al orgId.
