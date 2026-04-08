@@ -67,6 +67,23 @@
 
 ---
 
+### Phase 5: Dashboard Central & Configuración de Empresa
+**Status**: ⬜ Not Started
+**Objective**: Implementar un dashboard unificado con KPIs de todos los módulos activos y la gestión del perfil empresarial.
+**Depends on**: Phase 2, Phase 3, Phase 4
+
+**Tasks**:
+- [ ] Implementar DashboardModule con KPIs agregados (CRM, Inventario, Ventas)
+- [ ] Crear SettingsModule para gestión de Perfil de Empresa
+- [ ] Integrar navegación y rutas para Dashboard y Settings
+
+**Verification**:
+- Dashboard muestra datos reales de los módulos activos.
+- El perfil de empresa se persiste correctamente en Firestore.
+- El nombre de la empresa es dinámico en la interfaz.
+
+---
+
 ### Phase 6: Contabilidad y Finanzas
 **Status**: ⬜ Not Started
 **Objective**: Registro de ingresos y gastos, flujo de caja y reportes financieros básicos (P&L).
