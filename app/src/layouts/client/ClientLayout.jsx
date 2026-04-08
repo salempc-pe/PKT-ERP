@@ -94,6 +94,15 @@ export default function ClientLayout() {
             <span className="text-sm">Ventas y Facturación</span>
           </Link>
 
+          <Link 
+            to="/client/calendar" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/calendar') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <Calendar size={20} />
+            <span className="text-sm border-0 font-semibold">Agenda y Citas</span>
+          </Link>
+
           <div className="pt-4 pb-2 px-4 text-xs font-bold uppercase tracking-wider text-[#a3aac4]/70">Explorar</div>
 
           <Link 
