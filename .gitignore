@@ -1,0 +1,8 @@
+# Ignorar todo en la raíz
+/*
+
+# Excepto la carpeta app
+!/app/
+
+# Permitir este archivo .gitignore
+!.gitignore

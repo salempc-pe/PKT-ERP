@@ -1,238 +1,0 @@
-
-ERP SAAS
-PLAN MAESTRO DE PRODUCTO
-
-Sistema modular de gesti�n empresarial para PYMEs, emprendedores, influencers y profesionales independientes
-
-Versi�n 1.0  �  Marzo 2026
-
-
-1. Resumen Ejecutivo
-Este documento define la arquitectura, estrategia de producto, modelo de negocio y hoja de ruta para el desarrollo de un ERP SaaS modular orientado a peque�as empresas, emprendedores, influencers y profesionales independientes de habla hispana.
-
-El sistema se construir� sobre Firebase como infraestructura backend (BaaS), con React en el frontend, ofreciendo una propuesta de valor diferenciada: simplicidad de uso, precio accesible, y la posibilidad de contratar �nicamente los m�dulos que cada cliente necesita, evitando la complejidad y el costo de los ERPs tradicionales.
-
-Propuesta de valor central
-� Paga solo por lo que usas � modelo de m�dulos independientes
-� Sin servidores propios � infraestructura gestionada 100% en la nube
-� Pensado para Latinoam�rica � en espa�ol, con soporte local y precios accesibles
-� Escalable � crece con el negocio del cliente sin migrar de plataforma
-� F�cil de usar � interfaz limpia, sin curva de aprendizaje t�cnica
-
-Segmentos objetivo
-� Emprendedores con negocios digitales o f�sicos en etapa inicial
-� Influencers y creadores de contenido con ventas de productos propios
-� Profesionales independientes (consultores, coaches, dise�adores, abogados)
-� Peque�as empresas (5�50 empleados) sin sistema de gesti�n actual
-
-
-2. Arquitectura General del Sistema
-El sistema est� compuesto por dos interfaces principales y una capa de administraci�n interna, todas conectadas al mismo backend en Firebase.
-
-2.1 Vista de alto nivel
-� Interfaz Cliente (tenant app): La aplicaci�n que ve y usa cada empresa contratante. Muestra solo los m�dulos que tiene activos. Cada empresa tiene su propio espacio aislado (multi-tenancy).
-� Interfaz Admin (panel interno): La herramienta de tu equipo para gestionar clientes, m�dulos contratados, billing, soporte y configuraci�n. Solo accesible para roles internos.
-� Backend Firebase: Firestore como base de datos, Authentication para gesti�n de usuarios, Cloud Functions para l�gica de negocio y webhooks, Storage para archivos.
-� Integraciones externas: Stripe/Culqi para pagos, Resend o SendGrid para emails transaccionales, y futuras APIs de terceros.
-
-2.2 Multi-tenancy: aislamiento de datos
-La arquitectura multi-tenant garantiza que los datos de cada cliente sean completamente privados e independientes. Se implementa mediante la estructura de colecciones en Firestore y las Firestore Security Rules.
-
-Cada empresa (tenant) tiene un ID �nico. Toda su data vive bajo tenants/{tenantId}/... en Firestore. Las reglas de seguridad validan que el usuario autenticado pertenece al tenant correcto antes de permitir cualquier lectura o escritura.
-
-2.3 Sistema de m�dulos
-Cada m�dulo es una secci�n independiente de la aplicaci�n que se activa o desactiva por tenant. La l�gica de activaci�n reside en Firestore (colecci�n modules dentro del tenant) y en el frontend (rutas protegidas que verifican si el m�dulo est� activo antes de renderizar).
-
-� Un m�dulo inactivo no aparece en la navegaci�n del cliente
-� La activaci�n ocurre desde el panel admin o autom�ticamente al completarse el pago
-� Cada m�dulo puede tener sub-roles (ej: en CRM, un usuario puede ser "solo lectura" y otro "editor")
-
-
-3. Cat�logo de M�dulos
-La siguiente tabla detalla todos los m�dulos previstos para la plataforma, su segmento objetivo, el sprint estimado de desarrollo y el tier de plan en el que estar�n disponibles.
-
-M�duloFuncionalidadesSegmento objetivoSprint estimadoTierCRMGesti�n de contactos, clientes, pipeline de ventas, historial de interaccionesNegocios, consultores, influencersMes 2�3CoreInventarioControl de stock, alertas de reabastecimiento, categor�as, movimientosTiendas, marcas f�sicas, emprendedores de productoMes 3�4CoreContabilidadIngresos y gastos, P&L, balance, reportes fiscales b�sicosTodos los segmentosMes 4�5CorePagos / Facturaci�nEmisi�n de facturas, seguimiento de cobros, integraci�n pasarelasTodos los segmentosMes 3�4CoreAgenda / CitasCalendario, reservas de clientes, recordatorios automatizadosProfesionales independientes, coachesMes 5�6PlusProyectosTablero Kanban, asignaci�n de tareas, seguimiento de avanceAgencias, freelancersMes 6�7PlusReportes BIDashboard anal�tico, KPIs personalizables, exportaci�nTodosMes 7�8PremiumM�dulo PersonalizadoDesarrollo bajo pedido seg�n necesidad del clienteSegmento enterpriseBajo demandaCustom
-3.1 Detalle de m�dulos Core (MVP)
-
-CRM � Gesti�n de Contactos y Clientes
-� Directorio de contactos con campos personalizables (nombre, email, tel�fono, empresa, etiquetas)
-� Pipeline de ventas visual con etapas configurables (Kanban de oportunidades)
-� Historial de interacciones por contacto (notas, llamadas, reuniones)
-� Filtros y b�squeda avanzada, exportaci�n a CSV
-� Asignaci�n de contactos a usuarios del equipo
-
-Inventario � Control de Stock
-� Cat�logo de productos con SKU, categor�a, precio de compra y venta
-� Control de stock en tiempo real con alertas de stock m�nimo
-� Registro de entradas y salidas con motivo (compra, venta, ajuste)
-� Valoraci�n de inventario (FIFO / precio promedio)
-� Reportes de rotaci�n y productos m�s vendidos
-
-Contabilidad / Finanzas
-� Registro de ingresos y gastos con categor�as personalizables
-� Dashboard financiero: saldo actual, flujo de caja mensual, tendencias
-� Estado de resultados (P&L) por per�odo
-� Adjuntar comprobantes digitales a cada transacci�n
-� Exportaci�n de reportes a PDF y Excel
-
-Pagos y Facturaci�n
-� Emisi�n de facturas y cotizaciones con logo y datos del cliente
-� Estados de factura: borrador, enviada, pagada, vencida
-� Env�o autom�tico de facturas por email al cliente
-� Registro de pagos recibidos y pendientes
-� Integraci�n con Stripe y Culqi para cobros en l�nea
-� Recordatorios autom�ticos de pago vencido
-
-
-4. Interfaces del Sistema
-4.1 Interfaz Cliente (Tenant App)
-Es la aplicaci�n principal que usar�n los clientes contratantes. Cada empresa ve �nicamente sus datos y los m�dulos que tiene activos.
-
-Estructura de navegaci�n
-� Dashboard general: resumen visual con KPIs de los m�dulos activos (ventas, stock, cobros pendientes)
-� M�dulos activos: cada m�dulo aparece como secci�n en el men� lateral
-� M�dulos disponibles: marketplace interno donde el cliente puede ver m�dulos inactivos y solicitar activaci�n
-� Configuraci�n: perfil de empresa, usuarios del equipo, permisos por rol
-� Facturaci�n y plan: historial de pagos al SaaS, plan actual, gesti�n de suscripci�n
-� Soporte: canal de chat o tickets con tu equipo
-
-Flujo de onboarding del cliente
-1. Registro con email o Google (Firebase Auth)
-2. Formulario de perfil empresarial (nombre, sector, tama�o)
-3. Selecci�n de m�dulos iniciales (wizard de 3 pasos)
-4. Elecci�n de plan y pago (si aplica)
-5. Dashboard activo con tour interactivo de bienvenida
-
-4.2 Interfaz Admin (Panel Interno)
-Es la herramienta exclusiva de tu equipo para operar el SaaS. No es visible para los clientes. Permite controlar todo el negocio desde un solo lugar.
-
-Secciones principales del panel admin
-� Lista de clientes: tabla con todos los tenants, plan, estado, MRR, fecha de pr�ximo cobro y m�dulos activos
-� Perfil de cliente: vista detallada de un tenant con historial de pagos, m�dulos, usuarios registrados y notas internas
-� Gesti�n de m�dulos: activar/desactivar m�dulos por cliente, configurar fechas de vencimiento
-� Facturaci�n y cobros: registro de pagos recibidos, facturas emitidas al cliente, alertas de mora
-� Creaci�n de clientes: alta manual de nuevos tenants (para ventas directas sin self-service)
-� M�dulos custom: gesti�n del backlog de desarrollos a medida, estado por cliente
-� Reportes del negocio: MRR total, churn, m�dulos m�s contratados, clientes por plan
-� Configuraci�n global: planes disponibles, precios, usuarios del equipo admin y sus roles
-
-5. Stack Tecnol�gico
-A continuaci�n se detalla el stack seleccionado para el proyecto, justificando cada decisi�n t�cnica. Firebase fue elegido como infraestructura principal por su velocidad de desarrollo, escalabilidad autom�tica y reducci�n de complejidad operativa.
-
-CapaTecnolog�aJustificaci�nEstadoFrontendReact + ViteComponentes reutilizables, rendimiento, ecosistema amplioRecomendadoEstilosTailwind CSSUtility-first, dise�o r�pido y consistenteRecomendadoBackend / BaaSFirebase (Firestore, Auth, Functions)Infraestructura gestionada, escalable, sin servidor propioSeleccionadoAutenticaci�nFirebase AuthEmail/password, Google SSO, roles personalizadosIncluido en FirebaseBase de datosFirestore (NoSQL)Documentos flexibles, tiempo real, sin servidorSeleccionadoAlmacenamientoFirebase StorageArchivos, facturas PDF, im�genes de perfilIncluidoFunciones serverFirebase Cloud Functions (Node.js)L�gica de negocio, webhooks, cron jobsSeleccionadoPagosStripe + Culqi (Per�)Cobros SaaS, suscripciones, facturaci�n recurrenteRecomendadoEmail transaccionalResend o SendGridNotificaciones, facturas, onboardingRecomendadoHostingFirebase Hosting + VercelFirebase para app cliente; Vercel para landing/marketingRecomendadoControl de versionesGitHubRepositorio privado, CI/CD b�sicoEst�ndarMonitoreoFirebase Analytics + SentryErrores en producci�n, uso de featuresFase 2
-5.1 Por qu� Firebase es la elecci�n correcta para la Fase 1
-� Sin servidor propio: no hay que gestionar instancias, actualizaciones de sistema operativo, ni uptime. Firebase escala autom�ticamente.
-� Tiempo real nativo: Firestore ofrece sincronizaci�n en tiempo real sin polling, ideal para dashboards con datos actualizados.
-� Autenticaci�n lista para usar: Firebase Auth soporta email/password, Google SSO, magic links y gesti�n de tokens JWT sin c�digo adicional.
-� Funciones serverless: Cloud Functions (Node.js) permiten ejecutar l�gica de backend sin levantar un servidor Express completo.
-� Costo inicial muy bajo: el plan Spark de Firebase es gratuito hasta ciertos l�mites; el plan Blaze (pay-as-you-go) permite escalar sin compromisos fijos.
-
-5.2 Consideraciones y l�mites de Firebase
-� Firestore cobra por lecturas, escrituras y borrados. Es cr�tico optimizar las consultas desde el inicio y evitar lecturas innecesarias (usar listeners locales, paginaci�n, cach�).
-� Las transacciones complejas y reportes anal�ticos pesados son m�s eficientes en bases de datos SQL. Para la Fase 2 se puede agregar BigQuery (integrado con Firebase) para analytics avanzado.
-� El vendor lock-in es real pero manejable: abstraer las llamadas a Firebase detr�s de servicios/repositorios en el c�digo facilita una migraci�n futura si fuera necesaria.
-
-5.3 Alternativas consideradas
-� Supabase (PostgreSQL + Auth): excelente alternativa open-source, mejor para queries relacionales. Recomendado si el modelo de datos crece en complejidad. Curva de aprendizaje similar.
-� AWS Amplify: similar a Firebase pero dentro del ecosistema AWS. Mayor complejidad de configuraci�n inicial.
-� Backend propio (Node.js + Express + PostgreSQL): m�xima flexibilidad, pero requiere gestionar infraestructura, aumentando costos y tiempo de desarrollo en Fase 1.
-Conclusi�n: Firebase es la elecci�n �ptima para arrancar r�pido, validar el producto y llegar al mercado. La migraci�n a un backend propio puede evaluarse cuando el MRR justifique el costo operativo.
-
-
-6. Modelo de Datos en Firestore
-La arquitectura de datos sigue el patr�n de multi-tenancy por colecci�n. Toda la informaci�n de un cliente (tenant) vive anidada bajo su ID �nico, garantizando aislamiento y facilitando las reglas de seguridad.
-
-Colecci�n FirestoreProp�sitoCampos principalestenants/{tenantId}Empresa/cliente contratantename, email, plan, createdAt, status, ownerIdtenants/{id}/modules/{moduleId}M�dulos activos por tenantmoduleKey, activatedAt, billingCycle, statustenants/{id}/crm/contacts/{id}Contactos del CRMname, email, phone, company, tags, lastContact, ownerIdtenants/{id}/inventory/products/{id}Productos del inventarioname, sku, stock, minStock, price, categoryIdtenants/{id}/finance/transactions/{id}Movimientos contablestype, amount, category, date, description, attachmentUrltenants/{id}/invoices/{id}Facturas emitidasclientId, items[], total, status, dueDate, pdfUrlusers/{userId}Usuarios del sistematenantId, role, name, email, lastLogin, preferencesadminClients/{clientId}Vista admin de clientestenantId, plan, mrr, nextBilling, supportTier, notesbilling/{recordId}Historial de pagostenantId, amount, date, stripePaymentId, status, invoice
-6.1 Principios de dise�o de datos
-� Desnormalizaci�n estrat�gica: en Firestore es v�lido duplicar datos para evitar m�ltiples lecturas. Por ejemplo, el nombre del cliente se guarda en la factura para no tener que hacer un JOIN adicional.
-� Subcollections sobre arrays para listas grandes: los contactos del CRM van en una subcollection, no en un array dentro del documento del tenant (los arrays tienen l�mite de tama�o y no son paginables).
-� �ndices compuestos: definir en firestore.indexes.json los �ndices para las consultas m�s frecuentes (ej: facturas por estado + fecha, productos por categor�a + stock bajo).
-� Timestamps siempre en UTC: usar serverTimestamp() de Firestore para garantizar consistencia independientemente de la zona horaria del cliente.
-
-
-7. Seguridad y Sistema de Roles
-El sistema implementa un modelo de roles granular que separa completamente el acceso del equipo interno (tu empresa) del acceso de los clientes. Los roles se implementan como Custom Claims en Firebase Auth y se validan tanto en el frontend (para UI) como en las Firestore Security Rules (para datos).
-
-RolQui�n lo tieneAccesoControlInterfazSuper AdminT� (el due�o del SaaS)Todo el sistemaFirestore Admin SDKSolo backendAdminTu equipo de soporteLeer clientes, editar billing, ver m�dulosFirestore Rules + role claimPanel adminOwnerDue�o de la cuenta clienteTodo su tenant, gesti�n de usuariosFirestore Rules scopedApp clienteMemberEmpleado del clienteM�dulos asignados por el OwnerFirestore Rules scopedApp clienteRead-onlyAuditor/contador del clienteVista sin edici�n en m�dulos permitidosFirestore RulesApp cliente
-7.1 Implementaci�n de Firestore Security Rules
-Las reglas de seguridad son la �ltima l�nea de defensa. Deben ser exhaustivas desde el inicio. Estructura base recomendada:
-
-� Regla 1 � Deny all por defecto: ning�n acceso permitido a menos que una regla expl�cita lo autorice.
-� Regla 2 � Tenant isolation: un usuario solo puede leer/escribir dentro de su propio tenantId. Se valida comparando request.auth.token.tenantId con el documento solicitado.
-� Regla 3 � Validaci�n de rol: las operaciones de escritura sensibles (borrar contactos, emitir facturas) requieren rol Owner o Admin.
-� Regla 4 � Admin panel: las colecciones adminClients y billing solo son accesibles por usuarios con custom claim role == 'superadmin' o 'admin'.
-� Regla 5 � Validaci�n de datos: las reglas tambi�n validan el schema de los documentos escritos (campos requeridos, tipos de datos) para evitar datos corruptos.
-
-
-8. Modelo de Negocio y Precios
-El modelo de monetizaci�n combina suscripciones mensuales por plan con add-ons de m�dulos individuales, generando ingresos recurrentes predecibles (MRR) con potencial de expansi�n de revenue por cliente.
-
-PlanPrecioIncluyeSegmentoStarter$19/mes2 m�dulos incluidos + soporte b�sicoEmprendedores individualesPro$49/mes5 m�dulos + onboarding + soporte prioritarioPYMEs, profesionales independientesBusiness$99/mesM�dulos ilimitados + BI + integracionesNegocios en crecimientoEnterpriseDesde $199/mesTodo + m�dulos personalizados + SLA garantizadoEmpresas medianasAdd-on m�dulo$10�30/mes c/uM�dulos adicionales fuera del planTodos los tiersM�dulo customDesde $500 �nicoDesarrollo a medida + mantenimiento mensualPro / Enterprise
-8.1 Proyecci�n conservadora de MRR (A�o 1)
-� Meta mes 3: 10 clientes activos ? MRR estimado: $400�600 USD
-� Meta mes 6: 40 clientes activos ? MRR estimado: $1,800�2,500 USD
-� Meta mes 9: 80 clientes activos ? MRR estimado: $3,500�5,000 USD
-� Meta mes 12: 150 clientes activos ? MRR estimado: $7,000�10,000 USD
-
-8.2 M�tricas clave a rastrear
-� MRR (Monthly Recurring Revenue): ingresos recurrentes mensuales totales
-� Churn rate: porcentaje de clientes que cancelan por mes (objetivo: <5%)
-� ARPU (Average Revenue Per User): ingreso promedio por cliente
-� Module expansion rate: cu�ntos clientes agregan m�dulos adicionales despu�s del primer mes
-� CAC (Customer Acquisition Cost): costo de adquirir un nuevo cliente
-� LTV (Lifetime Value): ingreso total esperado por cliente durante su vida �til
-
-8.3 Estrategia de adquisici�n de clientes
-� Canal 1 � Redes sociales: contenido educativo sobre gesti�n de negocios en Instagram y TikTok. Demostrar el producto con casos de uso reales.
-� Canal 2 � Referidos: programa de afiliados donde clientes actuales ganan un mes gratis por cada referido que se convierte en cliente de pago.
-� Canal 3 � Ventas directas: outreach manual a emprendedores y negocios peque�os en grupos de Facebook, WhatsApp Business, LinkedIn.
-� Canal 4 � Alianzas: acuerdos con contadores, agencias de marketing y consultores que recomienden la plataforma a sus clientes.
-� Canal 5 � SEO + Blog: contenido sobre gesti�n de negocios, contabilidad b�sica, CRM para emprendedores, posicionado en Google Latinoam�rica.
-
-
-9. Hoja de Ruta de Desarrollo
-El roadmap est� organizado en 7 fases que llevan el producto desde cero hasta un ERP SaaS completo y en crecimiento. La prioridad en las primeras fases es llegar al mercado r�pido con el menor feature set que genere valor real (MVP).
-
-Per�odoFaseObjetivos principalesEntregable claveEtapaFase 1 Mes 1�2FundacionesSetup Firebase, autenticaci�n, roles (admin/cliente), estructura de rutas, dise�o base UI, panel admin b�sicoAdmin panel + LoginMVPFase 2 Mes 2�4M�dulos CoreCRM, Pagos/Facturaci�n, Inventario � funcionalidades base con CRUD y reportes simples3 m�dulos operativosMVPFase 3 Mes 4�5ContabilidadRegistro de ingresos/gastos, dashboard financiero, exportaci�n de reportesM�dulo contabilidadMVPFase 4 Mes 5�6Marketplace de m�dulosActivaci�n de m�dulos desde el panel cliente, l�gica de suscripci�n por m�dulo, integraci�n StripeModelo de negocio activoBetaFase 5 Mes 6�7M�dulos PlusAgenda/Citas, Gesti�n de proyectos, mejoras de UX/UI basadas en feedback2 m�dulos adicionalesBetaFase 6 Mes 7�9Escala y pulidoBI/Reportes avanzados, notificaciones, onboarding automatizado, m�dulos custom bajo pedidoProducto completoGAFase 7 Mes 9+CrecimientoIntegraciones externas (WhatsApp, email marketing), API p�blica, afiliados, multi-idiomaExpansi�n de mercadov2
-9.1 Criterios de MVP
-El MVP (Producto M�nimo Viable) se considera completo cuando:
-6. Un cliente puede registrarse de forma aut�noma (sin intervenci�n manual de tu equipo)
-7. Puede activar al menos un m�dulo y pagar en l�nea
-8. El panel admin te permite ver clientes, m�dulos activos y estado de pago
-9. Los datos del cliente est�n seguros y completamente aislados de otros tenants
-10. El sistema puede manejar 50 clientes simult�neos sin degradaci�n de rendimiento
-
-
-10. An�lisis de Riesgos
-
-RiesgoImpactoProbabilidadMitigaci�nCostos Firebase escalan con usoAltoMedioMonitorear Firestore reads/writes desde el inicio, usar paginaci�n y cach� local en el frontendComplejidad multi-tenant en reglas FirestoreAltoAltoDise�ar reglas desde el inicio con tenant isolation; usar Cloud Functions para operaciones cr�ticasBajo adoption en primeros clientesMedioMedioOfrecer plan gratuito limitado (freemium) + onboarding manual en las primeras 10 cuentasM�dulos personalizados dif�ciles de escalarMedioBajoDefinir marco de m�dulos est�ndar desde el inicio; custom = costo por proyecto separadoCompetencia con ERPs establecidos (Odoo, Zoho)AltoBajoDiferenciarse por simplicidad, precio y soporte en espa�ol para Latinoam�ricaRegulaci�n fiscal var�a por pa�sMedioMedioM�dulo contabilidad v1 gen�rico; agregar formatos por pa�s seg�n demanda (Per�, M�xico, etc.)
-11. Pr�ximos Pasos Inmediatos
-Para arrancar el proyecto de manera estructurada, se recomienda ejecutar las siguientes acciones en las pr�ximas 2 semanas:
-
-Semana 1 � Fundaciones t�cnicas
-11. Crear proyecto en Firebase Console (habilitar Firestore, Auth, Storage, Functions)
-12. Inicializar repositorio GitHub con estructura de carpetas (apps/client, apps/admin, packages/shared)
-13. Configurar Firebase CLI localmente y el emulador para desarrollo sin afectar producci�n
-14. Implementar autenticaci�n b�sica: registro, login, recuperaci�n de contrase�a
-15. Crear el modelo de datos inicial en Firestore para tenants y users
-
-Semana 2 � Esqueleto de la aplicaci�n
-16. Implementar el sistema de roles con Firebase Custom Claims
-17. Crear el layout base del panel cliente con navegaci�n lateral
-18. Crear el layout base del panel admin con navegaci�n
-19. Implementar Firestore Security Rules v1 con tenant isolation
-20. Conectar Stripe en modo test para verificar el flujo de suscripci�n
-
-Decisiones de dise�o a tomar antes de codificar
-� Nombre y dominio del producto (necesario para Firebase, Stripe y branding)
-� Dise�o visual: paleta de colores, tipograf�a, estilo UI (puedo construir el design system completo una vez elegido)
-� Estructura de precios definitiva (los valores en este documento son referenciales)
-� Pa�s de constituci�n legal para la facturaci�n del SaaS (afecta integraci�n de pasarelas de pago)
-
-Este documento es un punto de partida vivo. Debe actualizarse con cada decisi�n t�cnica o de negocio relevante.
-
-Versi�n 1.0  �  Marzo 2026  �  Confidencial
-ERP SaaS � Plan Maestro de Producto     Confidencial
-
-� 2026 � Documento Privado	P�gina 1
-
