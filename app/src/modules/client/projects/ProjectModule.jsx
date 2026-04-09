@@ -2,18 +2,28 @@ import { useState } from 'react';
 import { Briefcase, Plus, Search, MoreVertical, Layout, List, Loader2, X, AlertCircle, Folder, Clock, CheckCircle2 } from 'lucide-react';
 import { useProjects } from './useProjects';
 import { useAuth } from '../../../context/AuthContext';
-// import ProjectKanban from './ProjectKanban'; // Will be created in next plan
+import ProjectKanban from './ProjectKanban';
 
 export default function ProjectModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { projects, loading, addProject, updateProjectStatus } = useProjects(orgId);
+  const { projects, tasks, loading, addProject, updateProjectStatus, setActiveProjectId, addTask, updateTaskStatus } = useProjects(orgId);
   
   const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null); // For detail view (Kanban)
+  const [selectedProject, setSelectedProject] = useState(null); 
   const [formData, setFormData] = useState({ name: '', description: '', color: '#85adff' });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+
+  const handleSelectProject = (project) => {
+    setSelectedProject(project);
+    setActiveProjectId(project.id);
+  };
+
+  const handleBackToList = () => {
+    setSelectedProject(null);
+    setActiveProjectId(null);
+  };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
@@ -39,12 +49,12 @@ export default function ProjectModule() {
     );
   }
 
-  // Si hay un proyecto seleccionado, mostramos el Kanban (placeholder por ahora)
+  // Si hay un proyecto seleccionado, mostramos el Kanban real
   if (selectedProject) {
     return (
       <div className="animate-in fade-in duration-500 space-y-6">
         <button 
-          onClick={() => setSelectedProject(null)}
+          onClick={handleBackToList}
           className="text-[#a3aac4] hover:text-[#dee5ff] flex items-center gap-2 font-bold transition-colors"
         >
           ← Volver a todos los proyectos
@@ -61,12 +71,12 @@ export default function ProjectModule() {
             </div>
         </div>
         
-        {/* Aqui irá el ProjectKanban en el Plan 8.2 */}
-        <div className="bg-[#141f38]/30 border border-dashed border-[#40485d]/30 rounded-3xl h-96 flex flex-col items-center justify-center text-[#40485d]">
-            <Layout size={48} className="mb-4 opacity-20" />
-            <p className="font-bold">Tablero Kanban (Plan 8.2)</p>
-            <p className="text-sm">Configurando vista reactiva de tareas...</p>
-        </div>
+        <ProjectKanban 
+            project={selectedProject} 
+            tasks={tasks} 
+            addTask={addTask} 
+            updateTaskStatus={updateTaskStatus} 
+        />
       </div>
     );
   }
@@ -92,7 +102,7 @@ export default function ProjectModule() {
         {projects.length > 0 ? projects.map(project => (
           <div 
             key={project.id} 
-            onClick={() => setSelectedProject(project)}
+            onClick={() => handleSelectProject(project)}
             className="group relative bg-[#0f1930]/40 border border-[#40485d]/20 rounded-3xl p-6 hover:border-[#85adff]/50 transition-all cursor-pointer overflow-hidden"
           >
             {/* Accent Line */}
