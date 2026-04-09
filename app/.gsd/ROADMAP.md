@@ -121,20 +121,20 @@
 ---
 
 ### Phase 8: Gestión de Proyectos (Módulo Plus)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Tableros Kanban y seguimiento de tareas para equipos y freelancers.
 **Depends on**: Phase 2
 
 **Tasks**:
-- [ ] Implementar hook `useProjects` y persistencia en Firestore
-- [ ] Desarrollar interfaz `ProjectModule.jsx` (Listado y Gestión)
-- [ ] Construir `ProjectKanban.jsx` con tareas reactivas
-- [ ] Integrar KPIs en el Dashboard y navegación global
+- [x] Implementar hook `useProjects` y persistencia en Firestore
+- [x] Desarrollar interfaz `ProjectModule.jsx` (Listado y Gestión)
+- [x] Construir `ProjectKanban.jsx` con tareas reactivas
+- [x] Integrar KPIs en el Dashboard y navegación global
 
 **Verification**:
-- [ ] Creación y listado de proyectos funcional (Mock/Firebase).
-- [ ] Tablero Kanban operativo con cambio de estado de tareas.
-- [ ] Acceso desde el menú lateral y visualización de métricas en Dashboard.
+- [x] Creación y listado de proyectos funcional (Mock/Firebase).
+- [x] Tablero Kanban operativo con cambio de estado de tareas.
+- [x] Acceso desde el menú lateral y visualización de métricas en Dashboard.
 
 
 ---
