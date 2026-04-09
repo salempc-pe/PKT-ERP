@@ -126,10 +126,16 @@
 **Depends on**: Phase 2
 
 **Tasks**:
-- [ ] TBD (run /plan 8 to create)
+- [ ] Implementar hook `useProjects` y persistencia en Firestore
+- [ ] Desarrollar interfaz `ProjectModule.jsx` (Listado y Gestión)
+- [ ] Construir `ProjectKanban.jsx` con tareas reactivas
+- [ ] Integrar KPIs en el Dashboard y navegación global
 
 **Verification**:
-- TBD
+- [ ] Creación y listado de proyectos funcional (Mock/Firebase).
+- [ ] Tablero Kanban operativo con cambio de estado de tareas.
+- [ ] Acceso desde el menú lateral y visualización de métricas en Dashboard.
+
 
 ---
 
