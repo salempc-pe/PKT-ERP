@@ -1,9 +1,11 @@
-import { ArrowRight, Users, Box, Calculator, CheckCircle2, DollarSign, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Users, Briefcase, Box, Calculator, CheckCircle2, DollarSign, AlertTriangle, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCrm } from '../crm/useCrm';
 import { useInventory } from '../inventory/useInventory';
 import { useSales } from '../sales/useSales';
+import { useAppointments } from '../calendar/useAppointments';
+import { useProjects } from '../projects/useProjects';
 import KpiCard from './components/KpiCard';
 
 export default function ClientDashboard() {
@@ -13,13 +15,14 @@ export default function ClientDashboard() {
   const { contacts, leads, loading: loadingCrm } = useCrm(orgId);
   const { products, loading: loadingInv } = useInventory(orgId);
   const { sales, loading: loadingSales } = useSales(orgId);
+  const { appointments, loading: loadingAppts } = useAppointments(orgId);
+  const { projects, tasks, loading: loadingProjects } = useProjects(orgId);
 
   // Calcula totales
   const totalContacts = contacts.length + leads.length;
   
   // Total Inventory Value
   const totalInventoryValue = products.reduce((acc, product) => {
-    // Some mock prices have $, some might be numbers
     const priceStr = String(product.price).replace(/[^0-9.]/g, '');
     const price = parseFloat(priceStr) || 0;
     return acc + (price * (product.stock || 0));
@@ -34,6 +37,14 @@ export default function ClientDashboard() {
     .reduce((acc, s) => acc + (parseFloat(s.totalAmount) || 0), 0);
 
   const pendingInvoices = sales.filter(s => s.status === 'Pendiente').length;
+
+  // Appointments
+  const todayStr = new Date().toISOString().split('T')[0];
+  const upcomingAppointments = appointments.filter(a => a.date >= todayStr && a.status === 'PENDING').length;
+
+  // Projects
+  const activeProjectsCount = projects.filter(p => p.status === 'active').length;
+  const pendingTasksCount = tasks.filter(t => t.status !== 'done').length;
 
   return (
     <div className="animate-in fade-in duration-500 space-y-10">
@@ -58,9 +69,9 @@ export default function ClientDashboard() {
       </section>
 
       {/* Unified KPIs */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <KpiCard 
-          title="Total Clientes & Leads" 
+          title="Clientes & Leads" 
           value={totalContacts} 
           icon={Users}
           loading={loadingCrm}
@@ -82,7 +93,7 @@ export default function ClientDashboard() {
           }}
         />
         <KpiCard 
-          title="Ingresos Recibidos" 
+          title="Ingresos" 
           value={`$${totalSalesRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} 
           icon={DollarSign}
           loading={loadingSales}
@@ -93,69 +104,85 @@ export default function ClientDashboard() {
           }}
         />
         <KpiCard 
-          title="Alertas / Pendientes" 
-          value={`${lowStockCount} Stock / ${pendingInvoices} Fac`}
-          icon={AlertTriangle}
-          loading={loadingInv || loadingSales}
+          title="Proyectos & Tareas" 
+          value={`${activeProjectsCount} Proj / ${tasks.length} Task`}
+          icon={Briefcase}
+          loading={loadingProjects}
           colorClass={{
-            border: lowStockCount > 0 || pendingInvoices > 0 ? "border-[#ff6b6b]/40" : "border-[#40485d]/20",
-            iconBg: lowStockCount > 0 || pendingInvoices > 0 ? "bg-[#ff6b6b]/20" : "bg-[#40485d]/50",
-            iconText: lowStockCount > 0 || pendingInvoices > 0 ? "text-[#ff6b6b]" : "text-[#a3aac4]",
-            valueText: lowStockCount > 0 || pendingInvoices > 0 ? "text-[#ff6b6b]" : "text-[#dee5ff]"
+            border: "border-[#dee5ff]/20",
+            iconBg: "bg-[#dee5ff]/20",
+            iconText: "text-[#dee5ff]",
+          }}
+        />
+        <KpiCard 
+          title="Citas Hoy" 
+          value={upcomingAppointments} 
+          icon={Calendar}
+          loading={loadingAppts}
+          colorClass={{
+            border: "border-[#ffba08]/20",
+            iconBg: "bg-[#ffba08]/20",
+            iconText: "text-[#ffba08]",
           }}
         />
       </section>
 
-      {/* Modular Trial Cards Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {/* CRM Module (Active) */}
+      {/* Modular Cards Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <Link to="/client/calendar" className="border border-[#ffba08]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
+          <div className="w-12 h-12 rounded-xl bg-[#ffba08]/20 flex items-center justify-center mb-6 text-[#ffba08] group-hover:scale-110 transition-transform">
+            <Calendar size={24} />
+          </div>
+          <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Agendas y Citas</h3>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Programación de tus clientes y equipo.</p>
+          <div className="bg-[#ffba08]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#ffba08] flex items-center justify-center gap-2">
+            <CheckCircle2 size={14} /> Entrar
+          </div>
+        </Link>
+
         <Link to="/client/crm" className="border border-[#85adff]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
           <div className="w-12 h-12 rounded-xl bg-[#85adff]/20 flex items-center justify-center mb-6 text-[#85adff] group-hover:scale-110 transition-transform">
             <Users size={24} />
           </div>
-          <h3 className="text-xl font-bold text-[#dee5ff] mb-2">CRM y Ventas</h3>
-          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Gestiona clientes, prospectos y embudos de venta de manera visual.</p>
+          <h3 className="text-xl font-bold text-[#dee5ff] mb-2">CRM</h3>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Gestiona clientes y prospectos de manera visual.</p>
           <div className="bg-[#85adff]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#85adff] flex items-center justify-center gap-2">
-            <CheckCircle2 size={14} /> Ir al Módulo
+            <CheckCircle2 size={14} /> Entrar
           </div>
         </Link>
 
-        {/* Inventory Module (Active) */}
         <Link to="/client/inventory" className="border border-[#e28ce9]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
           <div className="w-12 h-12 rounded-xl bg-[#e28ce9]/20 flex items-center justify-center mb-6 text-[#e28ce9] group-hover:scale-110 transition-transform">
             <Box size={24} />
           </div>
           <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Inventario</h3>
-          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Control de existencias y alertas de reabastecimiento en tiempo real.</p>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Control de existencias y alertas de stock.</p>
           <div className="bg-[#e28ce9]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#e28ce9] flex items-center justify-center gap-2">
-            <CheckCircle2 size={14} /> Ir al Módulo
+            <CheckCircle2 size={14} /> Entrar
           </div>
         </Link>
         
-        {/* Sales Module (Active) */}
+        <Link to="/client/projects" className="border border-[#dee5ff]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
+          <div className="w-12 h-12 rounded-xl bg-[#dee5ff]/20 flex items-center justify-center mb-6 text-[#dee5ff] group-hover:scale-110 transition-transform">
+            <Briefcase size={24} />
+          </div>
+          <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Proyectos</h3>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Tableros Kanban para organizar el trabajo.</p>
+          <div className="bg-[#dee5ff]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#dee5ff] flex items-center justify-center gap-2">
+            <CheckCircle2 size={14} /> Entrar
+          </div>
+        </Link>
+
         <Link to="/client/sales" className="border border-[#50e3c2]/20 bg-[#141f38] p-6 rounded-2xl group hover:bg-[#1f2b49] transition-all duration-300 block">
           <div className="w-12 h-12 rounded-xl bg-[#50e3c2]/20 flex items-center justify-center mb-6 text-[#50e3c2] group-hover:scale-110 transition-transform">
             <DollarSign size={24} />
           </div>
           <h3 className="text-xl font-bold text-[#dee5ff] mb-2">Facturación</h3>
-          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Emisión de cotizaciones y facturación ligada al inventario.</p>
+          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Cotizaciones y facturación integrada.</p>
           <div className="bg-[#50e3c2]/10 text-center py-2 rounded-lg text-xs font-bold uppercase tracking-widest text-[#50e3c2] flex items-center justify-center gap-2">
-            <CheckCircle2 size={14} /> Ir al Módulo
+            <CheckCircle2 size={14} /> Entrar
           </div>
         </Link>
-
-        {/* Finance Module (Inactive) */}
-        <div className="bg-[#091328] border border-[#40485d]/20 p-6 rounded-2xl group hover:bg-[#141f38] transition-all duration-300 opacity-60">
-          <div className="w-12 h-12 rounded-xl bg-[#40485d]/50 flex items-center justify-center mb-6 text-[#a3aac4] group-hover:scale-110 transition-transform">
-            <Calculator size={24} />
-          </div>
-          <h3 className="text-xl font-bold text-[#a3aac4] mb-2">Contabilidad</h3>
-          <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2">Contabilidad básica, P&L, reportes y finanzas para tu empresa.</p>
-          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-[#a3aac4]">
-            <span>No Activo</span>
-            <ArrowRight size={14} />
-          </div>
-        </div>
       </section>
     </div>
   );

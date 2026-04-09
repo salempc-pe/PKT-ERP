@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -64,6 +64,15 @@ export default function ClientLayout() {
           >
             <Users size={20} />
             <span className="text-sm">CRM y Ventas</span>
+          </Link>
+          
+          <Link 
+            to="/client/projects" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/projects') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <Briefcase size={20} />
+            <span className="text-sm border-0 font-semibold">Proyectos</span>
           </Link>
           
           <Link 
