@@ -140,12 +140,16 @@
 ---
 
 ### Phase 9: Marketplace y Sistema de Suscripciones
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar la pasarela de pagos para el SaaS y la activación/desactivación dinámica de módulos.
 **Depends on**: Phase 1, Phase 4
 
 **Tasks**:
-- [ ] TBD (run /plan 9 to create)
+- [x] Implementar estado global de módulos activos en AuthContext
+- [x] Crear componente ModuleRoute para protección de acceso
+- [x] Desarrollar interfaz de Marketplace con tarjetas de productos
+- [x] Integrar flujo de Checkout simulado y persistencia local/mock
 
 **Verification**:
-- TBD
+- [x] Los módulos se activan dinámicamente tras el pago simulado.
+- [x] El sidebar y el ruteo respetan los permisos del tenant.
