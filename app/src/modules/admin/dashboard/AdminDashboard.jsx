@@ -1,6 +1,9 @@
 import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus } from 'lucide-react';
+import { useAdminAnalytics } from '../../../hooks/useAdminAnalytics';
 
 export default function AdminDashboard() {
+  const analytics = useAdminAnalytics();
+  
   return (
     <div className="animate-in fade-in duration-500">
       {/* Bento Metric Grid */}
@@ -8,11 +11,11 @@ export default function AdminDashboard() {
         {/* Big Revenue Metric */}
         <div className="col-span-12 lg:col-span-7 bg-[#091328] rounded-xl p-8 flex flex-col justify-between min-h-[320px] relative overflow-hidden group">
           <div className="relative z-10">
-            <p className="text-[#85adff] text-xs font-black uppercase tracking-[0.2em] mb-4">Ingresos MRR (Mes 3)</p>
-            <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">$4,120</h3>
+            <p className="text-[#85adff] text-xs font-black uppercase tracking-[0.2em] mb-4">Ingresos MRR</p>
+            <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">S/ {analytics.mrr}</h3>
             <div className="flex items-center gap-2 text-[#fbabff]">
               <TrendingUp size={16} />
-              <span className="text-sm font-bold">+12.4% vs mes anterior</span>
+              <span className="text-sm font-bold">{analytics.growthMetrics.mrrGrowth > 0 ? '+' : ''}{analytics.growthMetrics.mrrGrowth}% vs mes anterior</span>
             </div>
           </div>
           
@@ -30,19 +33,19 @@ export default function AdminDashboard() {
           {/* Total Clients */}
           <div className="bg-[#141f38] rounded-xl p-6 flex items-center justify-between group hover:bg-[#192540] transition-colors">
             <div>
-              <p className="text-[#a3aac4] text-sm font-semibold mb-1">Tenants (Clientes Activos)</p>
-              <h4 className="text-4xl font-black text-[#dee5ff]">42</h4>
+              <p className="text-[#a3aac4] text-sm font-semibold mb-1">Total Organizaciones</p>
+              <h4 className="text-4xl font-black text-[#dee5ff]">{analytics.activeOrganizations.length}</h4>
             </div>
             <div className="w-14 h-14 rounded-full bg-[#192540] flex items-center justify-center group-hover:scale-110 transition-transform">
               <Users size={28} className="text-[#85adff]" />
             </div>
           </div>
           
-          {/* Pending Payments */}
+          {/* ARPU */}
           <div className="bg-[#141f38] rounded-xl p-6 flex items-center justify-between group hover:bg-[#192540] transition-colors">
             <div>
-              <p className="text-[#a3aac4] text-sm font-semibold mb-1">Pagos Pendientes</p>
-              <h4 className="text-4xl font-black text-[#dee5ff]">3</h4>
+              <p className="text-[#a3aac4] text-sm font-semibold mb-1">ARPU (Ingreso Promedio)</p>
+              <h4 className="text-4xl font-black text-[#dee5ff]">S/ {analytics.arpu}</h4>
             </div>
             <div className="w-14 h-14 rounded-full bg-[#ff716c]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Clock size={28} className="text-[#ff716c]" />
@@ -73,59 +76,31 @@ export default function AdminDashboard() {
 
       {/* Recent Activity & Featured Projects */}
       <div className="grid grid-cols-12 gap-8">
-        {/* Customer Activity Table */}
         <div className="col-span-12 xl:col-span-8">
           <div className="flex justify-between items-end mb-6">
-            <h3 className="text-xl font-bold tracking-tight text-[#dee5ff]">Actividad Reciente (Tenants)</h3>
-            <button className="text-sm font-bold text-[#85adff] hover:underline transition-all">Exportar a CSV</button>
+            <h3 className="text-xl font-bold tracking-tight text-[#dee5ff]">Adopción de Módulos</h3>
           </div>
           
-          <div className="bg-[#091328] rounded-2xl overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#0f1930]">
-                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[#a3aac4]">Cliente</th>
-                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[#a3aac4]">Acción</th>
-                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[#a3aac4]">MRR Impact</th>
-                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[#a3aac4] text-right">Fecha</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#40485d]/10">
-                <tr className="hover:bg-[#141f38]/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#dee5ff]">AG</div>
-                      <span className="font-bold text-[#dee5ff]">Agencia Creativa XR</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4]">Módulo CRM Activado</td>
-                  <td className="px-6 py-4 font-bold text-[#fbabff]">+$30.00</td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4] text-right">Hace 2 hrs</td>
-                </tr>
-                <tr className="hover:bg-[#141f38]/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#dee5ff]">EC</div>
-                      <span className="font-bold text-[#dee5ff]">EcoTienda Local</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4]">Nuevo Tenant Registrado</td>
-                  <td className="px-6 py-4 font-bold text-[#fbabff]">+$19.00</td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4] text-right">Hace 5 hrs</td>
-                </tr>
-                <tr className="hover:bg-[#141f38]/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#dee5ff]">TC</div>
-                      <span className="font-bold text-[#dee5ff]">Tech Consultores</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4]">Pago Recibido (Pro)</td>
-                  <td className="px-6 py-4 font-bold text-[#dee5ff]">$49.00</td>
-                  <td className="px-6 py-4 text-sm text-[#a3aac4] text-right">Hace 1 día</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="bg-[#091328] rounded-2xl p-8 space-y-6">
+            {Object.entries(analytics.modulePopularity).map(([modId, count]) => {
+              const maxCount = Math.max(...Object.values(analytics.modulePopularity), 1);
+              const percentage = Math.round((count / maxCount) * 100);
+              
+              return (
+                <div key={modId} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-bold text-[#dee5ff] uppercase tracking-wider">{modId}</span>
+                    <span className="text-[#85adff] font-black">{count} activaciones</span>
+                  </div>
+                  <div className="w-full h-3 bg-[#141f38] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#85adff] to-[#fbabff] rounded-full transition-all duration-1000" 
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
         

@@ -153,3 +153,84 @@
 **Verification**:
 - [x] Los módulos se activan dinámicamente tras el pago simulado.
 - [x] El sidebar y el ruteo respetan los permisos del tenant.
+
+---
+
+### Phase 10: Arreglos y Mejoras de Admin
+**Status**: ✅ Complete
+**Objective**: Hacer funcionar la creación de organizaciones, equiparar módulo de facturación admin con clientes, y remover cabeceras redundantes ("Architect OS").
+**Depends on**: Phase 9
+
+**Tasks**:
+- [x] Hacer funcional el botón "Nueva Organización" en el listado de clientes del Admin.
+- [x] Asegurar que los módulos de facturación (Sales) del lado de Admin sean iguales a los del lado Cliente.
+- [x] Eliminar la cabecera "Architect OS" de los módulos de la parte de Admin (ya que las opciones están en el sidebar).
+
+**Verification**:
+- [x] Creación de nueva organización funcional operando sobre la base mock/firebase.
+- [x] Las interfaces de facturación son consistentes entre admin y cliente.
+---
+
+## Milestone 2: Platform Growth & SaaS Operations
+
+### Phase 11: Sistema de Suscripciones y Entitlements
+**Status**: ✅ Complete
+**Objective**: Evolucionar la activación manual de módulos a un sistema de Planes (Basic, Pro, Enterprise) con límites técnicos.
+**Depends on**: Phase 9, Phase 10
+
+**Tasks**:
+- [x] Definir lógica de "Planes" que agrupen módulos automáticamente.
+- [x] Implementar gestión de Cuotas de Uso (ej. límite de usuarios, almacenamiento o documentos).
+- [x] Integrar visualización de estado de suscripción en el Portal de Cliente.
+- [x] Crear panel de control de "Billing" en Admin para gestionar facturas del SaaS.
+
+**Verification**:
+- [x] El sistema bloquea acciones si se supera la cuota del plan.
+- [x] Los usuarios solo ven los módulos incluidos en su Tier seleccionado.
+
+---
+
+### Phase 12: Business Intelligence & SaaS Metrics (Admin)
+**Status**: ✅ Complete
+**Objective**: Proporcionar al dueño del ERP visibilidad total sobre los ingresos y el comportamiento del cliente.
+**Depends on**: Phase 11
+
+**Tasks**:
+- [x] Implementar dashboard de métricas SaaS: MRR, ARR y Churn Rate.
+- [x] Crear reportes de popularidad de módulos (Usage Analytics).
+- [ ] Implementar visualización de Health Score automático por cliente.
+- [ ] Desarrollar exportación de métricas financieras para contabilidad del ERP.
+
+**Verification**:
+- [x] Los gráficos de MRR muestran datos precisos basados en las suscripciones activas.
+- [x] Es posible identificar popularidad de módulos desde el panel admin.
+
+---
+
+### Phase 13: Centro de Soporte y Diagnóstico (SaaS Ops)
+**Status**: ⬜ Not Started
+**Objective**: Herramientas para dar soporte técnico eficiente y seguro a los clientes.
+**Depends on**: Phase 10
+
+**Tasks**:
+- [ ] Implementar sistema de "Impersonación" (Login as tenant) con auditoría.
+- [ ] Crear visor de Logs de Actividad multi-tenant para resolución de conflictos.
+- [ ] Desarrollar panel de errores críticos y notificaciones para el Administrador.
+
+**Verification**:
+- [ ] El administrador puede entrar al portal de un cliente de forma segura para dar soporte.
+---
+
+### Phase 14: Onboarding & Self-Service Password
+**Status**: ⬜ Not Started
+**Objective**: Permitir que los administradores inviten usuarios y que estos configuren su propia contraseña mediante un link seguro.
+**Depends on**: Phase 11
+
+**Tasks**:
+- [ ] Implementar estados de usuario (Pending/Active) y lógica de tokens en AuthContext.
+- [ ] Desarrollar la UI de "Copiar Link de Invitación" en el panel de administración.
+- [ ] Crear la página pública de `/setup-password` con validación de fuerza de contraseña.
+
+**Verification**:
+- [ ] Al crear un usuario, el admin recibe un link único.
+- [ ] Acceder al link permite guardar una contraseña y activa la cuenta inmediatamente.
