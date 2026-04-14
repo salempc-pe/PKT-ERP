@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X } from 'lucide-react';
+import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 
 const AVAILABLE_MODULES = [
   { id: 'crm', name: 'CRM y Ventas' },
@@ -169,6 +170,20 @@ export default function AdminClients() {
                       {org.subscription?.planId?.toUpperCase() || 'STARTUP'}
                     </span>
                     {org.ruc && <span className="text-[10px] text-[#85adff] font-bold bg-[#85adff]/10 px-2 py-0.5 rounded border border-[#85adff]/20">RUC: {org.ruc}</span>}
+                    {(() => {
+                      const health = calculateHealthScore(org);
+                      const colors = {
+                        'Excellent': 'bg-[#4ADE80]/10 text-[#4ADE80] border-[#4ADE80]/20',
+                        'Good': 'bg-amber-400/10 text-amber-400 border-amber-400/20',
+                        'At Risk': 'bg-red-400/10 text-red-400 border-red-400/20'
+                      };
+                      return (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border flex items-center gap-1 ${colors[health]}`}>
+                          <HeartPulse size={10} />
+                          {health}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

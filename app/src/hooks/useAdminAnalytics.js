@@ -7,6 +7,13 @@ const PLAN_PRICES = {
   enterprise: 499
 };
 
+export const calculateHealthScore = (org) => {
+  const activeModules = org?.subscription?.activeModules?.length || 0;
+  if (activeModules >= 4) return 'Excellent';
+  if (activeModules >= 2) return 'Good';
+  return 'At Risk';
+};
+
 export function useAdminAnalytics() {
   const { mockOrganizations, mockUsers } = useAuth();
 

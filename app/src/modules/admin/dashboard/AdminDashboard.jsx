@@ -1,9 +1,22 @@
-import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus } from 'lucide-react';
+import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus, Download } from 'lucide-react';
 import { useAdminAnalytics } from '../../../hooks/useAdminAnalytics';
 
 export default function AdminDashboard() {
   const analytics = useAdminAnalytics();
   
+  const handleExport = () => {
+    const dataStr = JSON.stringify(analytics, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `pkt_mrr_report_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="animate-in fade-in duration-500">
       {/* Bento Metric Grid */}
@@ -11,7 +24,14 @@ export default function AdminDashboard() {
         {/* Big Revenue Metric */}
         <div className="col-span-12 lg:col-span-7 bg-[#091328] rounded-xl p-8 flex flex-col justify-between min-h-[320px] relative overflow-hidden group">
           <div className="relative z-10">
-            <p className="text-[#85adff] text-xs font-black uppercase tracking-[0.2em] mb-4">Ingresos MRR</p>
+            <div className="flex justify-between items-start">
+              <p className="text-[#85adff] text-xs font-black uppercase tracking-[0.2em] mb-4">Ingresos MRR</p>
+              <button 
+                onClick={handleExport}
+                className="bg-[#141f38] hover:bg-[#192540] text-[#a3aac4] hover:text-[#dee5ff] border border-[#40485d]/30 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all relative z-20">
+                <Download size={14} /> Exportar JSON
+              </button>
+            </div>
             <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">S/ {analytics.mrr}</h3>
             <div className="flex items-center gap-2 text-[#fbabff]">
               <TrendingUp size={16} />
