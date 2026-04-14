@@ -1,10 +1,13 @@
 ## Current Position
-- **Phase**: 13 (completed)
-- **Task**: All tasks complete
-- **Status**: Verified
+- **Phase**: 14 (Onboarding & Self-Service Password)
+- **Task**: Planning complete
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Phase 13 completada con éxito. Implementada la lógica de Suplantación de Identidad (Impersonate) permitiendo a los administradores iniciar sesión de inmediato como clientes (soporte y testing de visibilidad). Se integró un banner global flotante rojo para prevenir sesgos de context.
+El usuario solicitó seguir adelante con el ROADMAP.md. Se ejecutó el flujo `/plan` para la Fase 14. Se evaluó el AuthContext.jsx y AdminClients.jsx existentes, y se crearon dos planes asilados (14.1 y 14.2) que abarcan los requisitos de estado de usuario, generación de url de invitación y creación del componente SetupPassword.
+
+## Oportunidades de Mejora y Contexto
+- El authContext y la base mock actual se beneficiarán de tener explícito un `status: 'active'` y `status: 'pending'` en lugar de asumir contraseñas '1234' para las nuevas cuentas.
 
 ## Next Steps
-1. /plan 14
+1. /execute 14
