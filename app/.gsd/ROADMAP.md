@@ -215,11 +215,12 @@
 
 **Tasks**:
 - [x] Implementar sistema de "Impersonación" (Login as tenant) con auditoría.
-- [ ] Crear visor de Logs de Actividad multi-tenant para resolución de conflictos.
-- [ ] Desarrollar panel de errores críticos y notificaciones para el Administrador.
+- [x] Crear visor de Logs de Actividad multi-tenant para resolución de conflictos.
+- [x] Desarrollar panel de errores críticos y notificaciones para el Administrador.
 
 **Verification**:
 - [x] El administrador puede entrar al portal de un cliente de forma segura para dar soporte.
+- [x] Auditoría de logs funcional y panel de alertas operativo en el dashboard.
 ---
 
 ### Phase 14: Onboarding & Self-Service Password
