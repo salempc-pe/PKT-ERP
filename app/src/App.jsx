@@ -15,6 +15,7 @@ import FinanceModule from './modules/client/finance/FinanceModule';
 import CalendarModule from './modules/client/calendar/CalendarModule';
 import ProjectModule from './modules/client/projects/ProjectModule';
 import MarketplaceModule from './modules/client/marketplace/MarketplaceModule';
+import SetupPassword from './modules/SetupPassword';
 import ModuleRoute from './components/ModuleRoute';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/setup-password" element={<SetupPassword />} />
           
           {/* Client Routes */}
           <Route path="/client" element={<ClientLayout />}>
