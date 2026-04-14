@@ -88,6 +88,18 @@ export function AuthProvider({ children }) {
     return initialOrgs;
   });
 
+  const [mockActivityLogs, setMockActivityLogs] = useState(() => {
+    const saved = localStorage.getItem('pkt_activity_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [mockSystemAlerts, setMockSystemAlerts] = useState(() => {
+    const saved = localStorage.getItem('pkt_system_alerts');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, type: 'warning', message: 'Mantenimiento programado para el domingo 20 de mayo.', date: new Date().toISOString() }
+    ];
+  });
+
   useEffect(() => {
     localStorage.setItem('pkt_mock_users', JSON.stringify(mockUsers));
   }, [mockUsers]);
@@ -95,6 +107,27 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('pkt_mock_organizations', JSON.stringify(mockOrganizations));
   }, [mockOrganizations]);
+
+  useEffect(() => {
+    localStorage.setItem('pkt_activity_logs', JSON.stringify(mockActivityLogs.slice(-100))); // Limit to last 100
+  }, [mockActivityLogs]);
+
+  useEffect(() => {
+    localStorage.setItem('pkt_system_alerts', JSON.stringify(mockSystemAlerts));
+  }, [mockSystemAlerts]);
+
+  const addLog = (action, details, type = 'info') => {
+    const newLog = {
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      user: user?.name || 'Sistema',
+      userId: user?.id,
+      action,
+      details,
+      type
+    };
+    setMockActivityLogs(prev => [newLog, ...prev]);
+  };
 
   useEffect(() => {
     // Check if user is stored in session
@@ -134,6 +167,8 @@ export function AuthProvider({ children }) {
       setUser(userWithSub);
       sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
       
+      addLog('Login', `Usuario ${foundUser.name} inició sesión`, 'success');
+
       // Redirect based on role
       if (foundUser.role === 'admin') {
         navigate('/admin/dashboard');
@@ -175,6 +210,8 @@ export function AuthProvider({ children }) {
     // Cambiar sesión
     setUser(userWithSub);
     sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
+    
+    addLog('Impersonation Start', `Administrador inició suplantación de ${targetUser.name} (Org: ${targetUser.organizationName || 'N/A'})`, 'warning');
 
     // Redirigir al dashboard cliente
     navigate('/client/dashboard');
@@ -187,6 +224,9 @@ export function AuthProvider({ children }) {
       setUser(parsedAdmin);
       sessionStorage.setItem('pkt_user', originalAdmin);
       sessionStorage.removeItem('pkt_original_admin');
+      
+      addLog('Impersonation Stop', `Suplantación finalizada. Admin regresó a su cuenta.`, 'info');
+
       navigate('/admin/clients'); // Volver a la vista de clientes
     }
   };
@@ -226,6 +266,9 @@ export function AuthProvider({ children }) {
       }
     };
     setMockOrganizations(prev => [...prev, newOrg]);
+
+    addLog('Org Created', `Nueva organización creada: ${newOrg.name} (Plan: ${planId})`, 'success');
+
     return newOrg;
   };
 
@@ -249,6 +292,8 @@ export function AuthProvider({ children }) {
     setMockUsers(prev => prev.map(u => 
       u.organizationId === orgId ? { ...u, activeModules: planConfig.modules } : u
     ));
+
+    addLog('Plan Update', `Plan de organización ${orgId} actualizado a ${planId}`, 'warning');
   };
 
   // Crear Usuario en Organización
@@ -274,6 +319,9 @@ export function AuthProvider({ children }) {
       ...userData
     };
     setMockUsers(prev => [...prev, newUser]);
+
+    addLog('User Invited', `Usuario invisible invitado a ${orgName}: ${userData.email}`, 'info');
+
     return { success: true, inviteToken };
   };
 
@@ -331,7 +379,8 @@ export function AuthProvider({ children }) {
       mockOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg,
       adminUpdateOrgPlan, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
-      setupUserPassword
+      setupUserPassword,
+      mockActivityLogs, mockSystemAlerts, addLog
     }}>
       {children}
     </AuthContext.Provider>

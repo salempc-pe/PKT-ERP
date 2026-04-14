@@ -16,6 +16,7 @@ import CalendarModule from './modules/client/calendar/CalendarModule';
 import ProjectModule from './modules/client/projects/ProjectModule';
 import MarketplaceModule from './modules/client/marketplace/MarketplaceModule';
 import SetupPassword from './modules/SetupPassword';
+import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="clients" element={<AdminClients />} />
             <Route path="sales" element={<SalesModule />} />
+            <Route path="logs" element={<ActivityLogs />} />
           </Route>
         </Routes>
       </AuthProvider>

@@ -1,8 +1,10 @@
-import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus, Download } from 'lucide-react';
+import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus, Download, Bell } from 'lucide-react';
 import { useAdminAnalytics } from '../../../hooks/useAdminAnalytics';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function AdminDashboard() {
   const analytics = useAdminAnalytics();
+  const { mockSystemAlerts } = useAuth();
   
   const handleExport = () => {
     const dataStr = JSON.stringify(analytics, null, 2);
@@ -72,6 +74,28 @@ export default function AdminDashboard() {
             </div>
           </div>
           
+          </div>
+          
+          {/* System Alerts */}
+          <div className="bg-[#000000] border border-[#40485d]/10 rounded-xl p-6">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#fbabff]">Alertas del Sistema</span>
+              <Bell size={16} className="text-[#fbabff]" />
+            </div>
+            <div className="space-y-4 max-h-[120px] overflow-y-auto pr-2 custom-scrollbar">
+              {mockSystemAlerts.map(alert => (
+                <div key={alert.id} className="flex gap-3 text-xs">
+                  <div className={`mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 ${alert.type === 'error' ? 'bg-red-500' : 'bg-amber-500'}`}></div>
+                  <div>
+                    <p className="text-[#dee5ff] font-semibold">{alert.message}</p>
+                    <p className="text-[#a3aac4] text-[10px]">{new Date(alert.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              ))}
+              {mockSystemAlerts.length === 0 && <p className="text-[10px] text-[#a3aac4] italic">No hay alertas activas.</p>}
+            </div>
+          </div>
+
           {/* System Integrity */}
           <div className="bg-[#000000] border border-[#40485d]/10 rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">

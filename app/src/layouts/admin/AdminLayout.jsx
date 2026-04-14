@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function AdminLayout() {
@@ -34,6 +34,11 @@ export default function AdminLayout() {
           <Link to="/admin/sales" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/sales') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
             <FileText size={20} />
             <span className="font-semibold text-sm">Ventas y Facturas</span>
+          </Link>
+          
+          <Link to="/admin/logs" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/logs') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
+            <Activity size={20} />
+            <span className="font-semibold text-sm">Auditoría / Logs</span>
           </Link>
           
 
