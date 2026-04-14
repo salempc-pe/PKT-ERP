@@ -1,13 +1,11 @@
 ## Current Position
-- **Phase**: 14 (Onboarding & Self-Service Password)
-- **Task**: Planning complete
-- **Status**: Ready for execution
+- **Phase**: 14 (completed)
+- **Task**: All tasks complete
+- **Status**: ✅ Complete
 
 ## Last Session Summary
-El usuario solicitó seguir adelante con el ROADMAP.md. Se ejecutó el flujo `/plan` para la Fase 14. Se evaluó el AuthContext.jsx y AdminClients.jsx existentes, y se crearon dos planes asilados (14.1 y 14.2) que abarcan los requisitos de estado de usuario, generación de url de invitación y creación del componente SetupPassword.
-
-## Oportunidades de Mejora y Contexto
-- El authContext y la base mock actual se beneficiarán de tener explícito un `status: 'active'` y `status: 'pending'` en lugar de asumir contraseñas '1234' para las nuevas cuentas.
+Phase 14 ejecutada con éxito. Implementado el sistema de invitaciones por token, gestión de estados de usuario (Pending/Active) y la página pública de Onboarding para configuración de contraseñas. El administrador ahora puede invitar usuarios y copiar sus enlaces de acceso únicos.
 
 ## Next Steps
-1. /execute 14
+1. Revisar ROADMAP para próximos hitos.
+2. /plan 15 (si existe) o mantenimiento.
