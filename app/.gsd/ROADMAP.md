@@ -222,7 +222,7 @@
 ---
 
 ### Phase 14: Onboarding & Self-Service Password
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Permitir que los administradores inviten usuarios y que estos configuren su propia contraseña mediante un link seguro.
 **Depends on**: Phase 11
 
