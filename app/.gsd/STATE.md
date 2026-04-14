@@ -1,11 +1,10 @@
 ## Current Position
-- **Phase**: 14 (completed)
-- **Task**: All tasks complete
-- **Status**: ✅ Complete
+- **Phase**: 12 (BI & Metrics Gaps)
+- **Task**: Planning gaps complete
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Phase 14 ejecutada con éxito. Implementado el sistema de invitaciones por token, gestión de estados de usuario (Pending/Active) y la página pública de Onboarding para configuración de contraseñas. El administrador ahora puede invitar usuarios y copiar sus enlaces de acceso únicos.
+Se identificaron brechas en los objetivos de la Fase 12 (falta de Health Score y botón de Exportación de datos). Se ha creado el archivo `.gsd/phases/12/3-GAP-PLAN.md` específico para resolver esto antes de proceder con otras tareas o las brechas de la Fase 13.
 
 ## Next Steps
-1. Revisar ROADMAP para próximos hitos.
-2. /plan 15 (si existe) o mantenimiento.
+1. /execute 12 --gaps-only
