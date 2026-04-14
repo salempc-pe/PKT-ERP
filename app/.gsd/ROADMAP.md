@@ -198,12 +198,13 @@
 **Tasks**:
 - [x] Implementar dashboard de métricas SaaS: MRR, ARR y Churn Rate.
 - [x] Crear reportes de popularidad de módulos (Usage Analytics).
-- [ ] Implementar visualización de Health Score automático por cliente.
-- [ ] Desarrollar exportación de métricas financieras para contabilidad del ERP.
+- [x] Implementar visualización de Health Score automático por cliente.
+- [x] Desarrollar exportación de métricas financieras para contabilidad del ERP.
 
 **Verification**:
 - [x] Los gráficos de MRR muestran datos precisos basados en las suscripciones activas.
 - [x] Es posible identificar popularidad de módulos desde el panel admin.
+- [x] Health Score renderizado y exportación de JSON funcional en Dashboard.
 
 ---
 
@@ -227,10 +228,10 @@
 **Depends on**: Phase 11
 
 **Tasks**:
-- [ ] Implementar estados de usuario (Pending/Active) y lógica de tokens en AuthContext.
-- [ ] Desarrollar la UI de "Copiar Link de Invitación" en el panel de administración.
-- [ ] Crear la página pública de `/setup-password` con validación de fuerza de contraseña.
+- [x] Implementar estados de usuario (Pending/Active) y lógica de tokens en AuthContext.
+- [x] Desarrollar la UI de "Copiar Link de Invitación" en el panel de administración.
+- [x] Crear la página pública de `/setup-password` con validación de fuerza de contraseña.
 
 **Verification**:
-- [ ] Al crear un usuario, el admin recibe un link único.
-- [ ] Acceder al link permite guardar una contraseña y activa la cuenta inmediatamente.
+- [x] Al crear un usuario, el admin recibe un link único.
+- [x] Acceder al link permite guardar una contraseña y activa la cuenta inmediatamente.
