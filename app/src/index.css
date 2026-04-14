@@ -78,3 +78,159 @@
     color: var(--color-on-surface);
   }
 }
+
+/* ─── Modo Claro ─────────────────────────────────────────── */
+:root.light {
+  --color-background:                 #f0f4ff;
+  --color-surface:                    #f0f4ff;
+  --color-surface-dim:                #dce3f9;
+  --color-surface-bright:             #ffffff;
+  --color-surface-container-lowest:   #ffffff;
+  --color-surface-container-low:      #eaeffc;
+  --color-surface-container:          #e4e9f8;
+  --color-surface-container-high:     #dde4f5;
+  --color-surface-container-highest:  #d7deef;
+  --color-surface-variant:            #dde2f8;
+
+  --color-on-surface:                 #161c2d;
+  --color-on-surface-variant:         #4a5068;
+  --color-on-background:              #161c2d;
+
+  --color-primary:                    #1a5bc8;
+  --color-primary-dim:                #2562d4;
+  --color-primary-fixed:              #3a72e0;
+  --color-primary-fixed-dim:          #2a5fc8;
+  --color-primary-container:          #cddcff;
+  --color-on-primary:                 #ffffff;
+  --color-on-primary-container:       #001944;
+  --color-on-primary-fixed:           #001944;
+  --color-on-primary-fixed-variant:   #00286a;
+  --color-inverse-primary:            #85adff;
+
+  --color-secondary:                  #3048ac;
+  --color-secondary-dim:              #3a55c0;
+  --color-secondary-container:        #dde0ff;
+  --color-secondary-fixed:            #c5c9ff;
+  --color-secondary-fixed-dim:        #9faeff;
+  --color-on-secondary:               #ffffff;
+  --color-on-secondary-container:     #030e6b;
+  --color-on-secondary-fixed:         #00175f;
+  --color-on-secondary-fixed-variant: #2a43a4;
+
+  --color-tertiary:                   #7c2a8a;
+  --color-tertiary-dim:               #8c3499;
+  --color-tertiary-container:         #f6d3ff;
+  --color-tertiary-fixed:             #f0c3fc;
+  --color-tertiary-fixed-dim:         #dc9ee8;
+  --color-on-tertiary:                #ffffff;
+  --color-on-tertiary-container:      #2e004f;
+  --color-on-tertiary-fixed:          #340047;
+  --color-on-tertiary-fixed-variant:  #5c1068;
+
+  --color-error:                      #b3261e;
+  --color-error-dim:                  #c42b23;
+  --color-error-container:            #ffdad6;
+  --color-on-error:                   #ffffff;
+  --color-on-error-container:         #410002;
+
+  --color-outline:                    #6c748b;
+  --color-outline-variant:            #c0c7dd;
+
+  --color-inverse-surface:            #2e3450;
+  --color-inverse-on-surface:         #eef0ff;
+
+  --color-surface-tint:               #1a5bc8;
+}
+
+/* ─── Transición suave al cambiar de tema ─────────────────────── */
+.animate-spin, .animate-pulse, .animate-bounce {
+  transition: none !important;
+}
+
+/* ─── Overrides para Modo Claro: Fondos de Superficies ──────────
+   Tailwind v4 en modo JIT genera clases exactas. Como los
+   módulos usan colores hardcodeados en hex, usamos attribute
+   selectors [class*="..."] para capturarlos sin importar el
+   orden de compilación de Tailwind.
+──────────────────────────────────────────────────────────────── */
+
+/* Fondo surface-container-high (#141f38) */
+:root.light [class*="bg-\[#141f38\]"] {
+  background-color: var(--color-surface-container-high) !important;
+}
+/* Fondo surface-container-low (#091328) */
+:root.light [class*="bg-\[#091328\]"] {
+  background-color: var(--color-surface-container-low) !important;
+}
+/* Fondo surface-container (#0f1930) */
+:root.light [class*="bg-\[#0f1930\]"] {
+  background-color: var(--color-surface-container) !important;
+}
+/* Fondo surface-variant (#192540) */
+:root.light [class*="bg-\[#192540\]"] {
+  background-color: var(--color-surface-variant) !important;
+}
+/* Fondo background (#060e20) */
+:root.light [class*="bg-\[#060e20\]"] {
+  background-color: var(--color-background) !important;
+}
+/* Fondos de avatares/chips oscuros */
+:root.light [class*="bg-\[#1d2b4a\]"] {
+  background-color: var(--color-surface-container-highest) !important;
+}
+:root.light [class*="bg-\[#2a1d4a\]"] {
+  background-color: var(--color-surface-container-highest) !important;
+}
+:root.light [class*="bg-\[#1f2b49\]"] {
+  background-color: var(--color-surface-bright) !important;
+}
+
+/* ─── Texto ─────────────────────────────────────────────────── */
+:root.light [class*="text-\[#dee5ff\]"] {
+  color: var(--color-on-surface) !important;
+}
+:root.light [class*="text-\[#a3aac4\]"] {
+  color: var(--color-on-surface-variant) !important;
+}
+:root.light [class*="text-\[#40485d\]"] {
+  color: var(--color-outline) !important;
+}
+
+/* ─── Bordes ─────────────────────────────────────────────────── */
+:root.light [class*="border-\[#40485d\]"] {
+  border-color: color-mix(in srgb, var(--color-outline-variant) 40%, transparent) !important;
+}
+
+/* ─── Divisores de tabla ─────────────────────────────────────── */
+:root.light [class*="divide-\[#40485d\]"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: color-mix(in srgb, var(--color-outline-variant) 25%, transparent) !important;
+}
+
+/* ─── Inputs y Textareas ─────────────────────────────────────── */
+:root.light input,
+:root.light textarea,
+:root.light select {
+  background-color: var(--color-surface-container-low) !important;
+  color: var(--color-on-surface) !important;
+  border-color: var(--color-outline-variant) !important;
+}
+:root.light input::placeholder,
+:root.light textarea::placeholder {
+  color: var(--color-on-surface-variant) !important;
+  opacity: 0.65;
+}
+
+/* ─── Títulos globales ───────────────────────────────────────── */
+:root.light h1, :root.light h2, :root.light h3, :root.light h4 {
+  color: var(--color-on-surface);
+}
+:root.light p {
+  color: inherit;
+}
+
+/* ─── Scroll en modo claro ───────────────────────────────────── */
+:root.light ::-webkit-scrollbar       { width: 6px; height: 6px; }
+:root.light ::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
+:root.light ::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 3px; }
+:root.light ::-webkit-scrollbar-thumb:hover { background: var(--color-outline); }
+

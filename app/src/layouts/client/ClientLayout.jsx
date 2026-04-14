@@ -1,7 +1,8 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 
@@ -11,7 +12,8 @@ export default function ClientLayout() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isImpersonating, stopImpersonation } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [tenantName, setTenantName] = useState(user?.organizationName || 'Mi Empresa S.A.');
 
   useEffect(() => {
@@ -27,7 +29,35 @@ export default function ClientLayout() {
   }, [user]);
 
   return (
-    <div className="bg-[#060e20] text-[#dee5ff] min-h-screen font-body flex relative overflow-hidden">
+    <>
+      {isImpersonating && (
+        <div className="fixed top-0 left-0 right-0 z-[9999] bg-red-600 text-white px-4 py-2 flex items-center justify-center gap-6 shadow-md text-sm font-bold animate-in slide-in-from-top-full duration-300">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span>Modo Soporte: Está viendo la cuenta de {user?.name} ({tenantName})</span>
+          </div>
+          <button 
+            onClick={stopImpersonation} 
+            className="bg-white text-red-600 px-4 py-1 rounded-full text-xs hover:bg-red-50 hover:scale-105 active:scale-95 transition-all shadow-sm"
+          >
+            Salir del Modo Soporte
+          </button>
+        </div>
+      )}
+      <div style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-on-surface)' }} className={`min-h-screen font-body flex relative overflow-hidden transition-colors duration-300 ${isImpersonating ? 'pt-10' : ''}`}>
+        {/* Botón flotante para menú móvil (aparece cuando sidebar está cerrado y es movil) */}
+        <button 
+          className="lg:hidden fixed top-6 left-6 z-40 p-3 rounded-xl shadow-lg transition-all duration-300"
+          style={{ 
+            backgroundColor: 'var(--color-surface-container-high)', 
+            color: 'var(--color-on-surface)',
+            border: '1px solid var(--color-outline-variant)'
+          }}
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu size={20} />
+        </button>
+
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
@@ -37,146 +67,201 @@ export default function ClientLayout() {
       )}
 
       {/* SideNavBar Shell */}
-      <aside className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-50 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="px-6 mb-8 flex justify-between items-center">
+      <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 space-y-6 z-50 transition-all duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="px-6 mb-4 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">{tenantName}</h1>
-            <p className="text-xs text-[#a3aac4] font-bold mt-1">Suscripción Activa</p>
+            <h1 style={{ color: 'var(--color-on-surface)' }} className="text-xl font-bold tracking-tighter">{tenantName}</h1>
+            <p style={{ color: 'var(--color-on-surface-variant)' }} className="text-xs font-bold mt-1">Suscripción Activa</p>
           </div>
+          {/* Botón Toggle Tema */}
+          <button
+            id="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
+            style={{
+              backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
+            }}
+          >
+            <span
+              className="w-4 h-4 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+              style={{
+                transform: isDark ? 'translateX(0)' : 'translateX(24px)',
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-on-primary)',
+              }}
+            >
+              {isDark
+                ? <Moon size={10} strokeWidth={2.5} />
+                : <Sun size={10} strokeWidth={2.5} />}
+            </span>
+          </button>
         </div>
-        
-        <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
+           <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
           <Link 
             to="/client/dashboard" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/dashboard') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/client/dashboard') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+            onMouseEnter={e => { if (!isActive('/client/dashboard')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+            onMouseLeave={e => { if (!isActive('/client/dashboard')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
             onClick={() => setIsSidebarOpen(false)}
           >
             <LayoutDashboard size={20} />
-            <span className="text-sm">Dashboard</span>
+            <span>Dashboard</span>
           </Link>
           
-          <div className="pt-4 pb-2 px-4 text-xs font-bold uppercase tracking-wider text-[#a3aac4]/70">Mis Módulos</div>
+          {(user?.activeModules?.length > 0) && (
+            <div style={{ color: 'var(--color-on-surface-variant)' }} className="pt-4 pb-2 px-4 text-[10px] font-bold uppercase tracking-widest opacity-50">Módulos</div>
+          )}
           
-          <Link 
-            to="/client/crm" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/crm') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Users size={20} />
-            <span className="text-sm">CRM y Ventas</span>
-          </Link>
+          {user?.activeModules?.includes('crm') && (
+            <Link 
+              to="/client/crm" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/crm') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/crm')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/crm')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Users size={20} />
+              <span>CRM y Ventas</span>
+            </Link>
+          )}
           
-          <Link 
-            to="/client/projects" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/projects') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Briefcase size={20} />
-            <span className="text-sm border-0 font-semibold">Proyectos</span>
-          </Link>
+          {user?.activeModules?.includes('projects') && (
+            <Link 
+              to="/client/projects" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/projects') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/projects')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/projects')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Briefcase size={20} />
+              <span>Proyectos</span>
+            </Link>
+          )}
           
-          <Link 
-            to="/client/inventory" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/inventory') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Box size={20} />
-            <span className="text-sm">Inventario</span>
-            <span className="ml-auto w-2 h-2 rounded-full bg-[#fbabff]"></span>
-          </Link>
+          {user?.activeModules?.includes('inventory') && (
+            <Link 
+              to="/client/inventory" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/inventory') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/inventory')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/inventory')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Box size={20} />
+              <span>Inventario</span>
+              <span className="ml-auto w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-tertiary)' }}></span>
+            </Link>
+          )}
           
-          <Link 
-            to="/client/finance" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/finance') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Calculator size={20} />
-            <span className="text-sm border-0 font-semibold">Contabilidad</span>
-          </Link>
+          {user?.activeModules?.includes('finance') && (
+            <Link 
+              to="/client/finance" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/finance') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/finance')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/finance')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Calculator size={20} />
+              <span>Contabilidad</span>
+            </Link>
+          )}
           
-          <Link 
-            to="/client/sales" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/sales') ? 'bg-[#192540] text-[#fbabff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <FileText size={20} />
-            <span className="text-sm">Ventas y Facturación</span>
-          </Link>
+          {user?.activeModules?.includes('sales') && (
+            <Link 
+              to="/client/sales" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/sales') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-tertiary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/sales')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/sales')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <FileText size={20} />
+              <span>Ventas y Facturas</span>
+            </Link>
+          )}
+  
+          {user?.activeModules?.includes('calendar') && (
+            <Link 
+              to="/client/calendar" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/calendar') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/calendar')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/calendar')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Calendar size={20} />
+              <span>Agenda</span>
+            </Link>
+          )}
 
-          <Link 
-            to="/client/calendar" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive('/client/calendar') ? 'bg-[#192540] text-[#85adff] shadow-inner font-bold' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930] font-semibold'}`}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Calendar size={20} />
-            <span className="text-sm border-0 font-semibold">Agenda y Citas</span>
-          </Link>
-
-          <div className="pt-4 pb-2 px-4 text-xs font-bold uppercase tracking-wider text-[#a3aac4]/70">Explorar</div>
+          <div style={{ color: 'var(--color-on-surface-variant)' }} className="pt-4 pb-2 px-4 text-[10px] font-bold uppercase tracking-widest opacity-50">Suscripción</div>
 
           <Link 
             to="/client/marketplace" 
-            className="flex items-center gap-3 px-4 py-3 text-[#fbabff] bg-[#f199f7]/10 hover:bg-[#f199f7]/20 rounded-lg transition-all duration-300"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-bold text-sm mx-2"
+            style={{ 
+              color: 'var(--color-on-primary)', 
+              backgroundColor: 'var(--color-primary)',
+              boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent)'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 85%, black)'; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--color-primary)'; }}
+            onClick={() => setIsSidebarOpen(false)}
           >
-            <Compass size={20} />
-            <span className="text-sm font-bold">Marketplace Módulos</span>
+            <Box size={20} />
+            <span>Comprar Módulos</span>
           </Link>
         </nav>
         
-        <div className="px-4 pt-4 mt-auto border-t border-[#40485d]/10 space-y-2">
-          <Link to="/client/settings" onClick={() => setIsSidebarOpen(false)} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all cursor-pointer">
-            <Settings size={20} />
-            <span className="font-semibold text-sm">Configuración</span>
+        {/* Footer Sidebar: Profile & Settings */}
+        <div className="px-4 py-4 space-y-4" style={{ borderTop: '1px solid color-mix(in srgb, var(--color-outline-variant) 20%, transparent)' }}>
+          <Link to="/client/settings" onClick={() => setIsSidebarOpen(false)} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all text-sm font-semibold hover:bg-[var(--color-surface-container)]"
+            style={{ color: 'var(--color-on-surface-variant)' }}
+          >
+            <Settings size={18} />
+            <span>Configuración</span>
           </Link>
-          <button onClick={logout} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
-            <LogOut size={20} />
-            <span className="font-semibold text-sm">Cerrar Sesión</span>
-          </button>
+
+          {/* User Profile Card */}
+          <div className="flex items-center gap-3 p-3 rounded-2xl" style={{ backgroundColor: 'var(--color-surface-container)' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs shrink-0" 
+              style={{ 
+                backgroundColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', 
+                color: 'var(--color-primary)',
+                border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)'
+              }}>
+              {user?.name?.substring(0, 2).toUpperCase() || 'JU'}
+            </div>
+            <div className="flex-1 min-w-0 pr-1">
+              <p className="text-xs font-black truncate" style={{ color: 'var(--color-on-surface)' }}>{user?.name || 'Juan Dueño'}</p>
+              <p className="text-[10px] font-bold opacity-50 truncate" style={{ color: 'var(--color-on-surface-variant)' }}>Administrador</p>
+            </div>
+            <button 
+              onClick={logout}
+              title="Cerrar Sesión"
+              className="p-2 rounded-lg transition-all shrink-0 hover:bg-red-500/10 hover:text-red-500"
+              style={{ color: 'var(--color-on-surface-variant)' }}
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Canvas */}
-      <main className="flex-1 p-4 lg:p-8 w-full max-h-screen overflow-y-auto">
-        {/* TopAppBar Shell */}
-        <header className="flex justify-between items-center w-full mb-8 lg:mb-12">
-          <div className="flex items-center gap-4">
-            <button 
-              className="lg:hidden text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <Menu size={24} />
-            </button>
-            <div>
-              <h2 className="text-xl lg:text-2xl font-black tracking-tighter text-[#dee5ff] capitalize">{location.pathname.split('/').pop() || 'Dashboard'}</h2>
-              <p className="text-[#a3aac4] text-xs lg:text-sm font-medium hidden sm:block">Monitoreo y gestión en tiempo real</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 lg:gap-6">
-            <div className="relative group">
-              <Bell className="text-[#a3aac4] hover:text-[#85adff] cursor-pointer transition-colors" size={20} />
-            </div>
-            
-            <div className="flex items-center gap-3 bg-[#141f38] rounded-full pl-2 pr-4 py-1.5 border border-[#40485d]/10">
-              <div className="w-8 h-8 rounded-full bg-[#primary-dim] flex items-center justify-center font-bold text-xs bg-[#85adff]/20 text-[#85adff]">
-                {user?.name?.substring(0, 2).toUpperCase() || 'JU'}
-              </div>
-              <span className="text-sm font-bold text-[#dee5ff] hidden sm:block">{user?.name || 'Juan Dueño'}</span>
-            </div>
-
-            <button 
-              onClick={logout}
-              className="flex items-center gap-2 bg-[#fbabff]/10 hover:bg-[#fbabff]/20 text-[#fbabff] px-4 py-2 rounded-xl transition-all border border-[#fbabff]/20 font-bold text-sm"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Cerrar Sesión</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Dynamic Route Content */}
-        <Outlet />
+      <main className="flex-1 p-6 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
+        {/* Dynamic Route Content (NO HEADER) */}
+        <div className="max-w-7xl mx-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
+    </>
   );
 }
+

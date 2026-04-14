@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useSales } from './useSales';
 import { useCrm } from '../crm/useCrm';
 import { useInventory } from '../inventory/useInventory';
+import { useFinance } from '../finance/useFinance';
 import { useAuth } from '../../../context/AuthContext';
 import { 
   FileText, Plus, Search, Filter, 
-  DollarSign, Loader2, X, AlertCircle, ShoppingCart, TrendingUp 
+  DollarSign, Loader2, X, AlertCircle, ShoppingCart, TrendingUp, PackageX
 } from 'lucide-react';
 
 export default function SalesModule() {
@@ -15,7 +16,8 @@ export default function SalesModule() {
   // -- Data Hooks --
   const { sales, loading: loadingSales, addSale } = useSales(orgId);
   const { contacts, loading: loadingCrm } = useCrm(orgId);
-  const { products, loading: loadingInv } = useInventory(orgId);
+  const { products, loading: loadingInv, updateProductStock } = useInventory(orgId);
+  const { addTransaction } = useFinance(orgId);
 
   // -- Modal State --
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,15 +38,27 @@ export default function SalesModule() {
     if (!selectedProduct) return;
     const prod = products.find(p => p.id === selectedProduct);
     if (prod) {
-      const price = parseFloat(prod.price.toString().replace(/[^0-9.-]+/g,"")); // Clean price string as $85.00
+      // Calcular cuántas unidades ya están en el carrito para este producto
+      const alreadyInCart = cart
+        .filter(i => i.productId === prod.id)
+        .reduce((acc, i) => acc + i.quantity, 0);
+      const stockDisponible = (prod.stock || 0) - alreadyInCart;
+      const qty = parseInt(quantity);
+
+      if (qty > stockDisponible) {
+        alert(`Stock insuficiente. Solo hay ${stockDisponible} unidad(es) disponibles de "${prod.name}".`);
+        return;
+      }
+
+      const price = parseFloat(prod.price.toString().replace(/[^0-9.-]+/g,"")); // Limpiar precio tipo $85.00
       setCart([
         ...cart, 
         { 
           productId: prod.id, 
           name: prod.name, 
-          quantity: parseInt(quantity), 
+          quantity: qty, 
           price: price,
-          subtotal: price * parseInt(quantity) 
+          subtotal: price * qty
         }
       ]);
       setSelectedProduct('');
@@ -72,16 +86,35 @@ export default function SalesModule() {
         subtotal: cartSubtotal,
         tax: igv,
         totalAmount: cartTotal,
-        status: 'Pendiente' // Por defecto
+        status: 'Pendiente'
       };
       
       await addSale(newSaleData);
+
+      // [INTEGRACIÓN → INVENTARIO] Descontar stock de cada producto vendido
+      for (const item of cart) {
+        const prod = products.find(p => p.id === item.productId);
+        if (prod) {
+          const nuevoStock = Math.max(0, (prod.stock || 0) - item.quantity);
+          await updateProductStock(item.productId, nuevoStock);
+        }
+      }
+
+      // [INTEGRACIÓN → FINANZAS] Registrar ingreso automático por la venta
+      await addTransaction({
+        type: 'income',
+        amount: cartTotal,
+        category: 'Ventas',
+        description: `Venta a ${clientRecord.name}${clientRecord.company ? ` (${clientRecord.company})` : ''}`,
+        date: new Date().toISOString(),
+        source: 'sales_module',
+      });
       
       setCart([]);
       setSelectedClient('');
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Error al guardar venta", err);
+      console.error("Error al emitir factura", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -246,7 +279,16 @@ export default function SalesModule() {
                         className="w-full bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-[#dee5ff] text-sm"
                       >
                          <option value="" disabled>Seleccionar producto...</option>
-                         {products.map(p => <option key={p.id} value={p.id}>{p.sku} | {p.name} ({p.price})</option>)}
+                         {products.map(p => {
+                           const enCarrito = cart.filter(i => i.productId === p.id).reduce((a, i) => a + i.quantity, 0);
+                           const stockReal = (p.stock || 0) - enCarrito;
+                           const agotado = stockReal <= 0;
+                           return (
+                             <option key={p.id} value={p.id} disabled={agotado}>
+                               {p.sku} | {p.name} ({p.price}) — Stock: {stockReal}{agotado ? ' ⚠ AGOTADO' : ''}
+                             </option>
+                           );
+                         })}
                       </select>
                       <div className="flex gap-2">
                         <input 
