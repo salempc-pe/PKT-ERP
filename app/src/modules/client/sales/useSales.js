@@ -31,6 +31,9 @@ export const useSales = (orgId = "default_org") => {
             clientName: 'Agencia CreaTiva', 
             totalAmount: 900.00, 
             status: 'Borrador', 
+            documentType: 'Factura',
+            issueDate: new Date(),
+            dueDate: new Date(Date.now() + 86400000 * 5),
             items: [{ name: 'Servicio Consultoría', quantity: 1, price: 900, subtotal: 900 }],
             createdAt: new Date() 
           },
@@ -40,6 +43,9 @@ export const useSales = (orgId = "default_org") => {
             clientName: 'David Paredes', 
             totalAmount: 120.00, 
             status: 'Pendiente', 
+            documentType: 'Boleta',
+            issueDate: new Date(Date.now() - 86400000 * 2),
+            dueDate: new Date(Date.now() - 86400000 * 1),
             items: [{ name: 'Casaca Impermeable', quantity: 1, price: 90, subtotal: 90 }],
             createdAt: new Date(Date.now() - 86400000 * 1) 
           },
@@ -49,6 +55,9 @@ export const useSales = (orgId = "default_org") => {
             clientName: 'Inversiones Globales SAC', 
             totalAmount: 450.00, 
             status: 'Pagada', 
+            documentType: 'Factura',
+            issueDate: new Date(Date.now() - 86400000 * 5),
+            dueDate: new Date(),
             items: [{ name: 'Zapatilla Urban X', quantity: 2, price: 85, subtotal: 170 }],
             createdAt: new Date(Date.now() - 86400000 * 2) 
           }
@@ -84,10 +93,14 @@ export const useSales = (orgId = "default_org") => {
     if (!isFirebaseConfigured) {
       return new Promise((resolve) => {
         setTimeout(() => {
+          const issueDate = saleData.issueDate || new Date();
+          const dueDate = saleData.dueDate || new Date(issueDate.getTime() + 86400000 * 30);
           setSales(prev => [{ 
             id: "s_" + Date.now(), 
             invoiceNumber: `INV-000${prev.length + 1}`,
             ...newSale, 
+            issueDate,
+            dueDate,
             createdAt: new Date() 
           }, ...prev]);
           resolve({ id: "s_" + Date.now() });
@@ -96,8 +109,14 @@ export const useSales = (orgId = "default_org") => {
     }
 
     const salesRef = collection(db, `organizations/${orgId}/invoices`);
+    const issueDate = saleData.issueDate || new Date();
+    // Default dueDate: 30 days if not set
+    const dueDate = saleData.dueDate || new Date(issueDate.getTime() + 86400000 * 30);
+
     return await addDoc(salesRef, {
       ...newSale,
+      issueDate,
+      dueDate,
       createdAt: serverTimestamp()
     });
   };
