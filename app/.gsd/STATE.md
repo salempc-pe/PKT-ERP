@@ -7,7 +7,7 @@
 - **Status**: Verified
 
 ## Last Session Summary
-Phase 16 executed successfully. 2 plans, 4 tasks completed. Implementado control de facturación con vencimientos y tipos de documentos.
+Phase 16 ejecutada con éxito. Se implementó el control detallado de facturación, vencimientos y botones de emisión (Boleta/Factura).
 
 ## Next Steps
-1. /new-milestone — Planificar el próximo hito de la plataforma.
+1. Proceed to next user requirements or /new-milestone if all goals are met.

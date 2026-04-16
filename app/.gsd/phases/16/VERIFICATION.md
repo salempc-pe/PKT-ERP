@@ -1,11 +1,8 @@
 ## Phase 16 Verification
 
 ### Must-Haves
-- [x] Identificación de documento — VERIFIED (Columna "Documento" con invoiceNumber y tipo)
-- [x] Nombre del cliente — VERIFIED (Columna "Cliente")
-- [x] Fechas de emisión y vencimiento — VERIFIED (Columna "Fechas" detallada)
-- [x] Totales — VERIFIED (Columna "Total")
-- [x] Retraso en días / días restantes — VERIFIED (Badge visual calculado en "Estado / Vencimiento")
-- [x] Botones emitir boleta/factura — VERIFIED (Dos botones distintos en cabecera y modal dinámico)
+- [x] Documento muestra ID, cliente, fechas y totales — VERIFIED (Columnas añadidas en `SalesModule.jsx` y datos en `useSales.js`).
+- [x] Cálculo visual de retraso/días restantes — VERIFIED (Función `getDueStatus` implementada con badges de color).
+- [x] Botones de Emitir Boleta / Emitir Factura — VERIFIED (Dos botones añadidos en el header y lógica de `documentType` en el modal).
 
 ### Verdict: PASS

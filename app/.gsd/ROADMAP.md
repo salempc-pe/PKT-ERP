@@ -266,9 +266,10 @@
 **Depends on**: Phase 15
 
 **Tasks**:
-- [ ] TBD (run /plan 16 to create)
+- [x] Plan 16.1 — Actualización de capa de datos (useSales)
+- [x] Plan 16.2 — Rediseño de interfaz de facturación (SalesModule)
 
 **Verification**:
-- [ ] Cada documento muestra ID, nombre del cliente, fecha de emisión, fecha de vencimiento y totales.
-- [ ] El sistema calcula y muestra visualmente los días de retraso o días restantes para el vencimiento.
-- [ ] Interfaz cuenta con botones para "Emitir Boleta" y "Emitir Factura" según los requerimientos.
+- [x] Cada documento muestra ID, nombre del cliente, fecha de emisión, fecha de vencimiento y totales.
+- [x] El sistema calcula y muestra visualmente los días de retraso o días restantes para el vencimiento.
+- [x] Interfaz cuenta con botones para "Emitir Boleta" y "Emitir Factura" según los requerimientos.
