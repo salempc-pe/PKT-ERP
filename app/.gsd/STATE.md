@@ -2,12 +2,12 @@
 
 ## Current Position
 - **Milestone**: 3 — Admin UX Polish
-- **Phase**: 16 (Not Started)
-- **Task**: TBD
-- **Status**: Planning
+- **Phase**: 16
+- **Task**: Planning complete
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Phase 15 ejecutada. Se agregó la Fase 16: Control de Facturación y Documentos (Clientes).
+Planning para la Fase 16 generado correctamente. Se han creado 2 planes para actualizar la capa de datos de ventas (useSales) y la interfaz de facturación.
 
 ## Next Steps
-1. /plan 16 — Crear los planes de ejecución para el nuevo sistema de facturación.
+1. /execute 16 — run all plans
