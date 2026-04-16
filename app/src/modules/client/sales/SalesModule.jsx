@@ -28,6 +28,25 @@ export default function SalesModule() {
   const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [documentType, setDocumentType] = useState('Factura');
+
+  const getDaysStatus = (dueDate) => {
+    if (!dueDate) return null;
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const due = new Date(dueDate);
+    due.setHours(0,0,0,0);
+    const diffTime = due - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return { text: `Retraso ${Math.abs(diffDays)}d`, color: 'text-red-400', bg: 'bg-red-500/10' };
+    } else if (diffDays === 0) {
+      return { text: 'Vence hoy', color: 'text-orange-400', bg: 'bg-orange-500/10' };
+    } else {
+      return { text: `Vence en ${diffDays}d`, color: 'text-green-400', bg: 'bg-green-500/10' };
+    }
+  };
 
   // Calcula totales del cart local
   const cartSubtotal = cart.reduce((acc, item) => acc + item.subtotal, 0);
@@ -82,6 +101,7 @@ export default function SalesModule() {
         clientId: selectedClient,
         clientName: clientRecord.name,
         company: clientRecord.company,
+        documentType: documentType,
         items: cart,
         subtotal: cartSubtotal,
         tax: igv,
@@ -139,14 +159,22 @@ export default function SalesModule() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-extrabold text-[#dee5ff] mb-2 tracking-tight">Facturación y Ventas</h2>
-          <p className="text-[#a3aac4]">Emisión de recibos y control de pagos recibidos.</p>
+          <p className="text-[#a3aac4]">Control de cobranzas, vencimientos y emisión de comprobantes.</p>
         </div>
-        <button 
-          onClick={() => { setCart([]); setIsModalOpen(true); }}
-          className="bg-gradient-to-br from-[#85ffab] to-[#3dbd5d] text-[#002b11] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,255,171,0.3)] transition-all"
-        >
-          <Plus size={18} /> Nueva Factura
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => { setCart([]); setDocumentType('Boleta'); setIsModalOpen(true); }}
+            className="bg-[#141f38] text-[#85adff] border border-[#85adff]/20 font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-[#85adff]/10 transition-all"
+          >
+            <Plus size={18} /> Emitir Boleta
+          </button>
+          <button 
+            onClick={() => { setCart([]); setDocumentType('Factura'); setIsModalOpen(true); }}
+            className="bg-gradient-to-br from-[#85ffab] to-[#3dbd5d] text-[#002b11] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,255,171,0.3)] transition-all"
+          >
+            <Plus size={18} /> Emitir Factura
+          </button>
+        </div>
       </div>
 
       {/* KPI Stats */}
@@ -200,39 +228,56 @@ export default function SalesModule() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">Nro. Documento</th>
+                <th className="px-6 py-5">Documento</th>
                 <th className="px-6 py-5">Cliente</th>
-                <th className="px-6 py-5">Items</th>
-                <th className="px-6 py-5 text-right">Monto (Total)</th>
-                <th className="px-6 py-5 text-center">Rendimiento</th>
+                <th className="px-6 py-5 text-center">Fechas</th>
+                <th className="px-6 py-5 text-right">Total</th>
+                <th className="px-6 py-5 text-center">Estado / Vencimiento</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {sales.length === 0 ? (
                  <tr><td colSpan="5" className="p-10 text-center text-[#a3aac4]">No hay facturas registradas.</td></tr>
               ) : (
-                sales.map((sale) => (
-                  <tr key={sale.id} className="hover:bg-[#141f38]/40 transition-colors">
-                    <td className="px-6 py-4 font-mono font-bold text-[#85adff] text-xs">
-                      {sale.invoiceNumber}
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-[#dee5ff]">{sale.clientName}</p>
-                      <p className="text-[10px] text-[#a3aac4]">{new Date(sale.createdAt).toLocaleDateString()}</p>
-                    </td>
-                    <td className="px-6 py-4 text-[#a3aac4]">
-                      {sale.items?.length || 0} prod.
-                    </td>
-                    <td className="px-6 py-4 font-black text-[#dee5ff] text-right">
-                      ${sale.totalAmount?.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                       {sale.status === 'Pagada' && <span className="inline-flex items-center px-2 py-1 bg-green-500/10 text-green-400 text-[10px] font-black tracking-widest uppercase rounded">Pagada</span>}
-                       {sale.status === 'Pendiente' && <span className="inline-flex items-center px-2 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black tracking-widest uppercase rounded">Pendiente</span>}
-                       {sale.status === 'Borrador' && <span className="inline-flex items-center px-2 py-1 bg-[#40485d]/30 text-[#a3aac4] text-[10px] font-black tracking-widest uppercase rounded">Borrador</span>}
-                    </td>
-                  </tr>
-                ))
+                sales.map((sale) => {
+                  const daysStatus = getDaysStatus(sale.dueDate);
+                  return (
+                    <tr key={sale.id} className="hover:bg-[#141f38]/40 transition-colors">
+                      <td className="px-6 py-4">
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-black uppercase mb-1 ${sale.documentType === 'Boleta' ? 'bg-[#85adff]/10 text-[#85adff]' : 'bg-[#85ffab]/10 text-[#85ffab]'}`}>
+                          {sale.documentType || 'Factura'}
+                        </span>
+                        <p className="font-mono font-bold text-[#dee5ff] text-xs">
+                          {sale.invoiceNumber}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[#dee5ff]">
+                        {sale.clientName}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex flex-col gap-1 items-center">
+                          <span className="text-[10px] text-[#a3aac4]">Emisión: {new Date(sale.issueDate || sale.createdAt).toLocaleDateString()}</span>
+                          <span className="text-[10px] text-[#dee5ff] font-medium italic">Vence: {sale.dueDate ? new Date(sale.dueDate).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-black text-[#dee5ff] text-right">
+                        ${sale.totalAmount?.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-5 text-center flex flex-col items-center gap-2">
+                         <div className="flex justify-center gap-2">
+                           {sale.status === 'Pagada' && <span className="inline-flex items-center px-2 py-1 bg-green-500/10 text-green-400 text-[10px] font-black tracking-widest uppercase rounded">Pagada</span>}
+                           {sale.status === 'Pendiente' && <span className="inline-flex items-center px-2 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black tracking-widest uppercase rounded">Pendiente</span>}
+                           {sale.status === 'Borrador' && <span className="inline-flex items-center px-2 py-1 bg-[#40485d]/30 text-[#a3aac4] text-[10px] font-black tracking-widest uppercase rounded">Borrador</span>}
+                         </div>
+                         {sale.status === 'Pendiente' && daysStatus && (
+                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${daysStatus.bg} ${daysStatus.color}`}>
+                             {daysStatus.text}
+                           </span>
+                         )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -249,7 +294,7 @@ export default function SalesModule() {
             <div className="p-6 md:w-1/2 flex flex-col h-full overflow-y-auto border-r border-[#40485d]/30">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-black text-[#dee5ff] uppercase tracking-wider text-sm flex items-center gap-2">
-                  <DollarSign size={16} className="text-[#85ffab]" /> Nuevo Documento
+                  <DollarSign size={16} className="text-[#85ffab]" /> Emitir {documentType}
                 </h3>
               </div>
 
@@ -373,7 +418,7 @@ export default function SalesModule() {
                   disabled={isSubmitting || cart.length === 0 || !selectedClient}
                   className="flex-[2] bg-[#85ffab] text-[#002b11] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,255,171,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Emitir Factura'}
+                  {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : `Emitir ${documentType}`}
                 </button>
               </div>
             </div>
