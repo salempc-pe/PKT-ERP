@@ -261,7 +261,7 @@
 ---
 
 ### Phase 16: Control de Facturación y Documentos (Clientes)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar panel de control de facturación para clientes con seguimiento de vencimientos (días restantes/retraso), estados de pago y emisión de comprobantes.
 **Depends on**: Phase 15
 
