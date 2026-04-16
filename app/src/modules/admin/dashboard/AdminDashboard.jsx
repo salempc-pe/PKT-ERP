@@ -74,8 +74,6 @@ export default function AdminDashboard() {
             </div>
           </div>
           
-          </div>
-          
           {/* System Alerts */}
           <div className="bg-[#000000] border border-[#40485d]/10 rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">

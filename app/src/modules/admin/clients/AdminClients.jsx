@@ -72,12 +72,17 @@ export default function AdminClients() {
   };
 
   // --- Handlers para Organizaciones ---
-  const handleCreateOrg = (e) => {
+  const handleCreateOrg = async (e) => {
     e.preventDefault();
     if (!newOrgData.name.trim()) return;
-    adminCreateOrg(newOrgData);
-    setNewOrgData({ name: '', ruc: '', address: '' });
-    setIsNewOrgModalOpen(false);
+    
+    try {
+      await adminCreateOrg(newOrgData);
+      setNewOrgData({ name: '', ruc: '', address: '' });
+      setIsNewOrgModalOpen(false);
+    } catch (error) {
+      alert("Error al crear la organización: " + error.message);
+    }
   };
 
   const handleOpenEditOrg = (org) => {
@@ -90,11 +95,11 @@ export default function AdminClients() {
     adminUpdateOrg(selectedOrg.id, editOrgData);
   };
 
-  const handleAddUser = (e) => {
+  const handleAddUser = async (e) => {
     e.preventDefault();
     if (!newUserInOrg.name || !newUserInOrg.email) return;
     
-    const result = adminCreateUser(selectedOrg.id, editOrgData.name, newUserInOrg);
+    const result = await adminCreateUser(selectedOrg.id, editOrgData.name, newUserInOrg);
     
     if (result && !result.success) {
       alert(result.error);
@@ -104,7 +109,7 @@ export default function AdminClients() {
     if (result && result.inviteToken) {
       const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
       navigator.clipboard.writeText(inviteUrl);
-      alert('¡Usuario creado! El enlace de invitación se ha copiado al portapapeles:\n' + inviteUrl);
+      alert('¡Usuario creado en Firestore! El enlace de invitación se ha copiado al portapapeles:\n' + inviteUrl);
     }
 
     setNewUserInOrg({ name: '', email: '', role: 'client' });

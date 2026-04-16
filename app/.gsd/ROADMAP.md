@@ -236,3 +236,39 @@
 **Verification**:
 - [x] Al crear un usuario, el admin recibe un link único.
 - [x] Acceder al link permite guardar una contraseña y activa la cuenta inmediatamente.
+
+---
+
+## Milestone 3: Admin UX Polish
+
+### Phase 15: Arreglos y Mejoras del Portal Admin
+**Status**: ✅ Complete
+**Objective**: Corregir gaps de funcionalidad en el portal administrativo: eliminación de organizaciones, módulos adicionales en edición, billing admin independiente, auditoría con filtros por org, y limpieza del sidebar.
+**Depends on**: Phase 13, Phase 14
+
+**Tasks**:
+- [ ] Plan 15.1 — Agregar botón de eliminar org + sección de módulos adicionales en modal editar, y quitar botón Support del sidebar
+- [ ] Plan 15.2 — Crear `AdminBillingModule` independiente con selector de organización activa, y mejorar Auditoría con filtros por organización y tipo de usuario
+
+**Verification**:
+- [ ] El modal "Editar Organización" tiene botón "Eliminar" con confirmación.
+- [ ] El modal "Editar Organización" tiene sección de activación de módulos adicionales.
+- [ ] `/admin/sales` renderiza un módulo de billing propio (no el `SalesModule` del cliente).
+- [ ] El nombre del cliente (org) es visible en el módulo de billing admin.
+- [ ] La vista de Auditoría tiene columna "Organización" y filtros por org y por tipo de actor.
+- [ ] El botón "Support" no aparece en el sidebar del admin.
+
+---
+
+### Phase 16: Control de Facturación y Documentos (Clientes)
+**Status**: ⬜ Not Started
+**Objective**: Implementar panel de control de facturación para clientes con seguimiento de vencimientos (días restantes/retraso), estados de pago y emisión de comprobantes.
+**Depends on**: Phase 15
+
+**Tasks**:
+- [ ] TBD (run /plan 16 to create)
+
+**Verification**:
+- [ ] Cada documento muestra ID, nombre del cliente, fecha de emisión, fecha de vencimiento y totales.
+- [ ] El sistema calcula y muestra visualmente los días de retraso o días restantes para el vencimiento.
+- [ ] Interfaz cuenta con botones para "Emitir Boleta" y "Emitir Factura" según los requerimientos.

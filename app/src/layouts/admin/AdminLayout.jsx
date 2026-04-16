@@ -1,19 +1,45 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function AdminLayout() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <div className="bg-[#060e20] text-[#dee5ff] min-h-screen font-body flex">
       {/* SideNavBar Shell */}
       <aside className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-40">
-        <div className="px-6 mb-8">
-          <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">Studio Alpha (Admin)</h1>
-          <p className="text-xs text-[#a3aac4] uppercase tracking-widest font-bold mt-1">Design & Planning</p>
+        <div className="px-6 mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">Studio Alpha (Admin)</h1>
+            <p className="text-xs text-[#a3aac4] uppercase tracking-widest font-bold mt-1">Design & Planning</p>
+          </div>
+          {/* Botón Toggle Tema */}
+          <button
+            onClick={toggleTheme}
+            title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
+            style={{
+              backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
+            }}
+          >
+            <span
+              className="w-4 h-4 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+              style={{
+                transform: isDark ? 'translateX(0)' : 'translateX(24px)',
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-on-primary)',
+              }}
+            >
+              {isDark
+                ? <Moon size={10} strokeWidth={2.5} />
+                : <Sun size={10} strokeWidth={2.5} />}
+            </span>
+          </button>
         </div>
         
         <nav className="flex-1 px-4 space-y-2">
