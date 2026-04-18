@@ -297,7 +297,7 @@
 ---
 
 ### Phase 18: Rework del Dashboard
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Rediseñar el dashboard para mostrar exclusivamente tarjetas de los módulos activados (una por módulo), incluyendo información clave de cada módulo.
 **Depends on**: Phase 17
 
@@ -305,4 +305,6 @@
 - [ ] TBD (run /plan 18 to create)
 
 **Verification**:
-- TBD
+- [x] Solo se muestran tarjetas de módulos activos.
+- [x] Los KPIs están integrados dentro de las tarjetas de cada módulo.
+- [x] Se eliminó la redundancia de KPIs y accesos directos.
