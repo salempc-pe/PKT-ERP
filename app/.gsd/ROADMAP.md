@@ -314,15 +314,18 @@
 ---
 
 ### Phase 19: Gestión del Logo de la Empresa
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Permitir la carga, procesamiento (redimensionamiento a cuadrado y optimización) y visualización del logo de la empresa en el portal de cliente y documentos.
 **Depends on**: Phase 18
 
 **Tasks**:
-- [ ] TBD (run /plan 19 to create)
+- [x] Implementar lógica de procesamiento de imagen (recorte y escala) en Canvas.
+- [x] Crear componente de carga de logo en configuración de empresa.
+- [x] Integrar visualización de logo en Sidebar Header y Client Dashboard.
+- [x] Asegurar persistencia base64 en Firestore.
 
 **Verification**:
-- [ ] Carga de imagen con recorte automático a cuadrado (shortest side).
-- [ ] Procesamiento de imagen para ligereza (tamaño icono).
-- [ ] Visualización del logo en el dashboard y sidebar.
-- [ ] Persistencia del logo en el perfil de la organización.
+- [x] Carga de imagen con recorte automático a cuadrado (shortest side).
+- [x] Procesamiento de imagen para ligereza (tamaño icono).
+- [x] Visualización del logo en el dashboard y sidebar.
+- [x] Persistencia del logo en el perfil de la organización.
