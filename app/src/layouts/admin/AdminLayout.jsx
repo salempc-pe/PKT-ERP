@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -8,6 +8,10 @@ export default function AdminLayout() {
   const isActive = (path) => location.pathname === path;
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="bg-[#060e20] text-[#dee5ff] min-h-screen font-body flex">
@@ -71,10 +75,6 @@ export default function AdminLayout() {
         </nav>
         
         <div className="px-4 pt-4 mt-auto border-t border-[#40485d]/10 space-y-2">
-          <button className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
-            <HelpCircle size={20} />
-            <span className="font-semibold text-sm">Support</span>
-          </button>
           <button onClick={logout} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
             <LogOut size={20} />
             <span className="font-semibold text-sm">Logout</span>

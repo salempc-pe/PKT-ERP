@@ -4,6 +4,7 @@ import {
   onSnapshot, 
   addDoc, 
   updateDoc, 
+  deleteDoc,
   doc, 
   query, 
   orderBy,
@@ -85,10 +86,18 @@ export const useSales = (orgId = "default_org") => {
   // -- Métodos MUTADORES --
 
   const addSale = async (saleData) => {
+    const docType = saleData.documentType || "Factura";
+    const prefix = docType === 'Factura' ? 'F001' : 'B001';
+    
+    // Calcular el siguiente número basado en lo que ya tenemos en el estado local
+    const count = sales.filter(s => s.documentType === docType).length + 1;
+    const invoiceNumber = `${prefix}-${String(count).padStart(4, '0')}`;
+
     const newSale = { 
       ...saleData, 
+      invoiceNumber,
       status: saleData.status || "Pendiente",
-      documentType: saleData.documentType || "Factura",
+      documentType: docType,
       issueDate: saleData.issueDate || new Date(),
       dueDate: saleData.dueDate || new Date(Date.now() + 86400000 * 30) // 30 días por defecto
     };
@@ -98,7 +107,6 @@ export const useSales = (orgId = "default_org") => {
         setTimeout(() => {
           setSales(prev => [{ 
             id: "s_" + Date.now(), 
-            invoiceNumber: `INV-000${prev.length + 1}`,
             ...newSale, 
             createdAt: new Date() 
           }, ...prev]);
@@ -131,11 +139,26 @@ export const useSales = (orgId = "default_org") => {
     });
   };
 
+  const deleteSale = async (saleId) => {
+    if (!isFirebaseConfigured) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          setSales(prev => prev.filter(s => s.id !== saleId));
+          resolve();
+        }, 400);
+      });
+    }
+
+    const saleRef = doc(db, `organizations/${orgId}/invoices`, saleId);
+    return await deleteDoc(saleRef);
+  };
+
   return {
     sales,
     loading,
     error,
     addSale,
-    updateSaleStatus
+    updateSaleStatus,
+    deleteSale
   };
 };

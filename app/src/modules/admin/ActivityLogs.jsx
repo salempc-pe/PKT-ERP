@@ -3,13 +3,17 @@ import { Clock, User, Info, AlertTriangle, CheckCircle, Search } from 'lucide-re
 import { useState } from 'react';
 
 export default function ActivityLogs() {
-  const { mockActivityLogs } = useAuth();
+  const { mockActivityLogs, mockOrganizations } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [orgFilter, setOrgFilter] = useState('all');
+  const [actorFilter, setActorFilter] = useState('all');
 
   const filteredLogs = mockActivityLogs.filter(log => 
-    log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.details.toLowerCase().includes(searchTerm.toLowerCase())
+    log.details.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (orgFilter === 'all' || log.orgId === orgFilter) &&
+    (actorFilter === 'all' || (actorFilter === 'superadmin' ? !log.orgId : log.orgId))
   );
 
   const getTypeStyles = (type) => {
@@ -38,15 +42,36 @@ export default function ActivityLogs() {
           <p className="text-[#a3aac4] text-sm">Historial cronológico de acciones en la plataforma.</p>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={18} />
-          <input 
-            type="text" 
-            placeholder="Filtrar logs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 w-64 transition-all"
-          />
+        <div className="flex gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={18} />
+            <input 
+              type="text" 
+              placeholder="Filtrar logs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 w-64 transition-all"
+            />
+          </div>
+          <select
+            value={orgFilter}
+            onChange={(e) => setOrgFilter(e.target.value)}
+            className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all"
+          >
+            <option value="all">Todas las Org.</option>
+            {mockOrganizations.map(org => (
+              <option key={org.id} value={org.id}>{org.name}</option>
+            ))}
+          </select>
+          <select
+            value={actorFilter}
+            onChange={(e) => setActorFilter(e.target.value)}
+            className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all"
+          >
+            <option value="all">Cualquier Actor</option>
+            <option value="org">Organización</option>
+            <option value="superadmin">Super Admin</option>
+          </select>
         </div>
       </div>
 
@@ -57,6 +82,7 @@ export default function ActivityLogs() {
               <tr className="bg-[#060e20] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[#a3aac4]">
                 <th className="px-6 py-4">Timestamp</th>
                 <th className="px-6 py-4">Usuario</th>
+                <th className="px-6 py-4">Organización</th>
                 <th className="px-6 py-4">Acción</th>
                 <th className="px-6 py-4">Detalles</th>
                 <th className="px-6 py-4">Tipo</th>
@@ -78,6 +104,11 @@ export default function ActivityLogs() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
+                    <span className="text-xs text-[#a3aac4]">
+                      {log.orgId ? (mockOrganizations.find(o => o.id === log.orgId)?.name || log.orgId) : '—'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <span className="text-xs font-black text-[#fbabff] uppercase tracking-wider">{log.action}</span>
                   </td>
                   <td className="px-6 py-4">
@@ -93,7 +124,7 @@ export default function ActivityLogs() {
               ))}
               {filteredLogs.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-[#a3aac4] italic text-sm">
+                  <td colSpan="6" className="px-6 py-12 text-center text-[#a3aac4] italic text-sm">
                     No se encontraron registros de actividad.
                   </td>
                 </tr>

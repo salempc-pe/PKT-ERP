@@ -8,8 +8,11 @@ import { useAuth } from '../context/AuthContext';
 export default function ModuleRoute({ module }) {
   const { user } = useAuth();
   
-  // Si no hay usuario (aunque ya debería estar manejado por Login) o no tiene el módulo activo
-  const isModuleActive = user?.activeModules?.includes(module);
+  // Si no hay usuario, no hacemos nada aquí (dejar que AuthContext redireccione al login)
+  if (!user) return null;
+
+  // Si tiene el módulo activo
+  const isModuleActive = user?.subscription?.activeModules?.includes(module);
 
   if (!isModuleActive) {
     console.warn(`Intento de acceso a módulo no activo: ${module}`);

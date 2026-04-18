@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
@@ -14,6 +14,10 @@ export default function ClientLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout, isImpersonating, stopImpersonation } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
   const [tenantName, setTenantName] = useState(user?.organizationName || 'Mi Empresa S.A.');
 
   useEffect(() => {
@@ -110,11 +114,11 @@ export default function ClientLayout() {
             <span>Dashboard</span>
           </Link>
           
-          {(user?.activeModules?.length > 0) && (
+          {(user?.subscription?.activeModules?.length > 0) && (
             <div style={{ color: 'var(--color-on-surface-variant)' }} className="pt-4 pb-2 px-4 text-[10px] font-bold uppercase tracking-widest opacity-50">Módulos</div>
           )}
           
-          {user?.activeModules?.includes('crm') && (
+          {user?.subscription?.activeModules?.includes('crm') && (
             <Link 
               to="/client/crm" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -128,7 +132,7 @@ export default function ClientLayout() {
             </Link>
           )}
           
-          {user?.activeModules?.includes('projects') && (
+          {user?.subscription?.activeModules?.includes('projects') && (
             <Link 
               to="/client/projects" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -142,7 +146,7 @@ export default function ClientLayout() {
             </Link>
           )}
           
-          {user?.activeModules?.includes('inventory') && (
+          {user?.subscription?.activeModules?.includes('inventory') && (
             <Link 
               to="/client/inventory" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -157,7 +161,7 @@ export default function ClientLayout() {
             </Link>
           )}
           
-          {user?.activeModules?.includes('finance') && (
+          {user?.subscription?.activeModules?.includes('finance') && (
             <Link 
               to="/client/finance" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -171,7 +175,7 @@ export default function ClientLayout() {
             </Link>
           )}
           
-          {user?.activeModules?.includes('sales') && (
+          {user?.subscription?.activeModules?.includes('sales') && (
             <Link 
               to="/client/sales" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -185,7 +189,7 @@ export default function ClientLayout() {
             </Link>
           )}
   
-          {user?.activeModules?.includes('calendar') && (
+          {user?.subscription?.activeModules?.includes('calendar') && (
             <Link 
               to="/client/calendar" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"

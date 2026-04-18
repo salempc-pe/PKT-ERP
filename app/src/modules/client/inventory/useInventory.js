@@ -54,8 +54,16 @@ export const useInventory = (orgId = "default_org") => {
   // -- Métodos MUTADORES --
 
   const addProduct = async (productData) => {
-    const status = productData.stock === 0 ? "Agotado" : productData.stock <= 10 ? "Bajo Stock" : "Normal";
-    const newProduct = { ...productData, status };
+    const lowStockThreshold = Number(productData.lowStockThreshold) || 5;
+    const stock = Number(productData.stock);
+    const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
+    
+    const newProduct = { 
+      ...productData, 
+      stock,
+      lowStockThreshold,
+      status 
+    };
 
     if (!isFirebaseConfigured) {
       return new Promise((resolve) => {
@@ -73,24 +81,30 @@ export const useInventory = (orgId = "default_org") => {
     });
   };
 
-  const updateProductStock = async (productId, newStock) => {
-    const status = newStock === 0 ? "Agotado" : newStock <= 10 ? "Bajo Stock" : "Normal";
+  const updateProduct = async (productId, productData) => {
+    const lowStockThreshold = Number(productData.lowStockThreshold) || 5;
+    const stock = Number(productData.stock);
+    const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
+
+    const updatedData = {
+      ...productData,
+      stock,
+      lowStockThreshold,
+      status,
+      updatedAt: serverTimestamp()
+    };
 
     if (!isFirebaseConfigured) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: newStock, status } : p));
+          setProducts(prev => prev.map(p => p.id === productId ? { ...p, ...updatedData, updatedAt: new Date() } : p));
           resolve();
         }, 400);
       });
     }
 
     const productRef = doc(db, `organizations/${orgId}/products`, productId);
-    return await updateDoc(productRef, {
-      stock: newStock,
-      status: status,
-      updatedAt: serverTimestamp()
-    });
+    return await updateDoc(productRef, updatedData);
   };
 
   return {
@@ -98,6 +112,6 @@ export const useInventory = (orgId = "default_org") => {
     loading,
     error,
     addProduct,
-    updateProductStock
+    updateProduct
   };
 };

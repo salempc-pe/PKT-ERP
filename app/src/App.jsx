@@ -18,6 +18,7 @@ import MarketplaceModule from './modules/client/marketplace/MarketplaceModule';
 import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
+import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
 
 function App() {
   return (
@@ -61,7 +62,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="clients" element={<AdminClients />} />
-            <Route path="sales" element={<SalesModule />} />
+            <Route path="sales" element={<AdminBillingModule />} />
             <Route path="logs" element={<ActivityLogs />} />
           </Route>
         </Routes>

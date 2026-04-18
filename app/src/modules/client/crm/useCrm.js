@@ -26,7 +26,9 @@ export const useCrm = (orgId = "default_org") => {
       // Mock Data inicial
       setTimeout(() => {
         setContacts([
-          { id: "mock1", name: "Empresa Local Demo", company: "Demo Corp", email: "demo@corp.com", phone: "+123456789", source: "Demo", createdAt: new Date() }
+          { id: "mock1", name: "Agencia CreaTiva", company: "CreaTiva SAC", email: "ventas@creativa.pe", phone: "+51999888777", source: "Directo", creditDays: 15, createdAt: new Date() },
+          { id: "mock2", name: "Inversiones Globales SAC", company: "IG SAC", email: "hola@globalsac.com", phone: "+51988776655", source: "Referido", creditDays: 30, createdAt: new Date() },
+          { id: "mock3", name: "David Paredes", company: "", email: "david@paredes.com", phone: "+51944556677", source: "Web", creditDays: 0, createdAt: new Date() }
         ]);
         setLoading(false);
       }, 800);
@@ -73,10 +75,15 @@ export const useCrm = (orgId = "default_org") => {
   // -- Métodos MUTADORES --
 
   const addContact = async (contactData) => {
+    const finalData = {
+      ...contactData,
+      creditDays: parseInt(contactData.creditDays) || 0
+    };
+
     if (!isFirebaseConfigured) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          setContacts(prev => [{ id: "c_" + Date.now(), ...contactData, createdAt: new Date() }, ...prev]);
+          setContacts(prev => [{ id: "c_" + Date.now(), ...finalData, createdAt: new Date() }, ...prev]);
           resolve({ id: "c_" + Date.now() });
         }, 600);
       });
@@ -84,7 +91,7 @@ export const useCrm = (orgId = "default_org") => {
 
     const contactsRef = collection(db, `organizations/${orgId}/contacts`);
     return await addDoc(contactsRef, {
-      ...contactData,
+      ...finalData,
       createdAt: serverTimestamp()
     });
   };

@@ -15,6 +15,7 @@ import {
   query, 
   where,
   setDoc,
+  getDoc,
   serverTimestamp 
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
@@ -202,27 +203,55 @@ export function AuthProvider({ children }) {
     // Escuchar cambios en la autenticación de Firebase
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // El usuario está autenticado en Firebase. 
-        // Buscamos su metadata en nuestro sistema (por ahora mockUsers)
-        const storedMockUsers = localStorage.getItem('pkt_mock_users');
-        const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
-        
-        const foundUser = currentMockUsers.find(u => u.email === firebaseUser.email);
-        
-        if (foundUser) {
-          const org = foundUser.organizationId ? mockOrganizations.find(o => o.id === foundUser.organizationId) : null;
-          const { password, ...userWithoutPassword } = foundUser;
+        try {
+          // 1. Obtener usuario de Firestore
+          const usersRef = collection(db, 'users');
+          const q = query(usersRef, where('email', '==', firebaseUser.email));
+          const querySnapshot = await getDocs(q);
           
-          const userWithSub = {
-            ...userWithoutPassword,
-            uid: firebaseUser.uid,
-            subscription: org?.subscription || null
-          };
-          
-          setUser(userWithSub);
-          sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
-        } else {
-          // Caso: Existe en Auth pero no en nuestra DB mock (ej: borrado localmente)
+          let userData = null;
+          if (!querySnapshot.empty) {
+            userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+          } else {
+            // Fallback MOCK
+            const storedMockUsers = localStorage.getItem('pkt_mock_users');
+            const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
+            userData = currentMockUsers.find(u => u.email === firebaseUser.email);
+          }
+
+          if (userData) {
+            let orgSubscription = null;
+            if (userData.organizationId) {
+              if (userData.organizationId.startsWith('org_')) {
+                // Fallback MOCK org
+                const storedOrgs = localStorage.getItem('pkt_mock_organizations');
+                const orgs = storedOrgs ? JSON.parse(storedOrgs) : INITIAL_MOCK_USERS.map(u => ({ id: u.organizationId })); // Simplified for fallback
+                const org = mockOrganizations.find(o => o.id === userData.organizationId) || orgs.find(o => o.id === userData.organizationId);
+                orgSubscription = org?.subscription || null;
+              } else {
+                // Obtener organización de Firestore
+                const orgDocRef = doc(db, 'organizations', userData.organizationId);
+                const orgSnap = await getDoc(orgDocRef);
+                if (orgSnap.exists()) {
+                  orgSubscription = orgSnap.data().subscription;
+                }
+              }
+            }
+
+            const { password, ...userWithoutPassword } = userData;
+            const userWithSub = {
+              ...userWithoutPassword,
+              uid: firebaseUser.uid,
+              subscription: orgSubscription || null
+            };
+            
+            setUser(userWithSub);
+            sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
+          } else {
+            setUser({ email: firebaseUser.email, role: 'client', status: 'pending' });
+          }
+        } catch (error) {
+          console.error("Error fetching user session from Firestore:", error);
           setUser({ email: firebaseUser.email, role: 'client', status: 'pending' });
         }
       } else {
@@ -234,7 +263,7 @@ export function AuthProvider({ children }) {
     });
 
     return () => unsubscribe();
-  }, [mockOrganizations]);
+  }, []);
 
   // Impersonation feature state
   const isImpersonating = !!sessionStorage.getItem('pkt_original_admin');
@@ -245,19 +274,43 @@ export function AuthProvider({ children }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // 2. Buscar metadata en el mock actual (o DB en el futuro)
-      const storedMockUsers = localStorage.getItem('pkt_mock_users');
-      const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : mockUsers;
-      const foundUser = currentMockUsers.find(u => u.email === email);
+      // 2. Buscar metadata en Firestore
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      
+      let foundUser = null;
+      if (!querySnapshot.empty) {
+        foundUser = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+      } else {
+        // Fallback MOCK
+        const storedMockUsers = localStorage.getItem('pkt_mock_users');
+        const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : mockUsers;
+        foundUser = currentMockUsers.find(u => u.email === email);
+      }
       
       if (foundUser) {
-        const org = foundUser.organizationId ? mockOrganizations.find(o => o.id === foundUser.organizationId) : null;
+        let orgSubscription = null;
+        if (foundUser.organizationId) {
+          if (foundUser.organizationId.startsWith('org_')) {
+            const org = mockOrganizations.find(o => o.id === foundUser.organizationId);
+            orgSubscription = org?.subscription || null;
+          } else {
+            // Server fetch
+            const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
+            const orgSnap = await getDoc(orgDocRef);
+            if (orgSnap.exists()) {
+              orgSubscription = orgSnap.data().subscription;
+            }
+          }
+        }
+
         const { password: _, ...userWithoutPassword } = foundUser;
         
         const userWithSub = {
           ...userWithoutPassword,
           uid: firebaseUser.uid,
-          subscription: org?.subscription || null
+          subscription: orgSubscription || null
         };
 
         setUser(userWithSub);
@@ -350,11 +403,28 @@ export function AuthProvider({ children }) {
     );
   };
 
-  // Actualizar módulos de un usuario (Deprecado a favor de adminUpdateOrgPlan pero mantenido por compatibilidad)
-  const adminUpdateUserModules = (userEmail, modules) => {
-    setMockUsers(prev => prev.map(u => 
-      u.email === userEmail ? { ...u, activeModules: modules } : u
-    ));
+  // Actualizar módulos de una organización en Firestore
+  const adminUpdateOrgModules = async (orgId, modules) => {
+    try {
+      const orgRef = doc(db, 'organizations', orgId);
+      await updateDoc(orgRef, {
+        "subscription.activeModules": modules
+      });
+
+      setMockOrganizations(prev => prev.map(o => 
+        o.id === orgId ? { 
+          ...o, 
+          subscription: {
+            ...o.subscription,
+            activeModules: modules
+          }
+        } : o
+      ));
+      
+      addLog('Modules Updated', `Módulos actualizados para organización ${orgId}`, 'info');
+    } catch (error) {
+      console.error("Error updating org modules:", error);
+    }
   };
 
   // Crear Organización Real en Firestore
@@ -521,6 +591,20 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Eliminar Organización en Firestore y mock local
+  const adminRemoveOrg = async (orgId) => {
+    try {
+      if (!orgId.startsWith('org_')) {
+        const { deleteDoc } = await import('firebase/firestore');
+        await deleteDoc(doc(db, 'organizations', orgId));
+      }
+      setMockOrganizations(prev => prev.filter(o => o.id !== orgId));
+      addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger');
+    } catch (error) {
+      console.error("Error removing org:", error);
+    }
+  };
+
   const getClientUsers = () => {
     return mockUsers.filter(u => u.role === 'client');
   };
@@ -530,8 +614,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, updateUser, 
-      adminUpdateUserModules, getClientUsers, adminCreateUser,
-      mockUsers, mockOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg,
+      adminUpdateOrgModules, getClientUsers, adminCreateUser,
+      mockUsers, mockOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
       adminUpdateOrgPlan, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,

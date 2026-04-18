@@ -10,7 +10,7 @@ export default function CRMModule() {
   const [activeTab, setActiveTab] = useState('pipeline'); // pipeline | contacts
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('lead'); // lead | contact
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual' });
+  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', creditDays: 0 });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
@@ -32,7 +32,7 @@ export default function CRMModule() {
         await addContact(formData);
       }
       setShowModal(false);
-      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual' });
+      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', creditDays: 0 });
     } catch (err) {
       console.error("Error al guardar en el CRM:", err);
       setSaveError("Falla crítica: No se pudo registrar. Verifica tu conexión o permisos de base de datos.");
@@ -152,6 +152,7 @@ export default function CRMModule() {
                 <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
                   <th className="px-6 py-5">Identidad</th>
                   <th className="px-6 py-5">Contacto Directo</th>
+                  <th className="px-6 py-5 text-center">Crédito</th>
                   <th className="px-6 py-5">Origen / Fuente</th>
                   <th className="px-6 py-5 text-right">Acciones</th>
                 </tr>
@@ -180,6 +181,11 @@ export default function CRMModule() {
                         </p>
                       </div>
                     </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[#a3aac4]'}`}>
+                        {contact.creditDays || 0} días
+                      </span>
+                    </td>
                     <td className="px-6 py-4">
                       <span className="text-[10px] font-black bg-[#141f38] text-[#85adff] px-2 py-1 rounded border border-[#85adff]/10 uppercase">
                         {contact.source}
@@ -191,7 +197,7 @@ export default function CRMModule() {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-10 text-center text-[#a3aac4] italic">No hay clientes registrados en la base de datos.</td>
+                    <td colSpan="5" className="px-6 py-10 text-center text-[#a3aac4] italic">No hay clientes registrados en la base de datos.</td>
                   </tr>
                 )}
               </tbody>
@@ -278,6 +284,24 @@ export default function CRMModule() {
                   />
                 </div>
               </div>
+              
+              {modalType === 'contact' && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Plazo de Crédito (Días)</label>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="number" 
+                      min="0"
+                      disabled={isSaving}
+                      value={formData.creditDays}
+                      onChange={(e) => setFormData({...formData, creditDays: parseInt(e.target.value) || 0})}
+                      className="flex-1 bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                      placeholder="0"
+                    />
+                    <span className="text-xs text-[#a3aac4] font-bold">días</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-6 bg-[#141f38] flex gap-3">

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse } from 'lucide-react';
+import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 
@@ -14,10 +14,10 @@ const AVAILABLE_MODULES = [
 
 export default function AdminClients() {
   const { 
-    getClientUsers, adminUpdateUserModules, 
+    getClientUsers, adminUpdateOrgModules, 
     mockOrganizations, adminCreateOrg, adminRemoveUser, 
     adminUpdateOrg, adminCreateUser, adminUpdateOrgPlan, 
-    SUBSCRIPTION_PLANS, impersonateUser
+    SUBSCRIPTION_PLANS, impersonateUser, adminRemoveOrg
   } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +54,7 @@ export default function AdminClients() {
   // --- Handlers para Módulos ---
   const handleOpenManageModules = (org) => {
     setSelectedOrg(org);
-    setActiveModulesForEdit(org.users[0]?.activeModules || []);
+    setActiveModulesForEdit(org.subscription?.activeModules || []);
     setIsManageModulesModalOpen(true);
   };
 
@@ -66,7 +66,7 @@ export default function AdminClients() {
 
   const handleSaveModules = () => {
     if (selectedOrg) {
-      selectedOrg.users.forEach(u => adminUpdateUserModules(u.email, activeModulesForEdit));
+      adminUpdateOrgModules(selectedOrg.id, activeModulesForEdit);
     }
     setIsManageModulesModalOpen(false);
   };
@@ -93,6 +93,12 @@ export default function AdminClients() {
 
   const handleSaveOrgDetails = () => {
     adminUpdateOrg(selectedOrg.id, editOrgData);
+  };
+
+  const handleDeleteOrg = () => {
+    if (!window.confirm(`¿Eliminar "${selectedOrg?.name}"? Esta acción no se puede deshacer.`)) return;
+    adminRemoveOrg(selectedOrg.id);
+    setIsEditOrgModalOpen(false);
   };
 
   const handleAddUser = async (e) => {
@@ -275,7 +281,15 @@ export default function AdminClients() {
                 <h2 className="text-xl font-black text-[#dee5ff]">Editar {selectedOrg?.name}</h2>
                 <p className="text-xs text-[#a3aac4]">ID Sistema: {selectedOrg?.id}</p>
               </div>
-              <button onClick={() => setIsEditOrgModalOpen(false)} className="p-2 text-[#a3aac4] hover:text-white rounded-xl"><X size={20} /></button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleDeleteOrg}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-bold hover:bg-red-500/20 transition-all"
+                >
+                  <Trash2 size={14} /> Eliminar Org
+                </button>
+                <button onClick={() => setIsEditOrgModalOpen(false)} className="p-2 text-[#a3aac4] hover:text-white rounded-xl"><X size={20} /></button>
+              </div>
             </div>
 
             <div className="p-6 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -377,6 +391,38 @@ export default function AdminClients() {
                   </div>
                   <button type="submit" className="w-full py-2 bg-[#fbabff]/10 text-[#fbabff] rounded-lg text-xs font-bold hover:bg-[#fbabff]/20 transition-all">+ Vincular Usuario</button>
                 </form>
+              </div>
+
+              {/* Sección Módulos Adicionales */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-[#4ADE80] uppercase tracking-widest">Módulos Adicionales</h3>
+                <p className="text-[10px] text-[#a3aac4]">Activa o desactiva módulos individuales para todos los usuarios de esta organización.</p>
+                <div className="space-y-2">
+                  {AVAILABLE_MODULES.map(module => {
+                    const orgActiveModules = selectedOrg?.subscription?.activeModules || [];
+                    const isActive = orgActiveModules.includes(module.id);
+                    return (
+                      <div
+                        key={module.id}
+                        onClick={() => {
+                          const toggled = isActive
+                            ? orgActiveModules.filter(id => id !== module.id)
+                            : [...orgActiveModules, module.id];
+                          adminUpdateOrgModules(selectedOrg.id, toggled);
+                        }}
+                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isActive ? 'bg-[#4ADE80]/10 border-[#4ADE80]/30 text-[#4ADE80]' : 'bg-[#141f38]/50 border-[#40485d]/20 text-[#dee5ff]'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Box size={16} opacity={isActive ? 1 : 0.5} />
+                          <span className="text-sm font-bold">{module.name}</span>
+                        </div>
+                        <div className={`w-5 h-5 rounded-md flex items-center justify-center ${isActive ? 'bg-[#4ADE80] text-[#060e20]' : 'bg-[#060e20] border border-[#40485d]/30'}`}>
+                          {isActive && <Check size={12} strokeWidth={4} />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

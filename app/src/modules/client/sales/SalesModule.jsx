@@ -14,7 +14,7 @@ export default function SalesModule() {
   const orgId = user?.organizationId || "default_org";
   
   // -- Data Hooks --
-  const { sales, loading: loadingSales, addSale } = useSales(orgId);
+  const { sales, loading: loadingSales, addSale, updateSaleStatus, deleteSale } = useSales(orgId);
   const { contacts, loading: loadingCrm } = useCrm(orgId);
   const { products, loading: loadingInv, updateProductStock } = useInventory(orgId);
   const { addTransaction } = useFinance(orgId);
@@ -29,10 +29,15 @@ export default function SalesModule() {
   const [selectedProduct, setSelectedProduct] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [selectedDocType, setSelectedDocType] = useState('Factura');
+  const [issueDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dueDate, setDueDate] = useState('');
 
   // Función para calcular estado de vencimiento
-  const getDueStatus = (dueDate, status) => {
+  const getDueStatus = (dueDateValue, status) => {
     if (status === 'Pagada') return { text: 'Al día', color: 'text-green-400 bg-green-400/10' };
+    
+    // Convertir de Firestore Timestamp si es necesario
+    const dueDate = dueDateValue?.toDate ? dueDateValue.toDate() : new Date(dueDateValue);
     
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -58,6 +63,13 @@ export default function SalesModule() {
         color: 'text-[#85adff] bg-[#85adff]/10' 
       };
     }
+  };
+
+  // Helper para formatear fechas de forma segura (Firestore o JS Date)
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "---";
+    const d = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
+    return isNaN(d.getTime()) ? "---" : d.toLocaleDateString();
   };
 
   // Calcula totales del cart local
@@ -118,7 +130,9 @@ export default function SalesModule() {
         tax: igv,
         totalAmount: cartTotal,
         status: 'Pendiente',
-        documentType: selectedDocType
+        documentType: selectedDocType,
+        issueDate: new Date(issueDate),
+        dueDate: new Date(dueDate)
       };
       
       await addSale(newSaleData);
@@ -132,15 +146,17 @@ export default function SalesModule() {
         }
       }
 
-      // [INTEGRACIÓN → FINANZAS] Registrar ingreso automático por la venta
-      await addTransaction({
-        type: 'income',
-        amount: cartTotal,
-        category: 'Ventas',
-        description: `Venta a ${clientRecord.name}${clientRecord.company ? ` (${clientRecord.company})` : ''}`,
-        date: new Date().toISOString(),
-        source: 'sales_module',
-      });
+      // [INTEGRACIÓN → FINANZAS] Registrar ingreso automático si la venta se marca Pagada
+      if (newSaleData.status === 'Pagada') {
+        await addTransaction({
+          type: 'income',
+          amount: cartTotal,
+          category: 'Ventas',
+          description: `Venta ${selectedDocType} a ${clientRecord.name}${clientRecord.company ? ` (${clientRecord.company})` : ''}`,
+          date: new Date().toISOString(),
+          source: 'sales_module',
+        });
+      }
       
       setCart([]);
       setSelectedClient('');
@@ -242,19 +258,20 @@ export default function SalesModule() {
               <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
                 <th className="px-6 py-5">Documento</th>
                 <th className="px-6 py-5">Detalle</th>
-                <th className="px-6 py-5">Emisión / Venc.</th>
+                <th className="px-6 py-5 text-center">Emisión</th>
+                <th className="px-6 py-5 text-center">Vencimiento</th>
                 <th className="px-6 py-5 text-center">Estado / Días</th>
                 <th className="px-6 py-5 text-right">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {sales.length === 0 ? (
-                 <tr><td colSpan="5" className="p-10 text-center text-[#a3aac4]">No hay facturas registradas.</td></tr>
+                 <tr><td colSpan="6" className="p-10 text-center text-[#a3aac4]">No hay facturas registradas.</td></tr>
               ) : (
                  sales.map((sale) => {
                    const dueInfo = getDueStatus(sale.dueDate, sale.status);
                    return (
-                    <tr key={sale.id} className="hover:bg-[#141f38]/40 transition-colors">
+                    <tr key={sale.id} className="hover:bg-[#141f38]/40 transition-colors group">
                       <td className="px-6 py-4">
                         <span className="text-[10px] block font-black text-[#a3aac4] mb-1">{sale.documentType?.toUpperCase()}</span>
                         <p className="font-mono font-bold text-[#85adff] text-xs">{sale.invoiceNumber}</p>
@@ -263,20 +280,58 @@ export default function SalesModule() {
                         <p className="font-bold text-[#dee5ff]">{sale.clientName}</p>
                         <p className="text-[10px] text-[#a3aac4]">{sale.items?.length || 0} productos</p>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="text-[#dee5ff] text-xs">E: {new Date(sale.issueDate || sale.createdAt).toLocaleDateString()}</p>
-                        <p className="text-[#a3aac4] text-[10px]">V: {new Date(sale.dueDate || sale.createdAt).toLocaleDateString()}</p>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-[#dee5ff] text-xs">
+                        {formatDate(sale.issueDate || sale.createdAt)}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-[#a3aac4] text-xs">
+                        {formatDate(sale.dueDate || sale.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1.5">
                           {sale.status === 'Pagada' && <span className="inline-flex items-center px-1.5 py-0.5 bg-green-500/10 text-green-400 text-[9px] font-black tracking-widest uppercase rounded">Pagada</span>}
                           {sale.status === 'Pendiente' && <span className="inline-flex items-center px-1.5 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black tracking-widest uppercase rounded">Pendiente</span>}
                           {sale.status === 'Borrador' && <span className="inline-flex items-center px-1.5 py-0.5 bg-[#40485d]/30 text-[#a3aac4] text-[9px] font-black tracking-widest uppercase rounded">Borrador</span>}
+                          {sale.status === 'Anulada' && <span className="inline-flex items-center px-1.5 py-0.5 bg-red-500/10 text-red-400 text-[9px] font-black tracking-widest uppercase rounded">Anulada</span>}
                           <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${dueInfo.color}`}>{dueInfo.text}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 font-black text-[#dee5ff] text-right">
-                        ${sale.totalAmount?.toFixed(2)}
+                        <div className="flex flex-col items-end">
+                          <span>${sale.totalAmount?.toFixed(2)}</span>
+                          <div className="flex gap-2 mt-2 transition-opacity">
+                            {sale.status === 'Pendiente' && (
+                              <button 
+                                onClick={async () => {
+                                  await updateSaleStatus(sale.id, 'Pagada');
+                                  // Registrar transacción al cobrar
+                                  await addTransaction({
+                                    type: 'income',
+                                    amount: sale.totalAmount,
+                                    category: 'Ventas',
+                                    description: `Cobro ${sale.documentType} ${sale.invoiceNumber}`,
+                                    date: new Date().toISOString(),
+                                    source: 'sales_module',
+                                  });
+                                }}
+                                className="text-[9px] font-black uppercase tracking-tighter bg-green-500/20 text-green-400 px-2 py-0.5 border border-green-500/20 rounded hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                              >
+                                Pagado
+                              </button>
+                            )}
+                            {(sale.status === 'Pendiente' || sale.status === 'Borrador') && (
+                              <button 
+                                onClick={() => {
+                                  if (window.confirm('¿Estás seguro de que deseas anular y ELIMINAR este registro definitivamente?')) {
+                                    deleteSale(sale.id);
+                                  }
+                                }}
+                                className="text-[9px] font-black uppercase tracking-tighter bg-red-500/20 text-red-400 px-2 py-0.5 border border-red-500/20 rounded hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                              >
+                                Anular
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </td>
                     </tr>
                    );
@@ -303,17 +358,31 @@ export default function SalesModule() {
 
                <div className="space-y-6">
                  {/* Selector de Cliente */}
-                 <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-[#a3aac4] uppercase">Buscar Cliente (CRM)</label>
-                   <select 
-                     value={selectedClient} 
-                     onChange={(e) => setSelectedClient(e.target.value)}
-                     className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-3 text-[#dee5ff] focus:border-[#85ffab] outline-none text-sm"
-                   >
-                     <option value="" disabled>Seleccione un cliente registrado...</option>
-                     {contacts.map(c => <option key={c.id} value={c.id}>{c.name} {c.company ? `- ${c.company}` : ''}</option>)}
-                   </select>
-                 </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-[#a3aac4] uppercase">Buscar Cliente (CRM)</label>
+                    <select 
+                      value={selectedClient} 
+                      onChange={(e) => {
+                        const cid = e.target.value;
+                        setSelectedClient(cid);
+                        const client = contacts.find(c => c.id === cid);
+                        const days = client?.creditDays || 0;
+                        const computed = new Date();
+                        computed.setDate(computed.getDate() + days);
+                        setDueDate(computed.toISOString().split('T')[0]);
+                      }}
+                      className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-3 text-[#dee5ff] focus:border-[#85ffab] outline-none text-sm"
+                    >
+                      <option value="" disabled>Seleccione un cliente registrado...</option>
+                      {contacts.map(c => <option key={c.id} value={c.id}>{c.name} {c.company ? `- ${c.company}` : ''}</option>)}
+                    </select>
+                    {selectedClient && (
+                      <div className="flex justify-between items-center px-1">
+                        <span className="text-[9px] font-bold text-[#85adff]">Emisión: {issueDate}</span>
+                        <span className="text-[9px] font-bold text-orange-400">Vence: {dueDate}</span>
+                      </div>
+                    )}
+                  </div>
 
                  <hr className="border-[#40485d]/20" />
 
