@@ -109,10 +109,10 @@
 **Depends on**: Phase 2
 
 **Tasks**:
-- [ ] Implementar capa de datos `useAppointments` para gestión reactiva
-- [ ] Desarrollar interfaz `CalendarModule.jsx` y modal de nueva cita
-- [ ] Integrar citas con clientes de CRM
-- [ ] Conectar módulo en menú principal de cliente
+- [x] Implementar capa de datos `useAppointments` para gestión reactiva
+- [x] Desarrollar interfaz `CalendarModule.jsx` y modal de nueva cita
+- [x] Integrar citas con clientes de CRM
+- [x] Conectar módulo en menú principal de cliente
 
 **Verification**:
 - [x] Es posible agendar una junta/cita enlazando al cliente existente.
@@ -247,16 +247,16 @@
 **Depends on**: Phase 13, Phase 14
 
 **Tasks**:
-- [ ] Plan 15.1 — Agregar botón de eliminar org + sección de módulos adicionales en modal editar, y quitar botón Support del sidebar
-- [ ] Plan 15.2 — Crear `AdminBillingModule` independiente con selector de organización activa, y mejorar Auditoría con filtros por organización y tipo de usuario
+- [x] Plan 15.1 — Agregar botón de eliminar org + sección de módulos adicionales en modal editar, y quitar botón Support del sidebar
+- [x] Plan 15.2 — Crear `AdminBillingModule` independiente con selector de organización activa, y mejorar Auditoría con filtros por organización y tipo de usuario
 
 **Verification**:
-- [ ] El modal "Editar Organización" tiene botón "Eliminar" con confirmación.
-- [ ] El modal "Editar Organización" tiene sección de activación de módulos adicionales.
-- [ ] `/admin/sales` renderiza un módulo de billing propio (no el `SalesModule` del cliente).
-- [ ] El nombre del cliente (org) es visible en el módulo de billing admin.
-- [ ] La vista de Auditoría tiene columna "Organización" y filtros por org y por tipo de actor.
-- [ ] El botón "Support" no aparece en el sidebar del admin.
+- [x] El modal "Editar Organización" tiene botón "Eliminar" con confirmación.
+- [x] El modal "Editar Organización" tiene sección de activación de módulos adicionales.
+- [x] `/admin/sales` renderiza un módulo de billing propio (no el `SalesModule` del cliente).
+- [x] El nombre del cliente (org) es visible en el módulo de billing admin.
+- [x] La vista de Auditoría tiene columna "Organización" y filtros por org y por tipo de actor.
+- [x] El botón "Support" no aparece en el sidebar del admin.
 
 ---
 
@@ -273,3 +273,36 @@
 - [x] Cada documento muestra ID, nombre del cliente, fecha de emisión, fecha de vencimiento y totales.
 - [x] El sistema calcula y muestra visualmente los días de retraso o días restantes para el vencimiento.
 - [x] Interfaz cuenta con botones para "Emitir Boleta" y "Emitir Factura" según los requerimientos.
+
+---
+
+### Phase 17: Mejoras Avanzadas de Facturación e Integración Contable
+**Status**: ✅ Complete
+**Objective**: Automatizar la numeración de documentos, gestionar plazos de crédito vinculados al CRM y sincronizar movimientos pagados con el módulo de finanzas.
+**Depends on**: Phase 16
+
+**Tasks**:
+- [x] **Plan 17.1**: Implementar numeración automática incremental para Boletas (B001-XXXX) y Facturas (F001-XXXX).
+- [x] **Plan 17.2**: Actualizar CRM para incluir campos de configuración de crédito (Días de Crédito) por cliente.
+- [x] **Plan 17.3**: Lógica de cálculo automático de fecha de vencimiento basada en el perfil de crédito del cliente seleccionado.
+- [x] **Plan 17.4**: Implementar estados de flujo de vida: "Pagado" y "Anulado", con botones de acción en SalesModule.
+- [x] **Plan 17.5**: Integración con Finanzas: Crear transacciones automáticas en useFinance solo cuando el documento se marque como "Pagado".
+
+**Verification**:
+- [x] Cada nueva factura/boleta tiene un correlativo único y secuencial.
+- [x] La fecha de vencimiento se ajusta automáticamente según los días de crédito del cliente en el CRM.
+- [x] Solo las facturas marcadas como "Pagado" generan entradas en el flujo de caja del módulo financiero.
+- [x] Las facturas anuladas mantienen registro pero no afectan saldos.
+
+---
+
+### Phase 18: Rework del Dashboard
+**Status**: ⬜ Not Started
+**Objective**: Rediseñar el dashboard para mostrar exclusivamente tarjetas de los módulos activados (una por módulo), incluyendo información clave de cada módulo.
+**Depends on**: Phase 17
+
+**Tasks**:
+- [ ] TBD (run /plan 18 to create)
+
+**Verification**:
+- TBD

@@ -2,12 +2,12 @@
 
 ## Current Position
 - **Milestone**: 3 — Admin UX Polish
-- **Phase**: 16 (completed)
-- **Task**: All tasks complete
-- **Status**: Verified
+- **Phase**: 18 (not started)
+- **Task**: Initializing phase 18
+- **Status**: Planning
 
 ## Last Session Summary
-Phase 16 ejecutada con éxito. Se implementó el control detallado de facturación, vencimientos y botones de emisión (Boleta/Factura).
+Phase 17 ejecutada con éxito. Se implementó la numeración automática (F001/B001), plazos de crédito en CRM con cálculo automático de vencimientos, y la integración contable de facturas pagadas. Se ha añadido la Fase 18 para el rediseño del Dashboard.
 
 ## Next Steps
-1. Proceed to next user requirements or /new-milestone if all goals are met.
+1. Correr `/plan 18` para definir la ejecución del rediseño del Dashboard.
