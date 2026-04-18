@@ -302,9 +302,27 @@
 **Depends on**: Phase 17
 
 **Tasks**:
-- [ ] TBD (run /plan 18 to create)
+- [x] Refactorizar `ClientDashboard.jsx` para carga dinámica de tarjetas.
+- [x] Crear componentes de tarjeta específicos en cada módulo.
+- [x] Crear componente base `DashboardCard` reutilizable.
 
 **Verification**:
 - [x] Solo se muestran tarjetas de módulos activos.
 - [x] Los KPIs están integrados dentro de las tarjetas de cada módulo.
-- [x] Se eliminó la redundancia de KPIs y accesos directos.
+- [x] El código del dashboard es limpio y modular.
+
+---
+
+### Phase 19: Gestión del Logo de la Empresa
+**Status**: ⬜ Not Started
+**Objective**: Permitir la carga, procesamiento (redimensionamiento a cuadrado y optimización) y visualización del logo de la empresa en el portal de cliente y documentos.
+**Depends on**: Phase 18
+
+**Tasks**:
+- [ ] TBD (run /plan 19 to create)
+
+**Verification**:
+- [ ] Carga de imagen con recorte automático a cuadrado (shortest side).
+- [ ] Procesamiento de imagen para ligereza (tamaño icono).
+- [ ] Visualización del logo en el dashboard y sidebar.
+- [ ] Persistencia del logo en el perfil de la organización.
