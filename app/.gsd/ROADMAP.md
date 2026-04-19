@@ -329,3 +329,23 @@
 - [x] Procesamiento de imagen para ligereza (tamaño icono).
 - [x] Visualización del logo en el dashboard y sidebar.
 - [x] Persistencia del logo en el perfil de la organización.
+ 
+ - - -  
+  
+ # # #   P h a s e   2 0 :   M e j o r a s   d e   U X / U I   y   F l u j o s  
+ * * S t a t u s * * :   +  N o t   S t a r t e d  
+ * * O b j e c t i v e * * :   L i m p i a r   l a   i n t e r f a z   ( q u i t a r   t i t u l o s ,   n o t i f i c a c i o n e s   i n n e c e s a r i a s ,   a l i n e a r   m o d a l e s ) ,   o p t i m i z a r   l a   v i s t a   d e   b o t o n e s   e n   e l   C R M   p o r   p e s t a n a s   y   a g r e g a r   u n   m o d a l   b a s i c o   d e   i m p r e s i o n   d e   f a c t u r a s   a l   c o n f i r m a r   u n   p a g o .  
+ * * D e p e n d s   o n * * :   P h a s e   1 9  
+  
+ * * T a s k s * * :  
+ -   [   ]   E l i m i n a r   e l   p u n t o   d e   n o t i f i c a c i o n   e n   e l   b o t o n   d e   i n v e n t a r i o   d e l   S i d e b a r .  
+ -   [   ]   E n   C R M :   m o v e r   ' N u e v o   c l i e n t e '   a   B a s e   d e   C o n t a c t o s   y   ' I n i c i a r   L e a d '   a   P i p e l i n e .  
+ -   [   ]   E l i m i n a r   t i t u l o s   y   s u b t i t u l o s   d e   l o s   m o d u l o s .  
+ -   [   ]   A g r e g a r   m o d a l   d e   i m p r e s i o n   ( b a s i c o )   a l   m a r c a r   f a c t u r a   c o m o   P a g a d a   e n   V e n t a s .  
+ -   [   ]   C o r r e g i r   l a   v i s u a l i z a c i o n   d e l   m o d a l   e n   I n v e n t a r i o   p a r a   m a n t e n e r   e l   f o n d o   d e   l a   a p l i c a c i o n .  
+  
+ * * V e r i f i c a t i o n * * :  
+ -   [   ]   V a l i d a r   U I   d e   S i d e b a r ,   C R M   ( b o t o n e s   p o r   p e s t a n a ) ,   T i t u l o s   r e m o v i d o s .  
+ -   [   ]   P r o b a r   i m p r e s i o n   a l   c a m b i a r   a   P a g a d o   y   M o d a l   d e   I n v e n t a r i o   c o n   f o n d o   c o r r e c t o .  
+  
+ 

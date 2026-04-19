@@ -2,12 +2,17 @@
 
 ## Current Position
 - **Milestone**: 3 — Admin UX Polish
-- **Phase**: 19 (completed)
-- **Task**: All tasks complete
-- **Status**: Verified
+- **Phase**: 20
+- **Task**: Planning phase
+- **Status**: Not Started
 
 ## Last Session Summary
-Fase 19 ejecutada exitosamente. Se implementó el sistema de gestión de logo de empresa con procesamiento de imagen (recorte cuadrado y optimización) directamente en el navegador. El logo ahora es visible de forma reactiva en el Sidebar y en el Dashboard.
+Se agregó la Fase 20 al roadmap para abordar mejoras de UX/UI solicitadas por el usuario:
+- Ajustes en Sidebar (remover punto del inventario).
+- Reubicación de botones en el módulo CRM según la pestaña seleccionada.
+- Eliminación de títulos de los módulos.
+- Pop-up de impresión de factura al marcar como "Pagada".
+- Solución al modal con fondo blanco en Inventario.
 
 ## Next Steps
-1. Esperar nuevos requerimientos del usuario.
+1. Ejecutar el plan de la Fase 20 (/plan 20).
