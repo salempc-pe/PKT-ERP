@@ -186,10 +186,6 @@ export default function SalesModule() {
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#dee5ff] mb-2 tracking-tight">Facturación y Ventas</h2>
-          <p className="text-[#a3aac4]">Emisión de recibos y control de pagos recibidos.</p>
-        </div>
         <div className="flex gap-3">
           <button 
             onClick={() => { setSelectedDocType('Boleta'); setCart([]); setIsModalOpen(true); }}
