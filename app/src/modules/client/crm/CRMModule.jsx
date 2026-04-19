@@ -71,14 +71,14 @@ export default function CRMModule() {
         {activeTab === 'pipeline' ? (
           <button 
             onClick={() => { setModalType('lead'); setShowModal(true); setSaveError(null); }}
-            className="bg-gradient-to-br from-[#85adff] to-[#5391ff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Kanban size={18} /> Iniciar Lead
           </button>
         ) : (
           <button 
             onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}
-            className="border border-[#40485d]/30 text-[#dee5ff] font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-[#141f38] transition-all"
+            className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Nuevo Cliente
           </button>
