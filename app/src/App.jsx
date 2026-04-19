@@ -14,6 +14,7 @@ import SettingsModule from './modules/settings/SettingsModule';
 import FinanceModule from './modules/client/finance/FinanceModule';
 import CalendarModule from './modules/client/calendar/CalendarModule';
 import ProjectModule from './modules/client/projects/ProjectModule';
+import TeamModule from './modules/client/team/TeamModule';
 
 import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
@@ -56,6 +57,7 @@ function App() {
             </Route>
 
             <Route path="settings" element={<SettingsModule />} />
+            <Route path="team" element={<TeamModule />} />
           </Route>
           
           {/* Admin Routes */}

@@ -6,20 +6,37 @@ import { useAuth } from '../../../context/AuthContext';
 export default function CRMModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { contacts, leads, loading, addContact, addLead, updateLeadStatus } = useCrm(orgId);
+  const { contacts, leads, loading, addContact, addLead, updateLeadStatus, updateLead } = useCrm(orgId);
   const [activeTab, setActiveTab] = useState('pipeline'); // pipeline | contacts
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('lead'); // lead | contact
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', creditDays: 0 });
+  const [editingLead, setEditingLead] = useState(null);
+  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
   const pipelineStages = [
-    { id: 'prospect', title: 'Prospecto', color: 'bg-[#a3aac4]' },
-    { id: 'negotiating', title: 'Negociación', color: 'bg-[#85adff]' },
-    { id: 'won', title: 'Ganado', color: 'bg-[#5391ff]' },
-    { id: 'lost', title: 'Perdido', color: 'bg-[#ff6b6b]' }
+    { id: 'prospect', title: 'Prospecto', color: 'bg-[#a3aac4]', next: 'negotiating', prev: null },
+    { id: 'negotiating', title: 'Negociación', color: 'bg-[#85adff]', next: 'won', prev: 'prospect' },
+    { id: 'won', title: 'Ganado', color: 'bg-[#5391ff]', next: null, prev: 'negotiating' },
+    { id: 'lost', title: 'Perdido', color: 'bg-[#ff6b6b]', next: null, prev: 'negotiating' }
   ];
+
+  const handleOpenEditLead = (lead) => {
+    setModalType('lead');
+    setEditingLead(lead);
+    setFormData({
+      name: lead.name,
+      company: lead.company || '',
+      email: lead.email || '',
+      phone: lead.phone || '',
+      source: lead.source || 'Manual',
+      description: lead.description || '',
+      creditDays: lead.creditDays || 0
+    });
+    setSaveError(null);
+    setShowModal(true);
+  };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
@@ -27,12 +44,17 @@ export default function CRMModule() {
     setSaveError(null);
     try {
       if (modalType === 'lead') {
-        await addLead(formData);
+        if (editingLead) {
+          await updateLead(editingLead.id, formData);
+        } else {
+          await addLead(formData);
+        }
       } else {
         await addContact(formData);
       }
       setShowModal(false);
-      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', creditDays: 0 });
+      setEditingLead(null);
+      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
     } catch (err) {
       console.error("Error al guardar en el CRM:", err);
       setSaveError("Falla crítica: No se pudo registrar. Verifica tu conexión o permisos de base de datos.");
@@ -70,7 +92,7 @@ export default function CRMModule() {
 
         {activeTab === 'pipeline' ? (
           <button 
-            onClick={() => { setModalType('lead'); setShowModal(true); setSaveError(null); }}
+            onClick={() => { setModalType('lead'); setEditingLead(null); setShowModal(true); setSaveError(null); }}
             className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Kanban size={18} /> Iniciar Lead
@@ -91,8 +113,8 @@ export default function CRMModule() {
           {pipelineStages.map(stage => (
             <div key={stage.id} className="flex flex-col gap-4">
               <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-2 font-black text-xs uppercase tracking-tighter text-[#a3aac4]">
-                  <div className={`w-2 h-2 rounded-full ${stage.color}`}></div>
+                <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[#a3aac4]">
+                  <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>
                   {stage.title}
                 </div>
                 <span className="text-[#40485d] font-bold text-xs">
@@ -100,42 +122,72 @@ export default function CRMModule() {
                 </span>
               </div>
               
-              <div className="flex flex-col gap-3 p-3 bg-[#0f1930]/40 border border-[#40485d]/10 rounded-2xl h-full min-h-[200px]">
+              <div className="flex flex-col gap-3 p-3 bg-[#0f1930]/40 border border-[#40485d]/10 rounded-2xl h-full min-h-[300px]">
                 {leads.filter(l => l.status === stage.id).map(lead => (
-                  <div key={lead.id} className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all cursor-pointer group">
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-extrabold text-[#dee5ff] text-sm">{lead.name}</p>
-                      <button className="text-[#40485d] hover:text-[#85adff]"><MoreVertical size={14}/></button>
+                  <div key={lead.id} className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all cursor-pointer group relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full opacity-20" className={stage.color}></div>
+                    
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="font-extrabold text-[#dee5ff] text-sm group-hover:text-[#85adff] transition-colors line-clamp-1">{lead.name}</p>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
+                        className="text-[#40485d] hover:text-[#85adff] transition-colors"
+                      >
+                        <MoreVertical size={14}/>
+                      </button>
                     </div>
-                    <p className="text-[11px] text-[#a3aac4] font-medium leading-tight mb-3">{lead.company}</p>
-                    <div className="flex gap-1.5">
-                      {stage.id === 'prospect' && (
-                        <button 
-                          onClick={() => updateLeadStatus(lead.id, 'negotiating')}
-                          className="text-[10px] bg-[#1d2b4a] text-[#85adff] px-2 py-0.5 rounded border border-[#85adff]/20 hover:bg-[#85adff] hover:text-[#141f38] transition-colors"
-                        >
-                          Mover a Negociación
-                        </button>
-                      )}
-                      {stage.id === 'negotiating' && (
-                        <div className="flex gap-1 w-full">
-                           <button 
-                            onClick={() => updateLeadStatus(lead.id, 'won')}
-                            className="text-[10px] bg-green-900/20 text-green-400 px-2 py-0.5 rounded border border-green-500/20 hover:bg-green-500 hover:text-white flex-1"
-                          >
-                            Ganado
-                          </button>
+                    
+                    <p className="text-[10px] text-[#85adff] font-black uppercase tracking-tight mb-2">{lead.company}</p>
+                    
+                    {lead.description && (
+                      <p className="text-[11px] text-[#a3aac4] line-clamp-2 leading-tight mb-4 opacity-70 italic">{lead.description}</p>
+                    )}
+
+                    <div className="flex justify-between items-center mt-2 pt-3 border-t border-[#40485d]/10">
+                      <div className="flex gap-1.5 w-full">
+                        {stage.prev && (
                           <button 
-                            onClick={() => updateLeadStatus(lead.id, 'lost')}
-                            className="text-[10px] bg-red-900/20 text-red-300 px-2 py-0.5 rounded border border-red-500/20 hover:bg-red-500 hover:text-white flex-1"
+                            onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.prev); }}
+                            className="p-1.5 text-[#a3aac4] hover:text-[#dee5ff] bg-[#1d2b4a]/50 hover:bg-[#1d2b4a] rounded-lg border border-[#40485d]/30 transition-all flex-1 flex justify-center"
+                            title="Retroceder etapa"
                           >
-                            Perdido
+                            <Kanban size={12} className="rotate-180" />
                           </button>
-                        </div>
-                      )}
+                        )}
+                        
+                        {stage.id === 'negotiating' ? (
+                          <div className="flex gap-1 flex-[3]">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'won'); }}
+                              className="text-[9px] font-black uppercase bg-green-500/10 text-green-400 px-2 py-1 rounded border border-green-500/20 hover:bg-green-500 hover:text-white transition-all flex-1"
+                            >
+                              Ganado
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'lost'); }}
+                              className="text-[9px] font-black uppercase bg-red-500/10 text-red-300 px-2 py-1 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex-1"
+                            >
+                              Perdido
+                            </button>
+                          </div>
+                        ) : stage.next && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.next); }}
+                            className="p-1.5 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all flex-[2] flex items-center justify-center gap-2 text-[10px] font-bold uppercase"
+                          >
+                            Siguiente <Kanban size={12} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
+
+                {leads.filter(l => l.status === stage.id).length === 0 && (
+                  <div className="flex-1 flex items-center justify-center text-[#40485d] opacity-20 text-[10px] italic py-10">
+                    Sin prospectos
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -246,16 +298,30 @@ export default function CRMModule() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Empresa / Negocio</label>
+                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Empresa / Proyecto</label>
                 <input 
                   type="text" 
                   disabled={isSaving}
                   value={formData.company}
                   onChange={(e) => setFormData({...formData, company: e.target.value})}
-                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
-                  placeholder="Ej: Inversiones X"
+                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 text-sm font-bold"
+                  placeholder="Ej: Inversiones Globales"
                 />
               </div>
+
+              {modalType === 'lead' && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Descripción / Observaciones</label>
+                  <textarea 
+                    rows="3"
+                    disabled={isSaving}
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 resize-none text-sm"
+                    placeholder="Detalles sobre el interés del cliente, presupuesto, etc."
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[#a3aac4] uppercase">Correo</label>
@@ -309,7 +375,7 @@ export default function CRMModule() {
               >
                 Cancelar
               </button>
-              <button 
+                <button 
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 bg-[#85adff] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
@@ -317,9 +383,9 @@ export default function CRMModule() {
                 {isSaving ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Registrando...
+                    Procesando...
                   </>
-                ) : 'Registrar'}
+                ) : (editingLead ? 'Actualizar' : 'Registrar')}
               </button>
             </div>
           </form>

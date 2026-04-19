@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, MoreVertical, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Trash2, X, Edit3, ArrowRight, ArrowLeft } from 'lucide-react';
 
-export default function ProjectKanban({ project, tasks, addTask, updateTaskStatus, updateTask }) {
+export default function ProjectKanban({ project, tasks, addTask, updateTaskStatus, updateTask, onBack }) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskData, setTaskData] = useState({ title: '', priority: 'medium', description: '' });
@@ -57,12 +57,19 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
   };
 
   return (
-    <div className="space-y-8 h-full">
-      <div className="flex justify-between items-center">
-        <h3 className="text-[#a3aac4] font-black text-xs uppercase tracking-widest">Tablero de Tareas</h3>
+    <div className="space-y-8 h-full animate-in fade-in duration-500">
+      {/* Header Unificada */}
+      <div className="flex justify-between items-center bg-[#0f1930]/30 p-4 rounded-2xl border border-[#40485d]/10">
+        <button 
+          onClick={onBack}
+          className="text-[#a3aac4] hover:text-[#85adff] flex items-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all bg-[#141f38] px-4 py-2.5 rounded-xl border border-[#40485d]/30 hover:border-[#85adff]/50 shadow-lg"
+        >
+          <ChevronLeft size={16} /> Volver a Proyectos
+        </button>
+
         <button 
           onClick={handleOpenNewTask}
-          className="bg-[#85adff] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          className="bg-[#85adff] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.4)] transition-all transform active:scale-95 border border-[#85adff]/20"
         >
           <Plus size={20} /> Nueva Tarea
         </button>
@@ -85,7 +92,8 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
               {tasks.filter(t => t.status === col.id).map(task => (
                 <div 
                   key={task.id} 
-                  className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all group"
+                  onClick={() => col.next && updateTaskStatus(task.id, col.next)}
+                  className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all group cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="space-y-1">
@@ -93,7 +101,10 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
                         {task.description && <p className="text-[11px] text-[#a3aac4] line-clamp-2 leading-tight">{task.description}</p>}
                     </div>
                     <button 
-                        onClick={() => handleOpenEditTask(task)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditTask(task);
+                        }}
                         className="text-[#40485d] hover:text-[#85adff] transition-colors p-1"
                         title="Editar Tarea"
                     >
@@ -107,7 +118,10 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
                     <div className="flex gap-1.5">
                         {col.prev && (
                             <button 
-                                onClick={() => updateTaskStatus(task.id, col.prev)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateTaskStatus(task.id, col.prev);
+                                }}
                                 className="p-1.5 text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500 rounded-lg border border-amber-500/20 transition-all"
                                 title="Mover atrás"
                             >
@@ -116,7 +130,10 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
                         )}
                         {col.next && (
                             <button 
-                                onClick={() => updateTaskStatus(task.id, col.next)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateTaskStatus(task.id, col.next);
+                                }}
                                 className="p-1.5 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all"
                                 title="Avanzar"
                             >

@@ -226,17 +226,32 @@ export default function ClientLayout() {
             </Link>
           )}
 
+          {user?.role === 'client' && (
+            <Link 
+              to="/client/team" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/team') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/team')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/team')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Shield size={20} />
+              <span>Mi Equipo</span>
+            </Link>
+          )}
 
         </nav>
         
         {/* Footer Sidebar: Profile & Settings */}
         <div className="px-4 py-4 space-y-4" style={{ borderTop: '1px solid color-mix(in srgb, var(--color-outline-variant) 20%, transparent)' }}>
-          <Link to="/client/settings" onClick={() => setIsSidebarOpen(false)} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all text-sm font-semibold hover:bg-[var(--color-surface-container)]"
-            style={{ color: 'var(--color-on-surface-variant)' }}
-          >
-            <Settings size={18} />
-            <span>Configuración</span>
-          </Link>
+          {(user?.role === 'client' || user?.role === 'admin') && (
+            <Link to="/client/settings" onClick={() => setIsSidebarOpen(false)} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all text-sm font-semibold hover:bg-[var(--color-surface-container)]"
+              style={{ color: 'var(--color-on-surface-variant)' }}
+            >
+              <Settings size={18} />
+              <span>Configuración</span>
+            </Link>
+          )}
 
           {/* User Profile Card */}
           <div className="flex items-center gap-3 p-3 rounded-2xl" style={{ backgroundColor: 'var(--color-surface-container)' }}>

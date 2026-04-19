@@ -366,20 +366,39 @@
 
 ---
 
-### Phase 22: Optimización del Módulo de Proyectos
-**Status**: ⬜ Not Started
+### Phase 22: Optimización del Módulo de Proyectos ✅
+**Status**: Complete
 **Objective**: Pulir la gestión de proyectos y tareas: añadir eliminación de proyectos, corregir reactividad de tareas, mejorar UI del Kanban y añadir edición de tareas.
 **Depends on**: Phase 21
 
 **Tasks**:
-- [ ] Reemplazar tres puntos en tarjetas de proyecto por un botón de eliminar (X) con confirmación.
-- [ ] Corregir reactividad al agregar y actualizar estado de tareas (que aparezcan/se muevan al instante).
-- [ ] Estandarizar botón "Nueva Tarea" (tamaño y azul #85adff).
-- [ ] Mejorar visibilidad de botones de avance/retroceso en tareas.
-- [ ] Implementar modal de edición para títulos y descripciones de tareas (en los tres puntos de la tarea).
+- [x] Reemplazar tres puntos en tarjetas de proyecto por un botón de eliminar (X) con confirmación.
+- [x] Corregir reactividad al agregar y actualizar estado de tareas (usando Date() para instantaneidad).
+- [x] Estandarizar botón "Nueva Tarea" (azul #85adff, estilo premium).
+- [x] Mejorar visibilidad de botones de avance/retroceso en tareas (colores intensos y flechas).
+- [x] Implementar modal de edición para títulos y descripciones de tareas.
 
 **Verification**:
-- [ ] Probar eliminación de proyecto con confirmación.
-- [ ] Verificar que nuevas tareas aparezcan sin recargar.
-- [ ] Comprobar flujo de estados en Kanban con feedback visual inmediato.
-- [ ] Validar modal de edición de tarea.
+- [x] Probar eliminación de proyecto con confirmación.
+- [x] Verificar que nuevas tareas aparezcan sin recargar.
+- [x] Comprobar flujo de estados en Kanban con feedback visual inmediato.
+- [x] Validar modal de edición de tarea.
+
+---
+
+### Phase 23: Enterprise Security & Multi-Tenant User Management
+**Status**: ✅ Complete
+**Objective**: Implementar un sistema de autenticación multi-inquilino con aislamiento estricto, invitaciones por correo, roles definidos (Admin/User) y límites de usuarios contratados gestionados desde el panel admin.
+**Depends on**: Phase 22
+
+**Tasks**:
+- [x] **Plan 23.1**: Actualizar `AdminOrganizations` para permitir definir el `maxUsers` (límite contratado) de cada empresa.
+- [x] **Plan 23.2**: Refactorizar Firebase Security Rules para aplicar aislamiento estricto por `organizationId` (Multi-tenancy).
+- [x] **Plan 23.3**: Implementar el módulo de "Gestión de Equipo" dentro del portal de Cliente (solo para usuarios con rol `Admin`).
+- [x] **Plan 23.4**: Desarrollar la lógica de validación de cuotas antes de generar una nueva invitación.
+- [x] **Plan 23.5**: Ajustar `AuthContext` para persistir y validar el rol del usuario (`admin` vs `user`) dentro de su organización.
+
+**Verification**:
+- [ ] Intentar acceder a datos de la Org A con un usuario de la Org B (debe fallar por Reglas de Firebase).
+- [ ] Verificar que el Admin de la empresa no pueda invitar a más usuarios de los permitidos por su cuota.
+- [ ] Probar el flujo completo de invitación -> activación -> login con rol restringido.

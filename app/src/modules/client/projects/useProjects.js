@@ -67,11 +67,26 @@ export const useProjects = (orgId = "default_org") => {
     }
 
     const tasksRef = collection(db, `organizations/${orgId}/tasks`);
-    const q = query(tasksRef, where("projectId", "==", activeProjectId), orderBy("createdAt", "desc"));
+    // Simplificamos la query quitando el orderBy para descartar problemas de índices compuestos
+    const q = query(tasksRef, where("projectId", "==", activeProjectId));
 
+    console.log(`[useProjects] Suscribiendo a tareas del proyecto: ${activeProjectId}`);
+    
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTasks(data);
+      console.log(`[useProjects] Tareas recibidas: ${data.length}`);
+      
+      // Ordenamos localmente si es necesario para no depender del índice de Firestore por ahora
+      const sortedData = data.sort((a, b) => {
+        const dateA = a.createdAt?.seconds || 0;
+        const dateB = b.createdAt?.seconds || 0;
+        return dateB - dateA;
+      });
+      
+      setTasks(sortedData);
+    }, (err) => {
+      console.error("[useProjects] Error en suscripción de tareas:", err);
+      setError(err.message);
     });
 
     return () => unsub();
@@ -114,7 +129,12 @@ export const useProjects = (orgId = "default_org") => {
       return newTask;
     }
     const tasksRef = collection(db, `organizations/${orgId}/tasks`);
-    return await addDoc(tasksRef, { ...taskData, orgId, status: taskData.status || "todo", createdAt: new Date() });
+    return await addDoc(tasksRef, { 
+      ...taskData, 
+      orgId, 
+      status: taskData.status || "todo", 
+      createdAt: serverTimestamp() 
+    });
   };
 
   const updateTaskStatus = async (taskId, newStatus) => {
@@ -123,7 +143,10 @@ export const useProjects = (orgId = "default_org") => {
       return;
     }
     const taskRef = doc(db, `organizations/${orgId}/tasks`, taskId);
-    return await updateDoc(taskRef, { status: newStatus, updatedAt: new Date() });
+    return await updateDoc(taskRef, { 
+      status: newStatus, 
+      updatedAt: serverTimestamp() 
+    });
   };
 
   const updateTask = async (taskId, taskData) => {

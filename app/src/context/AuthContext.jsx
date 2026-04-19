@@ -204,16 +204,27 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // 1. Obtener usuario de Firestore
-          const usersRef = collection(db, 'users');
-          const q = query(usersRef, where('email', '==', firebaseUser.email));
-          const querySnapshot = await getDocs(q);
+          // 1. Obtener usuario de Firestore por UID (recomendado para reglas de seguridad)
+          let userDocRef = doc(db, 'users', firebaseUser.uid);
+          let userSnap = await getDoc(userDocRef);
           
           let userData = null;
-          if (!querySnapshot.empty) {
-            userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+          if (userSnap.exists()) {
+            userData = { id: userSnap.id, ...userSnap.data() };
           } else {
-            // Fallback MOCK
+            // Fallback: buscar por email si el ID no es el UID (usuarios antiguos o pendientes)
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('email', '==', firebaseUser.email));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+              userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+              // OPCIONAL: Migrar el documento para que use el UID como ID
+              const oldDocId = querySnapshot.docs[0].id;
+              await setDoc(doc(db, 'users', firebaseUser.uid), { ...userData, uid: firebaseUser.uid });
+              // Si no es el mismo ID, podríamos borrar el anterior, pero es delicado sin más lógica
+            } else {
+              // Fallback MOCK
             const storedMockUsers = localStorage.getItem('pkt_mock_users');
             const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
             userData = currentMockUsers.find(u => u.email === firebaseUser.email);
@@ -242,7 +253,8 @@ export function AuthProvider({ children }) {
             const userWithSub = {
               ...userWithoutPassword,
               uid: firebaseUser.uid,
-              subscription: orgSubscription || null
+              subscription: orgSubscription || null,
+              isAdmin: userData.role === 'admin'
             };
             
             setUser(userWithSub);
@@ -440,7 +452,8 @@ export function AuthProvider({ children }) {
       subscription: {
         planId,
         activeModules: SUBSCRIPTION_PLANS[planId].modules,
-        limits: SUBSCRIPTION_PLANS[planId].limits
+        limits: SUBSCRIPTION_PLANS[planId].limits,
+        maxUsers: orgData.maxUsers || SUBSCRIPTION_PLANS[planId].limits.users
       }
     };
 
@@ -469,7 +482,8 @@ export function AuthProvider({ children }) {
       await updateDoc(orgRef, {
         "subscription.planId": planId,
         "subscription.activeModules": planConfig.modules,
-        "subscription.limits": planConfig.limits
+        "subscription.limits": planConfig.limits,
+        "subscription.maxUsers": planConfig.limits.users
       });
 
       setMockOrganizations(prev => prev.map(o => 
@@ -478,7 +492,8 @@ export function AuthProvider({ children }) {
           subscription: {
             planId,
             activeModules: planConfig.modules,
-            limits: planConfig.limits
+            limits: planConfig.limits,
+            maxUsers: planConfig.limits.users
           }
         } : o
       ));
@@ -492,7 +507,17 @@ export function AuthProvider({ children }) {
   // Crear Usuario en Organización Real en Firestore
   const adminCreateUser = async (orgId, orgName, userData) => {
     try {
-      // 1. Verificar límites (Omitido por brevedad en esta fase, pero importante)
+      // 1. Verificar límites de cuota (maxUsers)
+      const currentOrg = mockOrganizations.find(o => o.id === orgId);
+      const activeUsersCount = mockUsers.filter(u => u.organizationId === orgId).length;
+      const limit = currentOrg?.subscription?.maxUsers || currentOrg?.maxUsers || 5;
+
+      if (activeUsersCount >= limit) {
+        return { 
+          success: false, 
+          error: `Límite de usuarios alcanzado (${activeUsersCount}/${limit}). Actualiza tu plan para invitar a más colaboradores.` 
+        };
+      }
       
       const inviteToken = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
       
@@ -534,18 +559,35 @@ export function AuthProvider({ children }) {
       const userCredential = await createUserWithEmailAndPassword(auth, targetUser.email, newPassword);
       const firebaseUser = userCredential.user;
 
-      // 2. Actualizar estado local (Simulando DB)
+      // 2. Persistir en Firestore usando UID como ID (para aislamiento de reglas)
+      const userDocRef = doc(db, 'users', firebaseUser.uid);
+      const updatedData = { 
+        ...targetUser, 
+        uid: firebaseUser.uid,
+        status: 'active', 
+        inviteToken: null,
+        updatedAt: serverTimestamp() 
+      };
+      
+      // Eliminar el ID anterior si venía de un doc con ID aleatorio
+      if (targetUser.id && !targetUser.id.startsWith('usr_')) {
+        const { deleteDoc } = await import('firebase/firestore');
+        try {
+          await deleteDoc(doc(db, 'users', targetUser.id));
+        } catch(e) { console.warn("Could not delete old user doc", e); }
+      }
+
+      await setDoc(userDocRef, updatedData);
+
+      // 3. Actualizar estado local (Simulando DB)
       setMockUsers(prev => prev.map(u => 
         u.inviteToken === token ? { 
-          ...u, 
-          password: 'ENC', // Marcamos como encriptado/auth real
-          status: 'active', 
-          inviteToken: null,
-          uid: firebaseUser.uid
+          ...updatedData,
+          password: 'ENC'
         } : u
       ));
 
-      addLog('Password Setup', `Usuario ${targetUser.email} configuró su cuenta correctamente en Auth.`, 'success');
+      addLog('Password Setup', `Usuario ${targetUser.email} configuró su cuenta correctamente en Auth y DB.`, 'success');
 
       return { success: true };
     } catch (error) {
@@ -619,7 +661,8 @@ export function AuthProvider({ children }) {
       adminUpdateOrgPlan, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
-      mockActivityLogs, mockSystemAlerts, addLog
+      mockActivityLogs, mockSystemAlerts, addLog,
+      isAdmin: user?.role === 'admin' || user?.role === 'client'
     }}>
       {children}
     </AuthContext.Provider>

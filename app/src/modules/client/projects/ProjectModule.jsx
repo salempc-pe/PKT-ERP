@@ -50,32 +50,17 @@ export default function ProjectModule() {
     );
   }
 
-  // Si hay un proyecto seleccionado, mostramos el Kanban real
+  // Si hay un proyecto seleccionado, mostramos el Kanban con navegación integrada
   if (selectedProject) {
     return (
-      <div className="animate-in fade-in duration-500 space-y-6">
-        <button 
-          onClick={handleBackToList}
-          className="text-[#a3aac4] hover:text-[#dee5ff] flex items-center gap-2 font-bold transition-colors"
-        >
-          ← Volver a todos los proyectos
-        </button>
-        <div className="flex justify-between items-end border-b border-[#40485d]/20 pb-6">
-            <div className="flex gap-2">
-                <span className="bg-[#141f38] text-[#85adff] px-3 py-1 rounded-full text-xs font-black uppercase border border-[#85adff]/20">
-                    {selectedProject.status}
-                </span>
-            </div>
-        </div>
-        
         <ProjectKanban 
             project={selectedProject} 
             tasks={tasks} 
             addTask={addTask} 
             updateTaskStatus={updateTaskStatus} 
             updateTask={updateTask}
+            onBack={handleBackToList}
         />
-      </div>
     );
   }
 

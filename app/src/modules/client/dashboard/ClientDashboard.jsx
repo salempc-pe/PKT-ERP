@@ -43,10 +43,7 @@ export default function ClientDashboard() {
       <section className="relative rounded-3xl overflow-hidden p-6 lg:p-10 bg-[#091328] border border-[#85adff]/10">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="max-w-2xl">
-            <span className="text-[#85adff] font-bold tracking-[0.2em] text-[10px] uppercase mb-4 block flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              Estado: Sistema Operativo
-            </span>
+
             <h2 className="text-3xl lg:text-5xl font-black tracking-tighter text-[#dee5ff] mb-4 leading-tight">
               Hola, <span className="text-[#85adff]">{user?.name?.split(' ')[0] || 'Usuario'}</span>.
             </h2>
@@ -57,8 +54,8 @@ export default function ClientDashboard() {
 
           {logoUrl && (
             <div className="hidden md:block shrink-0">
-              <div className="w-32 h-32 rounded-3xl border border-[#85adff]/20 bg-[#141f38] shadow-2xl p-2 rotate-3 hover:rotate-0 transition-transform duration-500 overflow-hidden">
-                <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-cover rounded-2xl" />
+              <div className="w-32 h-32 rounded-2xl border border-[#85adff]/10 bg-[#141f38] overflow-hidden">
+                <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain" />
               </div>
             </div>
           )}
