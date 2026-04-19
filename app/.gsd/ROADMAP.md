@@ -350,16 +350,16 @@
 
 ---
 
-### Phase 21: Estandarización de Botones de Acción
-**Status**: ⬜ Not Started
+### Phase 21: Estandarización de Botones de Acción ✅
+**Status**: Complete
 **Objective**: Homogeneizar el estilo y posición de los botones principales en la parte superior de cada módulo.
 **Depends on**: Phase 20
 
 **Tasks**:
-- [ ] Cambiar el color de los botones principales a azul (predominante #85adff) en todos los módulos.
-- [ ] Alinear los botones siempre al lado derecho de la pantalla en la cabecera del módulo.
-- [ ] Asegurar coherencia visual en (Ventas, Inventario, CRM, Proyectos, Finanzas, Agenda).
+- [x] Cambiar el color de los botones principales a azul (predominante #85adff) en todos los módulos.
+- [x] Alinear los botones siempre al lado derecho de la pantalla en la cabecera del módulo.
+- [x] Asegurar coherencia visual en (Ventas, Inventario, CRM, Proyectos, Finanzas, Agenda).
 
 **Verification**:
-- [ ] Revisar visualmente cada módulo en modo dark/light.
-- [ ] Confirmar alineación `justify-end` o `ml-auto`.
+- [x] Revisar visualmente cada módulo en modo dark/light.
+- [x] Confirmar alineación `justify-end` o `ml-auto`.
