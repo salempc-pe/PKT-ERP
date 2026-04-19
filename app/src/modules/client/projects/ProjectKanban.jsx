@@ -1,33 +1,57 @@
 import { useState, useEffect } from 'react';
-import { Plus, MoreVertical, Clock, AlertCircle, CheckCircle2, Circle, HelpCircle } from 'lucide-react';
+import { Plus, MoreVertical, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Trash2, X, Edit3, ArrowRight, ArrowLeft } from 'lucide-react';
 
-export default function ProjectKanban({ project, tasks, addTask, updateTaskStatus }) {
+export default function ProjectKanban({ project, tasks, addTask, updateTaskStatus, updateTask }) {
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [taskData, setTaskData] = useState({ title: '', priority: 'medium' });
+  const [editingTask, setEditingTask] = useState(null);
+  const [taskData, setTaskData] = useState({ title: '', priority: 'medium', description: '' });
 
   const columns = [
-    { id: 'todo', title: 'Por Hacer', color: 'bg-slate-500' },
-    { id: 'in_progress', title: 'En Curso', color: 'bg-blue-500' },
-    { id: 'done', title: 'Finalizado', color: 'bg-emerald-500' }
+    { id: 'todo', title: 'Por Hacer', color: 'bg-slate-500', next: 'in_progress', prev: null },
+    { id: 'in_progress', title: 'En Curso', color: 'bg-blue-500', next: 'done', prev: 'todo' },
+    { id: 'done', title: 'Finalizado', color: 'bg-emerald-500', next: null, prev: 'in_progress' }
   ];
 
-  const handleAddTask = async (e) => {
+  const handleOpenNewTask = () => {
+    setEditingTask(null);
+    setTaskData({ title: '', priority: 'medium', description: '' });
+    setShowTaskModal(true);
+  };
+
+  const handleOpenEditTask = (task) => {
+    setEditingTask(task);
+    setTaskData({ 
+        title: task.title, 
+        priority: task.priority || 'medium', 
+        description: task.description || '' 
+    });
+    setShowTaskModal(true);
+  };
+
+  const handleSaveTask = async (e) => {
     e.preventDefault();
     if (!taskData.title.trim()) return;
-    await addTask({
-      ...taskData,
-      projectId: project.id,
-      status: 'todo'
-    });
-    setTaskData({ title: '', priority: 'medium' });
+
+    if (editingTask) {
+        await updateTask(editingTask.id, taskData);
+    } else {
+        await addTask({
+            ...taskData,
+            projectId: project.id,
+            status: 'todo'
+        });
+    }
+
+    setTaskData({ title: '', priority: 'medium', description: '' });
     setShowTaskModal(false);
+    setEditingTask(null);
   };
 
   const getPriorityBadge = (priority) => {
     switch(priority) {
-      case 'high': return <span className="text-[9px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded border border-red-500/20 uppercase">Alta</span>;
-      case 'medium': return <span className="text-[9px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20 uppercase">Media</span>;
-      case 'low': return <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 uppercase">Baja</span>;
+      case 'high': return <span className="text-[9px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded border border-red-500/20 uppercase font-bold">Alta</span>;
+      case 'medium': return <span className="text-[9px] bg-[#85adff]/10 text-[#85adff] px-1.5 py-0.5 rounded border border-[#85adff]/20 uppercase font-bold">Media</span>;
+      case 'low': return <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 uppercase font-bold">Baja</span>;
       default: return null;
     }
   };
@@ -37,10 +61,10 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
       <div className="flex justify-between items-center">
         <h3 className="text-[#a3aac4] font-black text-xs uppercase tracking-widest">Tablero de Tareas</h3>
         <button 
-          onClick={() => setShowTaskModal(true)}
-          className="text-[11px] bg-[#141f38] text-[#85adff] px-3 py-1.5 rounded-lg border border-[#85adff]/20 hover:bg-[#85adff] hover:text-[#002150] transition-all font-bold"
+          onClick={handleOpenNewTask}
+          className="bg-[#85adff] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
-          + Nueva Tarea
+          <Plus size={20} /> Nueva Tarea
         </button>
       </div>
 
@@ -64,30 +88,39 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
                   className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all group"
                 >
                   <div className="flex justify-between items-start mb-3">
-                    <p className="font-bold text-[#dee5ff] text-sm leading-tight">{task.title}</p>
-                    <button className="text-[#40485d] hover:text-[#dee5ff]"><MoreVertical size={14}/></button>
+                    <div className="space-y-1">
+                        <p className="font-bold text-[#dee5ff] text-sm leading-tight group-hover:text-[#85adff] transition-colors">{task.title}</p>
+                        {task.description && <p className="text-[11px] text-[#a3aac4] line-clamp-2 leading-tight">{task.description}</p>}
+                    </div>
+                    <button 
+                        onClick={() => handleOpenEditTask(task)}
+                        className="text-[#40485d] hover:text-[#85adff] transition-colors p-1"
+                        title="Editar Tarea"
+                    >
+                        <MoreVertical size={16}/>
+                    </button>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     {getPriorityBadge(task.priority)}
                     
-                    <div className="flex gap-1">
-                        {col.id !== 'todo' && (
+                    <div className="flex gap-1.5">
+                        {col.prev && (
                             <button 
-                                onClick={() => updateTaskStatus(task.id, col.id === 'done' ? 'in_progress' : 'todo')}
-                                className="p-1.5 text-[#40485d] hover:text-[#dee5ff] bg-[#0f1930] rounded-md transition-colors"
+                                onClick={() => updateTaskStatus(task.id, col.prev)}
+                                className="p-1.5 text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500 rounded-lg border border-amber-500/20 transition-all"
                                 title="Mover atrás"
                             >
-                                <Circle size={14} />
+                                <ArrowLeft size={14} />
                             </button>
                         )}
-                        {col.id !== 'done' && (
+                        {col.next && (
                             <button 
-                                onClick={() => updateTaskStatus(task.id, col.id === 'todo' ? 'in_progress' : 'done')}
-                                className="p-1.5 text-[#40485d] hover:text-[#85adff] bg-[#0f1930] rounded-md transition-colors"
+                                onClick={() => updateTaskStatus(task.id, col.next)}
+                                className="p-1.5 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all"
                                 title="Avanzar"
                             >
-                                <CheckCircle2 size={14} />
+                                <ArrowRight size={14} />
                             </button>
                         )}
                     </div>
@@ -105,42 +138,62 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
         ))}
       </div>
 
-      {/* Modal Nueva Tarea */}
+      {/* Modal Nueva/Editar Tarea */}
       {showTaskModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowTaskModal(false)}></div>
-            <form onSubmit={handleAddTask} className="bg-[#0f1930] w-full max-w-sm border border-[#40485d]/30 rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
-                <div className="p-5 border-b border-[#40485d]/20">
-                    <h4 className="font-black text-[#dee5ff] uppercase tracking-wider text-xs">Añadir Tarea</h4>
+            <form onSubmit={handleSaveTask} className="bg-[#0f1930] w-full max-w-sm border border-[#40485d]/30 rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
+                <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
+                    <h4 className="font-black text-[#dee5ff] uppercase tracking-wider text-xs">
+                        {editingTask ? 'Editar Tarea' : 'Añadir Nueva Tarea'}
+                    </h4>
+                    <button type="button" onClick={() => setShowTaskModal(false)} className="text-[#a3aac4] hover:text-white">
+                        <X size={18}/>
+                    </button>
                 </div>
-                <div className="p-5 space-y-4">
+                <div className="p-6 space-y-5">
                     <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-[#a3aac4] uppercase">Título de la Tarea</label>
                         <input 
                             required
                             autoFocus
                             type="text" 
-                            className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2 text-[#dee5ff] focus:border-[#85adff] outline-none text-sm"
+                            className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none text-sm"
                             value={taskData.title}
                             onChange={(e) => setTaskData({...taskData, title: e.target.value})}
+                            placeholder="Ej: Diseñar landing page"
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-[#a3aac4] uppercase">Prioridad</label>
-                        <select 
-                            className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2 text-[#dee5ff] focus:border-[#85adff] outline-none text-sm"
-                            value={taskData.priority}
-                            onChange={(e) => setTaskData({...taskData, priority: e.target.value})}
-                        >
-                            <option value="low">Baja</option>
-                            <option value="medium">Media</option>
-                            <option value="high">Alta</option>
-                        </select>
+                        <label className="text-[10px] font-black text-[#a3aac4] uppercase">Descripción (Opcional)</label>
+                        <textarea 
+                            rows="3"
+                            className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none text-sm resize-none"
+                            value={taskData.description}
+                            onChange={(e) => setTaskData({...taskData, description: e.target.value})}
+                            placeholder="Detalles adicionales sobre la tarea..."
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-[#a3aac4] uppercase">Prioridad principal</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {['low', 'medium', 'high'].map(p => (
+                                <button
+                                    key={p}
+                                    type="button"
+                                    onClick={() => setTaskData({...taskData, priority: p})}
+                                    className={`py-2 rounded-xl text-[10px] font-bold border transition-all uppercase ${taskData.priority === p ? 'bg-[#85adff] text-[#002150] border-[#85adff]' : 'bg-[#141f38] text-[#a3aac4] border-[#40485d]/30'}`}
+                                >
+                                    {p === 'low' ? 'Baja' : p === 'medium' ? 'Media' : 'Alta'}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-                <div className="p-5 bg-[#141f38] flex gap-3 rounded-b-3xl">
-                    <button type="submit" className="flex-1 bg-[#85adff] text-[#002150] font-black py-2 rounded-xl text-sm">Guardar</button>
-                    <button type="button" onClick={() => setShowTaskModal(false)} className="px-4 py-2 text-[#a3aac4] font-bold text-sm">Cerrar</button>
+                <div className="p-6 bg-[#141f38] flex gap-3 rounded-b-3xl">
+                    <button type="submit" className="flex-1 bg-[#85adff] text-[#002150] font-black py-3 rounded-xl text-sm shadow-lg shadow-[#85adff]/10 hover:shadow-[#85adff]/20 transition-all">
+                        {editingTask ? 'Actualizar Tarea' : 'Crear Tarea'}
+                    </button>
                 </div>
             </form>
         </div>

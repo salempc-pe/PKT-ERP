@@ -86,7 +86,7 @@ export const useProjects = (orgId = "default_org") => {
       return newProject;
     }
     const projectsRef = collection(db, `organizations/${orgId}/projects`);
-    return await addDoc(projectsRef, { ...projectData, status: "active", createdAt: serverTimestamp() });
+    return await addDoc(projectsRef, { ...projectData, status: "active", createdAt: new Date() });
   };
 
   const updateProjectStatus = async (projectId, newStatus) => {
@@ -95,7 +95,7 @@ export const useProjects = (orgId = "default_org") => {
       return;
     }
     const projectRef = doc(db, `organizations/${orgId}/projects`, projectId);
-    return await updateDoc(projectRef, { status: newStatus, updatedAt: serverTimestamp() });
+    return await updateDoc(projectRef, { status: newStatus, updatedAt: new Date() });
   };
 
   const deleteProject = async (projectId) => {
@@ -114,7 +114,7 @@ export const useProjects = (orgId = "default_org") => {
       return newTask;
     }
     const tasksRef = collection(db, `organizations/${orgId}/tasks`);
-    return await addDoc(tasksRef, { ...taskData, orgId, status: taskData.status || "todo", createdAt: serverTimestamp() });
+    return await addDoc(tasksRef, { ...taskData, orgId, status: taskData.status || "todo", createdAt: new Date() });
   };
 
   const updateTaskStatus = async (taskId, newStatus) => {
@@ -123,7 +123,16 @@ export const useProjects = (orgId = "default_org") => {
       return;
     }
     const taskRef = doc(db, `organizations/${orgId}/tasks`, taskId);
-    return await updateDoc(taskRef, { status: newStatus, updatedAt: serverTimestamp() });
+    return await updateDoc(taskRef, { status: newStatus, updatedAt: new Date() });
+  };
+
+  const updateTask = async (taskId, taskData) => {
+    if (!isFirebaseConfigured) {
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...taskData } : t));
+      return;
+    }
+    const taskRef = doc(db, `organizations/${orgId}/tasks`, taskId);
+    return await updateDoc(taskRef, { ...taskData, updatedAt: new Date() });
   };
 
   return {
@@ -136,6 +145,7 @@ export const useProjects = (orgId = "default_org") => {
     updateProjectStatus,
     deleteProject,
     addTask,
-    updateTaskStatus
+    updateTaskStatus,
+    updateTask
   };
 };

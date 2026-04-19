@@ -7,21 +7,22 @@ import ProjectKanban from './ProjectKanban';
 export default function ProjectModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { projects, tasks, loading, addProject, updateProjectStatus, setActiveProjectId, addTask, updateTaskStatus } = useProjects(orgId);
+  const { projects, tasks, loading, addProject, updateProjectStatus, deleteProject, setActiveProjectId, addTask, updateTaskStatus, updateTask } = useProjects(orgId);
   
   const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null); 
+  const [selectedProjectId, setSelectedProjectId] = useState(null); 
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
   const [formData, setFormData] = useState({ name: '', description: '', color: '#85adff' });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
   const handleSelectProject = (project) => {
-    setSelectedProject(project);
+    setSelectedProjectId(project.id);
     setActiveProjectId(project.id);
   };
 
   const handleBackToList = () => {
-    setSelectedProject(null);
+    setSelectedProjectId(null);
     setActiveProjectId(null);
   };
 
@@ -72,6 +73,7 @@ export default function ProjectModule() {
             tasks={tasks} 
             addTask={addTask} 
             updateTaskStatus={updateTaskStatus} 
+            updateTask={updateTask}
         />
       </div>
     );
@@ -104,7 +106,18 @@ export default function ProjectModule() {
               <div className="p-3 bg-[#141f38] rounded-2xl text-[#85adff]">
                 <Folder size={24} />
               </div>
-              <button className="text-[#40485d] hover:text-[#dee5ff] transition-colors"><MoreVertical size={18}/></button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm('¿Estás seguro de que deseas eliminar este proyecto y TODAS sus tareas?')) {
+                    deleteProject(project.id);
+                  }
+                }}
+                className="text-[#40485d] hover:text-red-400 transition-colors p-1"
+                title="Eliminar Proyecto"
+              >
+                <X size={18}/>
+              </button>
             </div>
 
             <h3 className="text-xl font-bold text-[#dee5ff] mb-2 group-hover:text-[#85adff] transition-colors">{project.name}</h3>
