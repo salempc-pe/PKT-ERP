@@ -220,14 +220,13 @@ export function AuthProvider({ children }) {
             if (!querySnapshot.empty) {
               userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
               // OPCIONAL: Migrar el documento para que use el UID como ID
-              const oldDocId = querySnapshot.docs[0].id;
               await setDoc(doc(db, 'users', firebaseUser.uid), { ...userData, uid: firebaseUser.uid });
-              // Si no es el mismo ID, podríamos borrar el anterior, pero es delicado sin más lógica
             } else {
               // Fallback MOCK
-            const storedMockUsers = localStorage.getItem('pkt_mock_users');
-            const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
-            userData = currentMockUsers.find(u => u.email === firebaseUser.email);
+              const storedMockUsers = localStorage.getItem('pkt_mock_users');
+              const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
+              userData = currentMockUsers.find(u => u.email === firebaseUser.email);
+            }
           }
 
           if (userData) {
@@ -236,7 +235,7 @@ export function AuthProvider({ children }) {
               if (userData.organizationId.startsWith('org_')) {
                 // Fallback MOCK org
                 const storedOrgs = localStorage.getItem('pkt_mock_organizations');
-                const orgs = storedOrgs ? JSON.parse(storedOrgs) : INITIAL_MOCK_USERS.map(u => ({ id: u.organizationId })); // Simplified for fallback
+                const orgs = storedOrgs ? JSON.parse(storedOrgs) : INITIAL_MOCK_USERS.map(u => ({ id: u.organizationId })); 
                 const org = mockOrganizations.find(o => o.id === userData.organizationId) || orgs.find(o => o.id === userData.organizationId);
                 orgSubscription = org?.subscription || null;
               } else {
@@ -254,7 +253,7 @@ export function AuthProvider({ children }) {
               ...userWithoutPassword,
               uid: firebaseUser.uid,
               subscription: orgSubscription || null,
-              isAdmin: userData.role === 'admin'
+              isAdmin: userData.role === 'admin' || userData.role === 'client'
             };
             
             setUser(userWithSub);
