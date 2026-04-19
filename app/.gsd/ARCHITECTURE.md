@@ -4,68 +4,49 @@
 
 ## Overview
 
-PKT ERP es un SaaS multi-inquilino (Multi-tenant) diseñado para la gestión empresarial modular. Utiliza Firebase para la persistencia y autenticación, con una arquitectura SPA basada en React Router 7.
+PKT ERP es una plataforma SaaS multi-tenant diseñada para la gestión empresarial. Utiliza una arquitectura "Serverless-first" apoyada en Firebase, priorizando el aislamiento de datos entre inquilinos mediante el uso de identidades de organización en cada documento de Firestore.
 
-```mermaid
-graph TD
-    EntryPoint[index.html / main.jsx] --> App[App.jsx]
-    App --> AuthProvider[AuthContext.jsx]
-    AuthProvider --> Router[React Router v7]
-    Router --> Public[Páginas Públicas]
-    Router --> AdminPortal[/admin/*]
-    Router --> ClientPortal[/client/*]
-    
-    subgraph Public
-        Login[Login.jsx]
-        SetupPass[SetupPassword.jsx]
-    end
-    
-    subgraph AdminPortal
-        AdminLayout[AdminLayout.jsx]
-        AdminLayout --> AdminDash[AdminDashboard.jsx]
-        AdminLayout --> AdminClients[AdminClients.jsx]
-        AdminLayout --> AdminSales[AdminBillingModule.jsx]
-        AdminLayout --> AdminLogs[ActivityLogs.jsx]
-    end
-    
-    subgraph ClientPortal
-        ClientLayout[ClientLayout.jsx]
-        ClientLayout --> ClientDash[ClientDashboard.jsx]
-        ClientLayout --> CRM[CRMModule.jsx]
-        ClientLayout --> INV[InventoryModule.jsx]
-        ClientLayout --> Team[TeamModule.jsx]
-        ClientLayout --> Modules[Módulos Adicionales...]
-    end
+```
+┌─────────────────────────────────────────┐
+│              [React Router]             │
+├─────────────────────────────────────────┤
+│        [AuthContext / Business Logic]   │
+├─────────────────────────────────────────┤
+│    [Firestore Rules / Security Layer]   │
+├─────────────────────────────────────────┤
+│           [Firestore Database]          │
+└─────────────────────────────────────────┘
 ```
 
-## Componentes Principales
+## Componentes
 
-### 1. Gestión de Identidad y Acceso (`src/context/AuthContext.jsx`)
-- **Aislamiento Multi-tenant**: Utiliza `organizationId` para separar datos.
-- **Roles**: Soporta `admin` (SaaS), `client` (Admin Empresa), y roles de staff (`employee`, `sales`, etc.).
-- **Persistencia Firestore**: Mapea automáticamente el `UID` de Firebase Auth a los documentos de `/users`.
+### AuthContext
+- **Propósito:** Gestión de sesión, roles (Admin/Client), y carga de datos aislada por tenant.
+- **Ubicación:** `src/context/AuthContext.jsx`
 
-### 2. Capa de Datos (Hooks Reactivos)
-- Cada módulo tiene su propio hook `useX` (ej. `useCrm`, `useInventory`) que implementa `onSnapshot` para actualizaciones en tiempo real y soporta un modo `MOCK` si las claves de Firebase no están presentes.
+### AdminPortal
+- **Propósito:** Gestión global de inquilinos, planes de suscripción y límites de usuarios.
+- **Ubicación:** `src/modules/admin/clients/AdminClients.jsx`
 
-### 3. Sistema de Rutas y Protección (`src/components/ModuleRoute.jsx`)
-- Protege el acceso a módulos específicos basándose en los permisos (`activeModules`) de la organización del usuario.
+### ClientPortal
+- **Propósito:** Experiencia del usuario final con módulos de negocio (CRM, Ventas, etc.).
+- **Ubicación:** `src/modules/client/`
 
-## Flujo de Datos (Multi-tenancy)
+## Flujo de Datos Multi-Tenant
 
-1. **Autenticación**: El usuario se loguea via Firebase Auth.
-2. **Contexto**: `AuthContext` obtiene el perfil de `/users/{uid}`, capturando su `role` y `organizationId`.
-3. **Seguridad**: `firestore.rules` valida que cualquier lectura/escritura en `/organizations/{orgId}/` coincida con el `organizationId` del perfil del usuario.
-4. **Persistencia**: Los datos se almacenan en subcolecciones de la organización: `organizations/{orgId}/contacts`, `organizations/{orgId}/items`, etc.
+1. **Login**: Usuario se autentica en Firebase Auth.
+2. **Context Resolve**: `AuthContext` obtiene el perfil del usuario desde `/users/{uid}`.
+3. **Tenant Scoping**: Se recupera el `organizationId` y los módulos activos de `/organizations/{orgId}`.
+4. **Data Loading**: Se cargan los registros (Ventas, Proyectos, etc.) filtrando estrictamente por el ID de la organización.
 
 ## Technical Debt
 
-- [ ] **Migración de Usuarios Legacy**: Algunos usuarios antiguos en el mock/local podrían no estar indexados por UID en Firestore.
-- [ ] **Validación de Formularios**: Mejorar la validación de esquemas (ej. Zod) en inputs de formularios complejos.
-- [ ] **Manejo de Errores Firestore**: Implementar una envolvente (wrapper) global para errores de red o permisos.
+- [ ] **Email Automation**: Falta integración con servicio SMTP real (actualmente simulado).
+- [ ] **Loading States**: Estandarizar estados de carga en todos los formularios modales.
+- [ ] **Document Numbering**: Mejorar la resiliencia de los correlativos automáticos tras fallos de red.
 
 ## Convenciones
 
-**Estilo**: Arquitectura de componentes funcionales con Hooks.
-**CSS**: Tailwind v4 con variables CSS nativas para el sistema de diseño "ArchitectOS".
-**Naming**: Módulos autonómicos (un directorio por módulo con sus propios hooks y componentes).
+**Naming:** Uso de CamelCase para componentes, hooks con prefijo `use`.
+**Structure:** Organización modular por feature dentro de `modules/client/`.
+**Estilo:** Glassmorphism moderado con paleta azul corporate (#85adff).

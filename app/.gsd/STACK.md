@@ -6,39 +6,32 @@
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| React | ^19.2.4 | UI Library |
-| Vite | ^8.0.1 | Build Tool / Dev Server |
-| Node.js | Current | Backend Runtime |
+| Node.js | v20+ | Entorno de ejecución de desarrollo |
+| React | v18 | Librería principal de UI |
+| Vite | latest | Herramienta de construcción y dev server |
 
 ## Dependencies
 
-### Production
+### Core & UI
 | Package | Version | Purpose |
 |---------|---------|---------|
-| firebase | ^12.11.0 | Backend as a Service (Auth, Firestore) |
-| lucide-react | ^1.7.0 | Icons |
-| react-router-dom | ^7.13.2 | Routing |
-| @tailwindcss/vite | ^4.2.2 | CSS Utility Framework |
-
-### Development
-| Package | Version | Purpose |
-|---------|---------|---------|
-| tailwindcss | ^4.2.2 | CSS Engine |
-| eslint | ^9.39.4 | Linting |
-| postcss | ^8.5.8 | CSS Transformation |
+| firebase | ^10.x | Backend as a Service (Auth, Firestore, Hosting) |
+| react-router-dom | ^6.x | Sistema de ruteo y navegación |
+| tailwindcss | v4.x | Framework de estilos (ArchitectOS Design System) |
+| lucide-react | latest | Sistema de iconos premium |
+| framer-motion | latest | Animaciones y micro-interacciones |
 
 ## Infrastructure
 
 | Service | Provider | Purpose |
 |---------|----------|---------|
-| Firebase Hosting | Google | Web Hosting |
-| Cloud Firestore | Google | NoSQL Database |
-| Firebase Auth | Google | Authentication |
+| Hosting | Firebase | Despliegue de la aplicación web |
+| Database | Firestore | Persistencia NoSQL multi-inquilino |
+| Auth | Firebase Auth | Gestión de identidad y sesiones |
 
 ## Configuration
 
 | Variable | Purpose | Location |
 |----------|---------|----------|
-| VITE_FIREBASE_API_KEY | Firebase Key | .env |
-| organizationId | Multi-tenant separator | Document Fields / Context |
-| role | Permission control | User Document / Context |
+| VITE_FIREBASE_* | Configuración del SDK de Firebase | `.env` |
+| tailwind.config.ts | Configuración del sistema de diseño | Raíz |

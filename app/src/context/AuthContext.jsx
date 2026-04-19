@@ -16,7 +16,8 @@ import {
   where,
   setDoc,
   getDoc,
-  serverTimestamp 
+  serverTimestamp,
+  deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 
@@ -45,146 +46,59 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Initial Mock Database
-  const INITIAL_MOCK_USERS = [
-    {
-      id: 'usr_admin1',
-      email: 'test@admin.com',
-      password: '1234',
-      name: 'Super Admin',
-      role: 'admin',
-      status: 'active',
-      organization: null, // Admins manage the platform
-    },
-    {
-      id: 'usr_client1',
-      email: 'test@cliente.com',
-      password: '1234',
-      name: 'Juan Cliente',
-      role: 'client',
-      status: 'active',
-      organizationId: 'org_001',
-      organizationName: 'TechCorp Solutions',
-      activeModules: ['crm', 'inventory'],
-    },
-    {
-      id: 'usr_client2',
-      email: 'alex.smith@global.com',
-      password: '1234',
-      name: 'Alex Smith',
-      role: 'client',
-      status: 'active',
-      organizationId: 'org_002',
-      organizationName: 'Global Industries',
-      activeModules: ['crm', 'inventory', 'sales', 'finance', 'calendar', 'projects'],
-    }
-  ];
+  const [mockUsers, setMockUsers] = useState([]);
+  const [mockOrganizations, setMockOrganizations] = useState([]);
+  const [mockActivityLogs, setMockActivityLogs] = useState([]);
+  const [mockSystemAlerts, setMockSystemAlerts] = useState([]);
 
-  const [mockUsers, setMockUsers] = useState(() => {
-    try {
-      const storedMockUsers = localStorage.getItem('pkt_mock_users');
-      return storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
-    } catch (e) {
-      console.error("Error parsing mock users", e);
-      return INITIAL_MOCK_USERS;
-    }
-  });
-
-  const [mockOrganizations, setMockOrganizations] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pkt_mock_organizations');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error("Error parsing mock organizations", e);
-    }
-    
-    const initialOrgs = Array.from(new Set(INITIAL_MOCK_USERS.map(u => u.organizationId))).filter(Boolean).map(id => {
-      const u = INITIAL_MOCK_USERS.find(user => user.organizationId === id);
-      const planId = 'business'; // Defecto para seeders
-      return {
-        id,
-        name: u?.organizationName || 'Empresa Nueva',
-        status: 'active',
-        industry: 'Tecnología',
-        subscription: {
-          planId,
-          activeModules: SUBSCRIPTION_PLANS[planId].modules,
-          limits: SUBSCRIPTION_PLANS[planId].limits
-        }
-      };
-    });
-    return initialOrgs;
-  });
-
-  const [mockActivityLogs, setMockActivityLogs] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pkt_activity_logs');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error("Error parsing logs", e);
-      return [];
-    }
-  });
-
-  const [mockSystemAlerts, setMockSystemAlerts] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pkt_system_alerts');
-      return saved ? JSON.parse(saved) : [
-        { id: 1, type: 'warning', message: 'Mantenimiento programado para el domingo 20 de mayo.', date: new Date().toISOString() }
-      ];
-    } catch (e) {
-      console.error("Error parsing alerts", e);
-      return [];
-    }
-  });
-
-  // Cargar Organizaciones y Usuarios desde Firestore al iniciar
+  // Carga reactiva de datos según el rol y organización
   useEffect(() => {
-    const fetchData = async () => {
+    if (!user) {
+      setMockUsers([]);
+      setMockOrganizations([]);
+      return;
+    }
+
+    const loadData = async () => {
       try {
-        // Cargar Orgs reales
-        const orgsSnapshot = await getDocs(collection(db, 'organizations'));
-        const realOrgs = orgsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const isUserAdmin = user.role === 'admin';
         
-        // Unir con mocks (opcional, para no perder los datos de prueba mientras migras)
-        setMockOrganizations(prev => {
-          const combined = [...prev, ...realOrgs];
-          // Eliminar duplicados por ID
-          return Array.from(new Map(combined.map(item => [item.id, item])).values());
-        });
+        if (isUserAdmin) {
+          // SUPER ADMIN: Cargar todas las organizaciones y todos los usuarios
+          const [orgsSnap, usersSnap] = await Promise.all([
+            getDocs(collection(db, 'organizations')),
+            getDocs(collection(db, 'users'))
+          ]);
+          
+          const orgData = orgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+          const userData = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+          
+          setMockOrganizations(orgData);
+          setMockUsers(userData);
+          console.log("SuperAdmin data loaded:", orgData.length, "orgs");
+        } else if (user.organizationId) {
+          // CLIENTE: Cargar solo su organización y su equipo
+          const usersRef = collection(db, 'users');
+          const q = query(usersRef, where('organizationId', '==', user.organizationId));
+          
+          const [orgSnap, teamSnap] = await Promise.all([
+            getDoc(doc(db, 'organizations', user.organizationId)),
+            getDocs(q)
+          ]);
 
-        // Cargar Usuarios reales
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        const realUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        setMockUsers(prev => {
-          const combined = [...prev, ...realUsers];
-          return Array.from(new Map(combined.map(item => [item.id, item])).values());
-        });
-
+          if (orgSnap.exists()) {
+            setMockOrganizations([{ id: orgSnap.id, ...orgSnap.data() }]);
+          }
+          setMockUsers(teamSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        }
       } catch (error) {
-        console.error("Error fetching Firestore data:", error);
+        console.error("Error loading scoped data:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    loadData();
+  }, [user]);
 
-  useEffect(() => {
-    localStorage.setItem('pkt_mock_users', JSON.stringify(mockUsers));
-  }, [mockUsers]);
-
-  useEffect(() => {
-    localStorage.setItem('pkt_mock_organizations', JSON.stringify(mockOrganizations));
-  }, [mockOrganizations]);
-
-  useEffect(() => {
-    localStorage.setItem('pkt_activity_logs', JSON.stringify(mockActivityLogs.slice(-100))); // Limit to last 100
-  }, [mockActivityLogs]);
-
-  useEffect(() => {
-    localStorage.setItem('pkt_system_alerts', JSON.stringify(mockSystemAlerts));
-  }, [mockSystemAlerts]);
 
   const addLog = (action, details, type = 'info') => {
     const newLog = {
@@ -212,39 +126,44 @@ export function AuthProvider({ children }) {
           if (userSnap.exists()) {
             userData = { id: userSnap.id, ...userSnap.data() };
           } else {
-            // Fallback: buscar por email si el ID no es el UID (usuarios antiguos o pendientes)
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('email', '==', firebaseUser.email));
-            const querySnapshot = await getDocs(q);
-            
-            if (!querySnapshot.empty) {
-              userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
-              // OPCIONAL: Migrar el documento para que use el UID como ID
-              await setDoc(doc(db, 'users', firebaseUser.uid), { ...userData, uid: firebaseUser.uid });
+            // AUTO-SEED ADMIN: Si el correo es el del dueño, lo creamos como admin por ser el primer login
+            if (firebaseUser.email === 'paulosalem8@gmail.com') {
+              userData = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: 'Paulo Salem (Super Admin)',
+                role: 'admin',
+                status: 'active',
+                createdAt: serverTimestamp()
+              };
+              await setDoc(userDocRef, userData);
+              console.log("Super Admin profile auto-created in Firestore!");
             } else {
-              // Fallback MOCK
-              const storedMockUsers = localStorage.getItem('pkt_mock_users');
-              const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : INITIAL_MOCK_USERS;
-              userData = currentMockUsers.find(u => u.email === firebaseUser.email);
+              // Fallback: buscar por email si el ID no es el UID (usuarios antiguos o pendientes)
+              try {
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where('email', '==', firebaseUser.email));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                  userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+                  // OPCIONAL: Migrar el documento para que use el UID como ID
+                  await setDoc(doc(db, 'users', firebaseUser.uid), { ...userData, uid: firebaseUser.uid });
+                }
+              } catch (queryError) {
+                console.warn("No se pudo realizar la búsqueda por email en AuthStateChanged:", queryError.message);
+              }
             }
           }
 
           if (userData) {
             let orgSubscription = null;
             if (userData.organizationId) {
-              if (userData.organizationId.startsWith('org_')) {
-                // Fallback MOCK org
-                const storedOrgs = localStorage.getItem('pkt_mock_organizations');
-                const orgs = storedOrgs ? JSON.parse(storedOrgs) : INITIAL_MOCK_USERS.map(u => ({ id: u.organizationId })); 
-                const org = mockOrganizations.find(o => o.id === userData.organizationId) || orgs.find(o => o.id === userData.organizationId);
-                orgSubscription = org?.subscription || null;
-              } else {
-                // Obtener organización de Firestore
-                const orgDocRef = doc(db, 'organizations', userData.organizationId);
-                const orgSnap = await getDoc(orgDocRef);
-                if (orgSnap.exists()) {
-                  orgSubscription = orgSnap.data().subscription;
-                }
+              // Obtener organización de Firestore
+              const orgDocRef = doc(db, 'organizations', userData.organizationId);
+              const orgSnap = await getDoc(orgDocRef);
+              if (orgSnap.exists()) {
+                orgSubscription = orgSnap.data().subscription;
               }
             }
 
@@ -285,34 +204,36 @@ export function AuthProvider({ children }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // 2. Buscar metadata en Firestore
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('email', '==', email));
-      const querySnapshot = await getDocs(q);
+      // 2. Buscar metadata en Firestore por UID (evita problemas de permisos con queries)
+      const userDocRef = doc(db, 'users', firebaseUser.uid);
+      const userSnap = await getDoc(userDocRef);
       
       let foundUser = null;
-      if (!querySnapshot.empty) {
-        foundUser = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+      if (userSnap.exists()) {
+        foundUser = { id: userSnap.id, ...userSnap.data() };
       } else {
-        // Fallback MOCK
-        const storedMockUsers = localStorage.getItem('pkt_mock_users');
-        const currentMockUsers = storedMockUsers ? JSON.parse(storedMockUsers) : mockUsers;
-        foundUser = currentMockUsers.find(u => u.email === email);
+        // Fallback: tratar de buscar por email (esto puede fallar con las reglas estrictas si no se usa el UID)
+        // pero incluimos un try/catch para que no rompa el login
+        try {
+          const usersRef = collection(db, 'users');
+          const q = query(usersRef, where('email', '==', email));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            foundUser = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+          }
+        } catch (e) {
+          console.warn("No se pudo realizar la búsqueda por email debido a restricciones de seguridad.");
+        }
+
       }
       
       if (foundUser) {
         let orgSubscription = null;
         if (foundUser.organizationId) {
-          if (foundUser.organizationId.startsWith('org_')) {
-            const org = mockOrganizations.find(o => o.id === foundUser.organizationId);
-            orgSubscription = org?.subscription || null;
-          } else {
-            // Server fetch
-            const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
-            const orgSnap = await getDoc(orgDocRef);
-            if (orgSnap.exists()) {
-              orgSubscription = orgSnap.data().subscription;
-            }
+          const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
+          const orgSnap = await getDoc(orgDocRef);
+          if (orgSnap.exists()) {
+            orgSubscription = orgSnap.data().subscription;
           }
         }
 
@@ -471,35 +392,49 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Actualizar Plan de Organización en Firestore
-  const adminUpdateOrgPlan = async (orgId, planId) => {
-    const planConfig = SUBSCRIPTION_PLANS[planId];
-    if (!planConfig) return;
-
+  // Actualizar Organización COMPLETA en Firestore (Unificado)
+  const adminUpdateFullOrg = async (orgId, data) => {
     try {
       const orgRef = doc(db, 'organizations', orgId);
-      await updateDoc(orgRef, {
-        "subscription.planId": planId,
-        "subscription.activeModules": planConfig.modules,
-        "subscription.limits": planConfig.limits,
-        "subscription.maxUsers": planConfig.limits.users
-      });
+      
+      // Construimos el payload de actualización
+      const updatePayload = {
+        name: data.name,
+        ruc: data.ruc || '',
+        address: data.address || '',
+        "subscription.planId": data.planId,
+        "subscription.activeModules": data.activeModules,
+        "subscription.maxUsers": Number(data.maxUsers),
+        "subscription.limits.users": Number(data.maxUsers) // Sincronizar ambos campos por seguridad
+      };
 
+      await updateDoc(orgRef, updatePayload);
+
+      // Actualizar estado local
       setMockOrganizations(prev => prev.map(o => 
         o.id === orgId ? { 
           ...o, 
+          name: data.name,
+          ruc: data.ruc,
+          address: data.address,
           subscription: {
-            planId,
-            activeModules: planConfig.modules,
-            limits: planConfig.limits,
-            maxUsers: planConfig.limits.users
+            ...o.subscription,
+            planId: data.planId,
+            activeModules: data.activeModules,
+            maxUsers: Number(data.maxUsers),
+            limits: {
+              ...o.subscription?.limits,
+              users: Number(data.maxUsers)
+            }
           }
         } : o
       ));
 
-      addLog('Plan Update', `Plan de organización ${orgId} actualizado a ${planId} en DB`, 'warning');
+      addLog('Org Updated', `Organización ${data.name} actualizada completamente en DB`, 'success');
+      return { success: true };
     } catch (error) {
-      console.error("Error updating plan in Firestore:", error);
+      console.error("Error updating full org in Firestore:", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -509,7 +444,7 @@ export function AuthProvider({ children }) {
       // 1. Verificar límites de cuota (maxUsers)
       const currentOrg = mockOrganizations.find(o => o.id === orgId);
       const activeUsersCount = mockUsers.filter(u => u.organizationId === orgId).length;
-      const limit = currentOrg?.subscription?.maxUsers || currentOrg?.maxUsers || 5;
+      const limit = currentOrg?.subscription?.maxUsers || 5;
 
       if (activeUsersCount >= limit) {
         return { 
@@ -568,9 +503,8 @@ export function AuthProvider({ children }) {
         updatedAt: serverTimestamp() 
       };
       
-      // Eliminar el ID anterior si venía de un doc con ID aleatorio
-      if (targetUser.id && !targetUser.id.startsWith('usr_')) {
-        const { deleteDoc } = await import('firebase/firestore');
+      // Eliminar el documento anterior si el ID era temporal (antes del Auth)
+      if (targetUser.id && targetUser.id !== firebaseUser.uid) {
         try {
           await deleteDoc(doc(db, 'users', targetUser.id));
         } catch(e) { console.warn("Could not delete old user doc", e); }
@@ -601,14 +535,9 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Eliminar Usuario en Firestore (Opcional: puedes preferir cambiar estado a 'inactive')
   const adminRemoveUser = async (userId) => {
     try {
-      // Si el ID es un doc id de Firestore (no empieza con usr_)
-      if (!userId.startsWith('usr_')) {
-        const { deleteDoc } = await import('firebase/firestore'); // Carga dinámica
-        await deleteDoc(doc(db, 'users', userId));
-      }
+      await deleteDoc(doc(db, 'users', userId));
       setMockUsers(prev => prev.filter(u => u.id !== userId));
       addLog('User Removed', `Usuario ${userId} eliminado de la base de datos`, 'danger');
     } catch (error) {
@@ -635,10 +564,7 @@ export function AuthProvider({ children }) {
   // Eliminar Organización en Firestore y mock local
   const adminRemoveOrg = async (orgId) => {
     try {
-      if (!orgId.startsWith('org_')) {
-        const { deleteDoc } = await import('firebase/firestore');
-        await deleteDoc(doc(db, 'organizations', orgId));
-      }
+      await deleteDoc(doc(db, 'organizations', orgId));
       setMockOrganizations(prev => prev.filter(o => o.id !== orgId));
       addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger');
     } catch (error) {
@@ -657,7 +583,7 @@ export function AuthProvider({ children }) {
       user, login, logout, updateUser, 
       adminUpdateOrgModules, getClientUsers, adminCreateUser,
       mockUsers, mockOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
-      adminUpdateOrgPlan, SUBSCRIPTION_PLANS,
+      adminUpdateFullOrg, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
       mockActivityLogs, mockSystemAlerts, addLog,

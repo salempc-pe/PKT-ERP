@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function TeamModule() {
   const { user, mockUsers, adminCreateUser, adminRemoveUser, mockOrganizations } = useAuth();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'employee' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const [loading, setLoading] = useState(false);
 
   const orgId = user?.organizationId;
@@ -26,7 +26,7 @@ export default function TeamModule() {
     try {
       const result = await adminCreateUser(orgId, user.organizationName, newUser);
       if (result.success) {
-        setNewUser({ name: '', email: '', role: 'employee' });
+        setNewUser({ name: '', email: '', role: 'user' });
         setIsInviteModalOpen(false);
         if (result.inviteToken) {
           const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
@@ -124,8 +124,13 @@ export default function TeamModule() {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-[10px] uppercase font-black px-2 py-1 rounded bg-[#fbabff]/10 text-[#fbabff] border border-[#fbabff]/20 tracking-widest leading-none">
-                    {member.role || 'user'}
+                  <span className={`text-[10px] uppercase font-black px-2 py-1 rounded border tracking-widest leading-none flex items-center w-fit gap-1 ${
+                    member.role === 'admin' 
+                      ? 'bg-[#fbabff]/10 text-[#fbabff] border-[#fbabff]/20' 
+                      : 'bg-[#85adff]/10 text-[#85adff] border-[#85adff]/20'
+                  }`}>
+                    {member.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
+                    {member.role === 'admin' ? 'Admin' : 'User'}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -177,7 +182,18 @@ export default function TeamModule() {
       {/* Invite Modal */}
       {isInviteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#091328] border border-[#40485d]/50 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="bg-[#091328] border border-[#40485d]/50 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden relative">
+            {loading && (
+              <div className="absolute inset-0 z-[60] bg-[#060e20]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+                <div className="relative">
+                  <div className="w-12 h-12 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
+                  <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#85adff] animate-pulse" size={20} />
+                </div>
+                <p className="mt-4 text-[#85adff] font-bold tracking-[0.2em] text-[10px] uppercase animate-pulse">
+                  Generando invitación...
+                </p>
+              </div>
+            )}
             <div className="p-6 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20] rounded-t-3xl">
               <h2 className="text-xl font-black text-[#dee5ff]">Invitar Miembro</h2>
               <button 
@@ -217,10 +233,8 @@ export default function TeamModule() {
                   onChange={e => setNewUser({...newUser, role: e.target.value})}
                   className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none"
                 >
-                  <option value="employee">Miembro del Equipo (User)</option>
-                  <option value="admin">Administrador del Tenant (Admin)</option>
-                  <option value="accountant">Contador</option>
-                  <option value="sales">Vendedor</option>
+                  <option value="user">Usuario Regular</option>
+                  <option value="admin">Administrador del Equipo</option>
                 </select>
               </div>
               <button 

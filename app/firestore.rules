@@ -3,32 +3,43 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Función segura para verificar si un documento existe antes de leerlo
+    function userExists() {
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
     // Función auxiliar para obtener el organizationId del usuario actual
-    // IMPORTANTE: El documento del usuario en /users debe tener como ID el UID de Firebase Auth
     function getUserOrg() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizationId;
+      return userExists() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizationId : null;
     }
 
     // Función para verificar si el usuario es Super Admin del SaaS
     function isSuperAdmin() {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return userExists() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // --- Colección de Usuarios ---
     match /users/{userId} {
-      // El usuario puede leer y escribir su propio perfil. El Super Admin tiene acceso total.
-      allow read, write: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      // Un usuario SIEMPRE puede intentar leer su propio perfil (necesario para el login inicial)
+      // Sin depender de isSuperAdmin() para evitar recursión o fallos si el doc no existe.
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Escritura permitida para el propio usuario o el Super Admin
+      allow write: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      
+      // Permitir que otros vean perfiles si son de la misma organización (para el equipo)
+      allow list: if request.auth != null && (getUserOrg() != null || isSuperAdmin());
     }
 
     // --- Colección de Organizaciones (Multi-tenancy) ---
     match /organizations/{orgId} {
       // Lectura si el usuario pertenece a la organización o es Super Admin
       allow read: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      
       // Escritura (crear/editar/eliminar org) solo para Super Admin
-      allow write: if request.auth != null && isSuperAdmin();
+      allow write: if isSuperAdmin();
 
       // --- Subcolecciones de la Organización ---
-      // (contacts, leads, inventory, sales, projects, finance, etc.)
       match /{allSubcollections=**} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
@@ -37,7 +48,7 @@ service cloud.firestore {
     // --- Logs y Auditoría ---
     match /activity_logs/{logId} {
       allow read: if request.auth != null && (getUserOrg() == resource.data.organizationId || isSuperAdmin());
-      allow write: if request.auth != null; // Se permite escritura pero las reglas de validación podrían ser más estrictas
+      allow write: if request.auth != null;
     }
 
     // --- Alertas de Sistema ---

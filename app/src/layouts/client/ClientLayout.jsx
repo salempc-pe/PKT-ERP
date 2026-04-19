@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';

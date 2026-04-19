@@ -106,13 +106,7 @@ export default function Login() {
           </button>
         </form>
         
-        <div className="mt-8 text-center">
-          <p className="text-xs text-[#a3aac4]/50">
-            <strong>Credenciales prueba:</strong><br/>
-            Admin: test@admin.com / 1234<br/>
-            Cliente: test@cliente.com / 1234
-          </p>
-        </div>
+
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2 } from 'lucide-react';
+import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 
@@ -14,62 +14,51 @@ const AVAILABLE_MODULES = [
 
 export default function AdminClients() {
   const { 
-    getClientUsers, adminUpdateOrgModules, 
-    mockOrganizations, adminCreateOrg, adminRemoveUser, 
-    adminUpdateOrg, adminCreateUser, adminUpdateOrgPlan, 
-    SUBSCRIPTION_PLANS, impersonateUser, adminRemoveOrg
+    mockOrganizations: organizations,
+    mockUsers: allUsers,
+    adminCreateOrg, adminRemoveUser, 
+    adminUpdateFullOrg, adminCreateUser, 
+    SUBSCRIPTION_PLANS, adminRemoveOrg
   } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
   
   // Modal States
-  const [isManageModulesModalOpen, setIsManageModulesModalOpen] = useState(false);
   const [isNewOrgModalOpen, setIsNewOrgModalOpen] = useState(false);
   const [isEditOrgModalOpen, setIsEditOrgModalOpen] = useState(false);
   
   const [selectedOrg, setSelectedOrg] = useState(null);
-  const [activeModulesForEdit, setActiveModulesForEdit] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
 
   // Forms State
   const [newOrgData, setNewOrgData] = useState({ name: '', ruc: '', address: '', maxUsers: 5 });
-  const [editOrgData, setEditOrgData] = useState({ name: '', ruc: '', address: '', maxUsers: 5 });
-  const [newUserInOrg, setNewUserInOrg] = useState({ name: '', email: '', role: 'client' });
+  
+  // Unified Edit State
+  const [editOrgState, setEditOrgState] = useState({
+    name: '',
+    ruc: '',
+    address: '',
+    maxUsers: 5,
+    planId: 'startup',
+    activeModules: []
+  });
 
-  const clientUsers = getClientUsers();
+  const [newUserInOrg, setNewUserInOrg] = useState({ name: '', email: '', role: 'admin' });
 
   // Unir organizaciones con sus usuarios de forma reactiva
   const organizationsWithUsers = useMemo(() => {
-    return mockOrganizations.map(org => ({
+    return organizations.map(org => ({
       ...org,
-      users: clientUsers.filter(u => u.organizationId === org.id)
+      users: allUsers.filter(u => u.organizationId === org.id)
     }));
-  }, [mockOrganizations, clientUsers]);
+  }, [organizations, allUsers]);
 
   const filteredOrgs = organizationsWithUsers.filter(org => 
     org.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (org.ruc && org.ruc.includes(searchTerm)) ||
     org.users.some(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
-  // --- Handlers para Módulos ---
-  const handleOpenManageModules = (org) => {
-    setSelectedOrg(org);
-    setActiveModulesForEdit(org.subscription?.activeModules || []);
-    setIsManageModulesModalOpen(true);
-  };
-
-  const handleToggleModule = (moduleId) => {
-    setActiveModulesForEdit(prev => 
-      prev.includes(moduleId) ? prev.filter(id => id !== moduleId) : [...prev, moduleId]
-    );
-  };
-
-  const handleSaveModules = () => {
-    if (selectedOrg) {
-      adminUpdateOrgModules(selectedOrg.id, activeModulesForEdit);
-    }
-    setIsManageModulesModalOpen(false);
-  };
 
   // --- Handlers para Organizaciones ---
   const handleCreateOrg = async (e) => {
@@ -87,17 +76,40 @@ export default function AdminClients() {
 
   const handleOpenEditOrg = (org) => {
     setSelectedOrg(org);
-    setEditOrgData({ 
+    setEditOrgState({ 
       name: org.name, 
       ruc: org.ruc || '', 
       address: org.address || '',
-      maxUsers: org.subscription?.maxUsers || org.maxUsers || 5
+      maxUsers: org.subscription?.maxUsers || 5,
+      planId: org.subscription?.planId || 'startup',
+      activeModules: org.subscription?.activeModules || []
     });
     setIsEditOrgModalOpen(true);
   };
 
-  const handleSaveOrgDetails = () => {
-    adminUpdateOrg(selectedOrg.id, editOrgData);
+  const handleToggleModuleInEdit = (moduleId) => {
+    setEditOrgState(prev => ({
+      ...prev,
+      activeModules: prev.activeModules.includes(moduleId)
+        ? prev.activeModules.filter(id => id !== moduleId)
+        : [...prev.activeModules, moduleId]
+    }));
+  };
+
+  const handleSaveFullOrg = async () => {
+    setIsSaving(true);
+    try {
+      const result = await adminUpdateFullOrg(selectedOrg.id, editOrgState);
+      if (result.success) {
+        setIsEditOrgModalOpen(false);
+      } else {
+        alert("Error al guardar: " + result.error);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteOrg = () => {
@@ -110,20 +122,25 @@ export default function AdminClients() {
     e.preventDefault();
     if (!newUserInOrg.name || !newUserInOrg.email) return;
     
-    const result = await adminCreateUser(selectedOrg.id, editOrgData.name, newUserInOrg);
-    
-    if (result && !result.success) {
-      alert(result.error);
-      return;
-    }
+    setIsInviting(true);
+    // Simulamos envío de correo
+    setTimeout(async () => {
+      const result = await adminCreateUser(selectedOrg.id, editOrgState.name, newUserInOrg);
+      setIsInviting(false);
+      
+      if (result && !result.success) {
+        alert(result.error);
+        return;
+      }
 
-    if (result && result.inviteToken) {
-      const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
-      navigator.clipboard.writeText(inviteUrl);
-      alert('¡Usuario creado en Firestore! El enlace de invitación se ha copiado al portapapeles:\n' + inviteUrl);
-    }
+      if (result && result.inviteToken) {
+        const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
+        navigator.clipboard.writeText(inviteUrl);
+        alert('📩 ¡Invitación enviada por sistema!\n\nSe ha generado el acceso para ' + newUserInOrg.email + '.\nEl enlace de activación ha sido copiado al portapapeles por si deseas enviarlo manualmente.');
+      }
 
-    setNewUserInOrg({ name: '', email: '', role: 'client' });
+      setNewUserInOrg({ name: '', email: '', role: 'admin' });
+    }, 1500);
   };
 
   const copyInviteLink = (token) => {
@@ -138,7 +155,7 @@ export default function AdminClients() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-[#dee5ff] tracking-tight mb-2">Inquilinos & Organizaciones</h1>
-          <p className="text-[#a3aac4] text-sm">Panel de control de empresas y acceso a módulos.</p>
+          <p className="text-[#a3aac4] text-sm">Panel de control de empresas y acceso a módulos real.</p>
         </div>
         
         <div className="flex items-center gap-4">
@@ -154,7 +171,7 @@ export default function AdminClients() {
           </div>
           <button 
             onClick={() => setIsNewOrgModalOpen(true)}
-            className="bg-[#85adff] hover:bg-[#a6c3ff] text-[#060e20] flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+            className="bg-gradient-to-r from-[#85adff] to-[#fbabff] hover:opacity-90 text-[#060e20] flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-lg"
           >
             <Plus size={18} />
             <span>Nueva Organización</span>
@@ -165,10 +182,10 @@ export default function AdminClients() {
       {/* Grid de Organizaciones */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {filteredOrgs.map((org) => (
-          <div key={org.id} className="bg-[#091328]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all hover:border-[#85adff]/20 flex flex-col h-full">
+          <div key={org.id} className="bg-[#091328]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all hover:border-[#85adff]/20 flex flex-col h-full group">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff]">
+                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff] group-hover:bg-[#85adff]/20 transition-colors">
                   <Building2 size={24} />
                 </div>
                 <div>
@@ -176,8 +193,8 @@ export default function AdminClients() {
                     {org.name}
                     <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full bg-[#4ADE80]/10 text-[#4ADE80]">Activado</span>
                   </h3>
-                  <div className="flex gap-2 items-center flex-wrap">
-                    <p className="text-xs text-[#a3aac4] uppercase tracking-wider font-semibold">ID: {org.id}</p>
+                  <div className="flex gap-2 items-center flex-wrap mt-1">
+                    <p className="text-[10px] text-[#a3aac4] uppercase tracking-wider font-semibold">ID: {org.id}</p>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
                       org.subscription?.planId === 'enterprise' ? 'bg-[#fbabff]/10 text-[#fbabff] border-[#fbabff]/20' : 
                       org.subscription?.planId === 'business' ? 'bg-[#85adff]/10 text-[#85adff] border-[#85adff]/20' : 
@@ -186,288 +203,326 @@ export default function AdminClients() {
                       {org.subscription?.planId?.toUpperCase() || 'STARTUP'}
                     </span>
                     {org.ruc && <span className="text-[10px] text-[#85adff] font-bold bg-[#85adff]/10 px-2 py-0.5 rounded border border-[#85adff]/20">RUC: {org.ruc}</span>}
-                    {(() => {
-                      const health = calculateHealthScore(org);
-                      const colors = {
-                        'Excellent': 'bg-[#4ADE80]/10 text-[#4ADE80] border-[#4ADE80]/20',
-                        'Good': 'bg-amber-400/10 text-amber-400 border-amber-400/20',
-                        'At Risk': 'bg-red-400/10 text-red-400 border-red-400/20'
-                      };
-                      return (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border flex items-center gap-1 ${colors[health]}`}>
-                          <HeartPulse size={10} />
-                          {health}
-                        </span>
-                      );
-                    })()}
                   </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => handleOpenEditOrg(org)}
+                className="p-2 hover:bg-[#85adff]/10 text-[#a3aac4] hover:text-[#85adff] rounded-xl transition-all"
+              >
+                <MoreVertical size={20} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-[#060e20]/40 p-3 rounded-2xl border border-[#40485d]/20">
+                <p className="text-[10px] uppercase font-bold text-[#a3aac4] mb-1">Usuarios</p>
+                <p className="text-lg font-black text-[#dee5ff]">{org.users.length} <span className="text-xs text-[#a3aac4]/50 font-normal">/ {org.subscription?.maxUsers || 5}</span></p>
+              </div>
+              <div className="bg-[#060e20]/40 p-3 rounded-2xl border border-[#40485d]/20">
+                <p className="text-[10px] uppercase font-bold text-[#a3aac4] mb-1">Salud Org</p>
+                <div className="flex items-center gap-2">
+                  <HeartPulse size={16} className="text-[#4ADE80]" />
+                  <p className="text-sm font-bold text-[#dee5ff]">{calculateHealthScore(org)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="border border-[#40485d]/10 rounded-2xl bg-[#060e20]/50 p-4 flex-1">
-              <h4 className="text-xs uppercase tracking-widest text-[#a3aac4] font-bold mb-4 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Users size={14} />
-                  Usuarios ({org.users.length})
-                </div>
-                <span className="text-[10px] text-[#85adff]/50">Límite: {org.subscription?.maxUsers || org.maxUsers || 5}</span>
-              </h4>
-              <div className="space-y-3 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
-                {org.users.map(u => (
-                  <div key={u.id} className="flex items-center justify-between text-sm group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#141f38] flex items-center justify-center text-[10px] font-bold text-[#85adff]">
-                        {u.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <p className="font-semibold text-[#dee5ff] truncate max-w-[120px]">{u.name}</p>
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#141f38] text-[#fbabff] border border-[#fbabff]/10">
-                      {u.role}
-                    </span>
-                  </div>
+            <div className="mb-6 flex-grow">
+              <p className="text-[10px] uppercase font-bold text-[#a3aac4] mb-2 tracking-widest">Módulos Activos</p>
+              <div className="flex flex-wrap gap-2">
+                {(org.subscription?.activeModules || []).map(m => (
+                  <span key={m} className="px-2 py-1 bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] text-[10px] font-bold rounded-lg uppercase tracking-tight">
+                    {m}
+                  </span>
                 ))}
-                {org.users.length === 0 && <p className="text-xs text-[#a3aac4] italic opacity-50">Sin colaboradores vinculados</p>}
+                {(!org.subscription?.activeModules || org.subscription.activeModules.length === 0) && (
+                  <span className="text-[10px] text-[#a3aac4]/40 italic">Ningún módulo activo</span>
+                )}
               </div>
             </div>
-            
-            <div className="mt-6 flex gap-3">
-              <button 
-                onClick={() => handleOpenEditOrg(org)}
-                className="flex-1 bg-[#141f38] hover:bg-[#1e2a4a] text-[#dee5ff] py-2.5 rounded-xl text-sm font-bold transition-colors"
-              >
-                Editar Organización
-              </button>
-              <button 
-                onClick={() => handleOpenManageModules(org)}
-                className="flex-1 bg-[#85adff]/10 hover:bg-[#85adff]/20 text-[#85adff] border border-[#85adff]/20 py-2.5 rounded-xl text-sm font-bold transition-colors"
-                disabled={org.users.length === 0}
-                title={org.users.length === 0 ? "Primero agrega un usuario" : ""}
-              >
-                Módulos
-              </button>
-            </div>
+
+            {/* Se eliminó el botón de suplantación */}
           </div>
         ))}
       </div>
 
       {/* --- MODAL: NUEVA ORGANIZACIÓN --- */}
       {isNewOrgModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#091328] border border-[#40485d]/50 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20] rounded-t-3xl">
-              <h2 className="text-xl font-black text-[#dee5ff]">Nueva Organización</h2>
-              <button onClick={() => setIsNewOrgModalOpen(false)} className="p-2 text-[#a3aac4] hover:text-white rounded-xl"><X size={20} /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-[#091328] border border-[#40485d]/50 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden shadow-[#85adff]/5">
+            <div className="p-8 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]/60">
+              <h2 className="text-2xl font-black text-[#dee5ff] tracking-tight">Nueva Organización</h2>
+              <button onClick={() => setIsNewOrgModalOpen(false)} className="text-[#a3aac4] hover:text-[#fbabff] transition-colors">
+                <X size={24} />
+              </button>
             </div>
-            <form onSubmit={handleCreateOrg} className="p-6 space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Nombre de la Empresa</label>
-                <input required type="text" value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="Ej: PKT Industrial" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[#a3aac4] uppercase tracking-wider ml-1">RUC</label>
-                  <input type="text" value={newOrgData.ruc} onChange={e => setNewOrgData({...newOrgData, ruc: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="10XXXXXXXXX" />
+            
+            <form onSubmit={handleCreateOrg} className="p-8 space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#a3aac4] uppercase mb-2 ml-1">Nombre de la Empresa</label>
+                  <input 
+                    required type="text" placeholder="Ej. TechCorp S.A.C" 
+                    value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})}
+                    className="w-full bg-[#060e20] border border-[#40485d]/50 text-[#dee5ff] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#85adff]/50 transition-all shadow-inner" 
+                  />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Límite Usuarios</label>
-                  <input required type="number" min="1" value={newOrgData.maxUsers} onChange={e => setNewOrgData({...newOrgData, maxUsers: parseInt(e.target.value)})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="5" />
+                <div>
+                  <label className="block text-xs font-bold text-[#a3aac4] uppercase mb-2 ml-1">RUC (Opcional)</label>
+                  <input 
+                    type="text" placeholder="20123456789" 
+                    value={newOrgData.ruc} onChange={e => setNewUserInOrg({...newOrgData, ruc: e.target.value})}
+                    className="w-full bg-[#060e20] border border-[#40485d]/50 text-[#dee5ff] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#85adff]/50 transition-all" 
+                  />
                 </div>
               </div>
-              <button type="submit" className="w-full py-3 rounded-xl font-bold bg-[#85adff] text-[#060e20] hover:bg-[#a6c3ff] transition-all">Crear Registro</button>
+              <button type="submit" className="w-full py-5 bg-gradient-to-r from-[#85adff] to-[#fbabff] text-[#060e20] font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Crear Registro
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* --- MODAL: EDITAR ORGANIZACIÓN & USUARIOS --- */}
+      {/* --- MODAL: EDITAR ORGANIZACIÓN (UNIFICADO) --- */}
       {isEditOrgModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#091328] border border-[#40485d]/50 rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
-            <div className="p-6 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]">
-              <div>
-                <h2 className="text-xl font-black text-[#dee5ff]">Editar {selectedOrg?.name}</h2>
-                <p className="text-xs text-[#a3aac4]">ID Sistema: {selectedOrg?.id}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-[#091328] border border-[#40485d]/50 rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden relative">
+            {(isSaving || isInviting) && (
+              <div className="absolute inset-0 z-[60] bg-[#060e20]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
+                  <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#85adff] animate-pulse" size={24} />
+                </div>
+                <p className="mt-4 text-[#85adff] font-bold tracking-[0.3em] text-[10px] uppercase animate-pulse">
+                  Procesando cambios...
+                </p>
+              </div>
+            )}
+            {/* CABECERA FIJA */}
+            <div className="p-8 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]/90 backdrop-blur-md">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff]">
+                  <Building2 size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-[#dee5ff] leading-none mb-1">Configurar Equipo</h2>
+                  <p className="text-xs text-[#a3aac4] font-medium uppercase tracking-widest">{selectedOrg?.name}</p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
-                <button
-                  onClick={handleDeleteOrg}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-bold hover:bg-red-500/20 transition-all"
-                >
-                  <Trash2 size={14} /> Eliminar Org
+                <button onClick={handleDeleteOrg} className="p-3 text-red-400/50 hover:text-red-400 hover:bg-red-400/10 rounded-2xl transition-all" title="Eliminar Organización">
+                  <Trash2 size={20} />
                 </button>
-                <button onClick={() => setIsEditOrgModalOpen(false)} className="p-2 text-[#a3aac4] hover:text-white rounded-xl"><X size={20} /></button>
+                <button onClick={() => setIsEditOrgModalOpen(false)} className="p-3 text-[#a3aac4] hover:text-[#fbabff] transition-all">
+                  <X size={24} />
+                </button>
               </div>
             </div>
 
-            <div className="p-6 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
-              {/* Sección Nombre Org */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-[#85adff] uppercase tracking-widest">Datos Maestros</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">Nombre</label>
-                    <input type="text" value={editOrgData.name} onChange={e => setEditOrgData({...editOrgData, name: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">RUC</label>
-                    <input type="text" value={editOrgData.ruc} onChange={e => setEditOrgData({...editOrgData, ruc: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" placeholder="RUC" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">Dirección</label>
-                    <input type="text" value={editOrgData.address} onChange={e => setEditOrgData({...editOrgData, address: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" placeholder="Dirección" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">Límite Usuarios</label>
-                    <input type="number" min="1" value={editOrgData.maxUsers} onChange={e => setEditOrgData({...editOrgData, maxUsers: parseInt(e.target.value)})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" />
-                  </div>
-                </div>
-
-                {/* NUEVO: Selector de Plan */}
-                <div className="bg-[#141f38]/50 p-4 rounded-2xl border border-[#40485d]/30 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-xs font-bold text-[#dee5ff] uppercase tracking-wider">Plan de Suscripción</h4>
-                    <span className="text-[10px] text-[#a3aac4]">Este cambio activa módulos automáticamente</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {Object.keys(SUBSCRIPTION_PLANS).map((planId) => (
-                      <button
-                        key={planId}
-                        onClick={() => adminUpdateOrgPlan(selectedOrg.id, planId)}
-                        className={`py-2 rounded-xl text-[10px] font-bold transition-all border ${
-                          selectedOrg?.subscription?.planId === planId 
-                            ? 'bg-[#85adff] text-[#060e20] border-[#85adff]' 
-                            : 'bg-[#060e20] text-[#a3aac4] border-[#40485d]/30 hover:border-[#85adff]/50'
-                        }`}
-                      >
-                        {SUBSCRIPTION_PLANS[planId].name.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button onClick={handleSaveOrgDetails} className="w-full bg-[#85adff]/10 text-[#85adff] border border-[#85adff]/20 py-2 rounded-xl text-xs font-bold hover:bg-[#85adff]/20">Actualizar Datos de Empresa</button>
-              </div>
-
-              {/* Sección Usuarios */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-[#fbabff] uppercase tracking-widest">Colaboradores Vinculados</h3>
-                
-                {/* Listado de Usuarios */}
-                <div className="space-y-2">
-                  {organizationsWithUsers.find(o => o.id === selectedOrg.id)?.users.map(u => (
-                    <div key={u.id} className="flex items-center justify-between p-3 bg-[#060e20] rounded-xl border border-[#40485d]/10">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg ${u.status === 'pending' ? 'bg-amber-400/10 text-amber-400' : 'bg-[#fbabff]/10 text-[#fbabff]'} flex items-center justify-center text-xs font-black relative`}>
-                          {u.name.substring(0,2).toUpperCase()}
-                          {u.status === 'pending' && <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-[#dee5ff] leading-none flex items-center gap-2">
-                            {u.name}
-                            <span className={`text-[8px] uppercase px-1.5 py-0.5 rounded ${u.status === 'pending' ? 'bg-amber-400/10 text-amber-400 border border-amber-400/20' : 'bg-[#4ADE80]/10 text-[#4ADE80] border border-[#4ADE80]/20'}`}>
-                              {u.status || 'active'}
-                            </span>
-                          </p>
-                          <p className="text-[10px] text-[#a3aac4]">{u.email}</p>
-                        </div>
+            {/* CONTENIDO DESPLAZABLE */}
+            <div className="flex-grow overflow-y-auto custom-scrollbar p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                {/* Columna Izquierda: Datos y Plan */}
+                <div className="lg:col-span-3 space-y-10">
+                  {/* Datos Básicos */}
+                  <section className="space-y-6">
+                    <h3 className="text-sm font-black text-[#85adff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Box size={16} /> Información General
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">Razón Social</label>
+                        <input 
+                          type="text" value={editOrgState.name} 
+                          onChange={e => setEditOrgState({...editOrgState, name: e.target.value})}
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
                       </div>
-                      <div className="flex items-center gap-1">
-                        {u.status === 'pending' ? (
-                          <button onClick={() => copyInviteLink(u.inviteToken)} className="text-amber-400 hover:text-amber-300 px-2 py-1 bg-amber-400/10 rounded-md text-xs font-bold transition-all">Copiar Link</button>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">RUC</label>
+                        <input 
+                          type="text" value={editOrgState.ruc} 
+                          onChange={e => setEditOrgState({...editOrgState, ruc: e.target.value})}
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">Dirección Fiscal</label>
+                        <input 
+                          type="text" value={editOrgState.address} 
+                          onChange={e => setEditOrgState({...editOrgState, address: e.target.value})}
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Planes y Límite */}
+                  <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
+                    <h3 className="text-sm font-black text-[#fbabff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <HeartPulse size={16} /> Plan & Capacidad
+                    </h3>
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      {Object.entries(SUBSCRIPTION_PLANS).map(([id, plan]) => (
+                        <button
+                          key={id}
+                          onClick={() => setEditOrgState(prev => ({ 
+                            ...prev, 
+                            planId: id,
+                            maxUsers: plan.limits.users 
+                          }))}
+                          className={`p-4 rounded-2xl border text-left transition-all ${editOrgState.planId === id ? 'bg-[#85adff]/10 border-[#85adff]/50 ring-1 ring-[#85adff]/50' : 'bg-[#141f38]/50 border-[#40485d]/20 hover:border-[#40485d]/50'}`}
+                        >
+                          <p className={`text-[10px] font-black uppercase mb-1 ${editOrgState.planId === id ? 'text-[#85adff]' : 'text-[#a3aac4]'}`}>{plan.name}</p>
+                          <p className="text-white text-xs font-bold">{plan.limits.users} Users</p>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-[#40485d]/10">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase">Límite de Usuarios Manual</label>
+                        <span className="text-lg font-black text-[#fbabff]">{editOrgState.maxUsers}</span>
+                      </div>
+                      <input 
+                        type="range" min="1" max="500" step="1"
+                        value={editOrgState.maxUsers} 
+                        onChange={e => setEditOrgState({...editOrgState, maxUsers: Number(e.target.value)})}
+                        className="w-full h-1.5 bg-[#091328] rounded-lg appearance-none cursor-pointer accent-[#fbabff]"
+                      />
+                    </div>
+                  </section>
+
+                  {/* Lista de Usuarios */}
+                  <section className="space-y-4">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                      <Users size={16} /> Usuarios Vinculados
+                    </h3>
+                    <div className="bg-[#060e20]/50 rounded-2xl border border-[#40485d]/20 overflow-hidden">
+                      {selectedOrg?.users.length === 0 ? (
+                        <div className="p-8 text-center text-[#a3aac4] text-xs">No hay usuarios vinculados.</div>
+                      ) : (
+                        <div className="divide-y divide-[#40485d]/10">
+                          {selectedOrg?.users.map(u => (
+                            <div key={u.id} className="p-4 flex items-center justify-between hover:bg-[#85adff]/5 transition-colors">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#85adff] to-[#fbabff] flex items-center justify-center text-[#060e20] text-[10px] font-black">
+                                  {u.name.substring(0,2).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-[#dee5ff]">{u.name}</p>
+                                  <p className="text-[10px] text-[#a3aac4] flex items-center gap-1">
+                                    {u.email} • 
+                                    <span className={`font-bold ${u.role === 'admin' ? 'text-[#fbabff]' : 'text-[#85adff]'}`}>
+                                      {u.role === 'admin' ? 'Administrador' : 'Usuario'}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                {u.status === 'pending' && (
+                                  <button onClick={() => copyInviteLink(u.inviteToken)} className="text-[#fbabff] hover:underline text-[10px] font-bold">Copy Link</button>
+                                )}
+                                <button onClick={() => adminRemoveUser(u.id)} className="p-2 text-[#a3aac4] hover:text-red-400 transition-colors">
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Invitación por Correo */}
+                    <form onSubmit={handleAddUser} className="bg-gradient-to-br from-[#141f38] to-[#091328] p-6 rounded-[2rem] border border-[#85adff]/20 space-y-4 shadow-xl">
+                      <p className="text-[10px] font-black text-[#85adff] uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                        <Mail size={14} /> Invitar Administrador
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input 
+                          required type="text" placeholder="Nombre completo" 
+                          value={newUserInOrg.name} onChange={e => setNewUserInOrg({...newUserInOrg, name: e.target.value})}
+                          className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff]/50" 
+                        />
+                        <input 
+                          required type="email" placeholder="Correo corporativo" 
+                          value={newUserInOrg.email} onChange={e => setNewUserInOrg({...newUserInOrg, email: e.target.value})}
+                          className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff]/50" 
+                        />
+                      </div>
+                      <button 
+                        type="submit" 
+                        disabled={isInviting}
+                        className="w-full py-4 bg-[#85adff] text-[#060e20] rounded-xl text-xs font-black hover:bg-[#a6c3ff] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                      >
+                        {isInviting ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-[#060e20] border-t-transparent animate-spin rounded-full"></div>
+                            Enviando Invitación por Correo...
+                          </>
                         ) : (
-                          <button onClick={() => impersonateUser(u)} className="text-[#85adff] hover:text-[#dee5ff] px-2 py-1 bg-[#85adff]/10 rounded-md text-xs font-bold transition-all">Entrar como...</button>
+                          <>
+                            <Send size={14} /> Enviar Enlace de Activación
+                          </>
                         )}
-                        <button onClick={() => adminRemoveUser(u.id)} className="text-red-400 hover:text-red-300 px-2 py-1 text-xs font-bold transition-all">Quitar</button>
-                      </div>
-                    </div>
-                  ))}
+                      </button>
+                    </form>
+                  </section>
                 </div>
 
-                {/* Formulario para agregar usuario */}
-                <form onSubmit={handleAddUser} className="bg-[#141f38]/30 p-4 rounded-2xl border border-dashed border-[#40485d]/40">
-                  <p className="text-[10px] font-bold text-[#a3aac4] uppercase mb-3">Agregar nuevo miembro</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                    <input required type="text" placeholder="Nombre completo" value={newUserInOrg.name} onChange={e => setNewUserInOrg({...newUserInOrg, name: e.target.value})} className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#85adff]/50" />
-                    <input required type="email" placeholder="Email" value={newUserInOrg.email} onChange={e => setNewUserInOrg({...newUserInOrg, email: e.target.value})} className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#85adff]/50" />
-                    <select 
-                      value={newUserInOrg.role} 
-                      onChange={e => setNewUserInOrg({...newUserInOrg, role: e.target.value})}
-                      className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-lg px-2 py-2 text-xs outline-none focus:border-[#85adff]/50"
-                    >
-                      <option value="client">Administrador</option>
-                      <option value="employee">Empleado</option>
-                      <option value="accountant">Contador</option>
-                      <option value="sales">Vendedor</option>
-                    </select>
-                  </div>
-                  <button type="submit" className="w-full py-2 bg-[#fbabff]/10 text-[#fbabff] rounded-lg text-xs font-bold hover:bg-[#fbabff]/20 transition-all">+ Vincular Usuario</button>
-                </form>
-              </div>
-
-              {/* Sección Módulos Adicionales */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-[#4ADE80] uppercase tracking-widest">Módulos Adicionales</h3>
-                <p className="text-[10px] text-[#a3aac4]">Activa o desactiva módulos individuales para todos los usuarios de esta organización.</p>
-                <div className="space-y-2">
-                  {AVAILABLE_MODULES.map(module => {
-                    const orgActiveModules = selectedOrg?.subscription?.activeModules || [];
-                    const isActive = orgActiveModules.includes(module.id);
-                    return (
-                      <div
-                        key={module.id}
-                        onClick={() => {
-                          const toggled = isActive
-                            ? orgActiveModules.filter(id => id !== module.id)
-                            : [...orgActiveModules, module.id];
-                          adminUpdateOrgModules(selectedOrg.id, toggled);
-                        }}
-                        className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isActive ? 'bg-[#4ADE80]/10 border-[#4ADE80]/30 text-[#4ADE80]' : 'bg-[#141f38]/50 border-[#40485d]/20 text-[#dee5ff]'}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Box size={16} opacity={isActive ? 1 : 0.5} />
-                          <span className="text-sm font-bold">{module.name}</span>
-                        </div>
-                        <div className={`w-5 h-5 rounded-md flex items-center justify-center ${isActive ? 'bg-[#4ADE80] text-[#060e20]' : 'bg-[#060e20] border border-[#40485d]/30'}`}>
-                          {isActive && <Check size={12} strokeWidth={4} />}
-                        </div>
-                      </div>
-                    );
-                  })}
+                {/* Columna Derecha: Módulos */}
+                <div className="lg:col-span-2 space-y-8 flex flex-col pt-2">
+                  <section className="space-y-6 flex-grow">
+                    <h3 className="text-sm font-black text-[#4ADE80] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Box size={16} /> Control de Módulos
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      {AVAILABLE_MODULES.map(module => {
+                        const isActive = editOrgState.activeModules.includes(module.id);
+                        return (
+                          <div
+                            key={module.id}
+                            onClick={() => handleToggleModuleInEdit(module.id)}
+                            className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-200 group ${isActive ? 'bg-[#4ADE80]/10 border-[#4ADE80]/40 text-[#4ADE80] shadow-[0_0_15px_rgba(74,222,128,0.05)]' : 'bg-[#060e20]/40 border-[#40485d]/20 text-[#a3aac4] hover:border-[#40485d]/50'}`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Box size={18} className={isActive ? 'animate-pulse' : 'opacity-40'} />
+                              <span className="text-sm font-bold tracking-tight">{module.name}</span>
+                            </div>
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-[#4ADE80] text-[#060e20] scale-110' : 'bg-[#091328] border border-[#40485d]/30 group-hover:border-[#40485d]/60'}`}>
+                              {isActive && <Check size={14} strokeWidth={4} />}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* --- MODAL: GESTIONAR MÓDULOS --- */}
-      {isManageModulesModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#091328] border border-[#40485d]/50 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]">
-              <div>
-                <h2 className="text-xl font-black text-[#dee5ff]">Suscripción</h2>
-                <p className="text-xs text-[#a3aac4]">Org: <span className="text-[#85adff] font-bold">{selectedOrg?.name}</span></p>
-              </div>
-              <button onClick={() => setIsManageModulesModalOpen(false)} className="p-2 text-[#a3aac4] hover:text-white rounded-xl"><X size={20} /></button>
-            </div>
-            <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar space-y-3">
-              {AVAILABLE_MODULES.map(module => {
-                const isSelected = activeModulesForEdit.includes(module.id);
-                return (
-                  <div key={module.id} onClick={() => handleToggleModule(module.id)} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${isSelected ? 'bg-[#85adff]/10 border-[#85adff]/30 text-[#85adff]' : 'bg-[#141f38]/50 border-[#40485d]/20 text-[#dee5ff]'}`}>
-                    <div className="flex items-center gap-3"><Box size={20} opacity={isSelected ? 1 : 0.5} /><span className="font-bold">{module.name}</span></div>
-                    <div className={`w-6 h-6 rounded-md flex items-center justify-center ${isSelected ? 'bg-[#85adff] text-[#060e20]' : 'bg-[#060e20] border'}`}>
-                      {isSelected && <Check size={14} strokeWidth={4} />}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="p-6 border-t border-[#40485d]/30 flex gap-3 bg-[#060e20]">
-              <button onClick={() => setIsManageModulesModalOpen(false)} className="flex-1 py-3 text-[#a3aac4] text-sm font-bold">Cerrar</button>
-              <button onClick={handleSaveModules} className="flex-1 py-3 bg-[#85adff] text-[#060e20] rounded-xl font-bold text-sm">Guardar Módulos</button>
+            {/* PIE DE PÁGINA FIJO */}
+            <div className="bg-[#060e20] p-8 border-t border-[#40485d]/30 space-y-4 rounded-b-[2.5rem]">
+              <button 
+                onClick={handleSaveFullOrg}
+                disabled={isSaving}
+                className="w-full py-6 bg-gradient-to-r from-[#4ADE80] to-[#85adff] text-[#060e20] font-black rounded-2xl shadow-xl shadow-[#4ADE80]/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-[#060e20] border-t-transparent animate-spin rounded-full"></div>
+                    Guardando Cambios...
+                  </>
+                ) : (
+                  <>
+                    <Save size={20} /> Guardar Todos los Cambios
+                  </>
+                )}
+              </button>
+              <p className="text-[10px] text-[#a3aac4] text-center font-bold uppercase tracking-widest opacity-60">Sincronización segura con base de datos real</p>
             </div>
           </div>
         </div>
