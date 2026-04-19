@@ -53,10 +53,6 @@ export default function CRMModule() {
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#dee5ff] mb-2 tracking-tight">Ecosistema CRM</h2>
-          <p className="text-[#a3aac4]">Control centralizado de relaciones para {user?.organizationName || 'tu empresa'}.</p>
-        </div>
         <div className="flex gap-3">
           <button 
             onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}

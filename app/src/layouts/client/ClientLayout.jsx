@@ -181,7 +181,6 @@ export default function ClientLayout() {
             >
               <Box size={20} />
               <span>Inventario</span>
-              <span className="ml-auto w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-tertiary)' }}></span>
             </Link>
           )}
           

@@ -60,10 +60,6 @@ export default function ProjectModule() {
           ← Volver a todos los proyectos
         </button>
         <div className="flex justify-between items-end border-b border-[#40485d]/20 pb-6">
-            <div>
-                <h2 className="text-3xl font-extrabold text-[#dee5ff] tracking-tight">{selectedProject.name}</h2>
-                <p className="text-[#a3aac4] mt-1">{selectedProject.description}</p>
-            </div>
             <div className="flex gap-2">
                 <span className="bg-[#141f38] text-[#85adff] px-3 py-1 rounded-full text-xs font-black uppercase border border-[#85adff]/20">
                     {selectedProject.status}
@@ -85,10 +81,6 @@ export default function ProjectModule() {
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#dee5ff] mb-2 tracking-tight">Gestión de Proyectos</h2>
-          <p className="text-[#a3aac4]">Planifica, ejecuta y monitorea el progreso de tu equipo.</p>
-        </div>
         <button 
           onClick={() => setShowModal(true)}
           className="bg-gradient-to-br from-[#85adff] to-[#5391ff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
