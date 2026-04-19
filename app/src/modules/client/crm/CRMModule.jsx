@@ -51,38 +51,38 @@ export default function CRMModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex gap-3">
+      {/* Tabs Selector */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex p-1 bg-[#141f38]/50 rounded-xl w-fit border border-[#40485d]/10">
           <button 
-            onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}
-            className="border border-[#40485d]/30 text-[#dee5ff] font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-[#141f38] transition-all"
+            onClick={() => setActiveTab('pipeline')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
           >
-            <Plus size={18} /> Nuevo Cliente
+            <Kanban size={16} /> Pipeline
           </button>
+          <button 
+            onClick={() => setActiveTab('contacts')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
+          >
+            <List size={16} /> Base de Contactos
+          </button>
+        </div>
+
+        {activeTab === 'pipeline' ? (
           <button 
             onClick={() => { setModalType('lead'); setShowModal(true); setSaveError(null); }}
             className="bg-gradient-to-br from-[#85adff] to-[#5391ff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Kanban size={18} /> Iniciar Lead
           </button>
-        </div>
-      </div>
-
-      {/* Tabs Selector */}
-      <div className="flex p-1 bg-[#141f38]/50 rounded-xl w-fit border border-[#40485d]/10">
-        <button 
-          onClick={() => setActiveTab('pipeline')}
-          className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
-        >
-          <Kanban size={16} /> Pipeline
-        </button>
-        <button 
-          onClick={() => setActiveTab('contacts')}
-          className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
-        >
-          <List size={16} /> Base de Contactos
-        </button>
+        ) : (
+          <button 
+            onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}
+            className="border border-[#40485d]/30 text-[#dee5ff] font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-[#141f38] transition-all"
+          >
+            <Plus size={18} /> Nuevo Cliente
+          </button>
+        )}
       </div>
 
       {/* Conditional Rendering based on Tab */}
