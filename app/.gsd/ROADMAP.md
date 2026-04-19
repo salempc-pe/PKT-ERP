@@ -363,3 +363,23 @@
 **Verification**:
 - [x] Revisar visualmente cada módulo en modo dark/light.
 - [x] Confirmar alineación `justify-end` o `ml-auto`.
+
+---
+
+### Phase 22: Optimización del Módulo de Proyectos
+**Status**: ⬜ Not Started
+**Objective**: Pulir la gestión de proyectos y tareas: añadir eliminación de proyectos, corregir reactividad de tareas, mejorar UI del Kanban y añadir edición de tareas.
+**Depends on**: Phase 21
+
+**Tasks**:
+- [ ] Reemplazar tres puntos en tarjetas de proyecto por un botón de eliminar (X) con confirmación.
+- [ ] Corregir reactividad al agregar y actualizar estado de tareas (que aparezcan/se muevan al instante).
+- [ ] Estandarizar botón "Nueva Tarea" (tamaño y azul #85adff).
+- [ ] Mejorar visibilidad de botones de avance/retroceso en tareas.
+- [ ] Implementar modal de edición para títulos y descripciones de tareas (en los tres puntos de la tarea).
+
+**Verification**:
+- [ ] Probar eliminación de proyecto con confirmación.
+- [ ] Verificar que nuevas tareas aparezcan sin recargar.
+- [ ] Comprobar flujo de estados en Kanban con feedback visual inmediato.
+- [ ] Validar modal de edición de tarea.

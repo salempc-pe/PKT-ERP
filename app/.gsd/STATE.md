@@ -2,13 +2,13 @@
 
 ## Current Position
 - **Milestone**: 3 — Admin UX Polish
-- **Phase**: 21 (completed)
-- **Task**: All tasks complete
-- **Status**: Verified
+- **Phase**: 22
+- **Task**: Planning phase
+- **Status**: Not Started
 
 ## Last Session Summary
-Fase 21 completada. Todos los botones de acción principales ahora son de color azul (#85adff) y están alineados a la derecha de las cabeceras.
+Fase 21 completada (estandarización de botones). Se inicia la Fase 22 para arreglar errores de reactividad y mejorar la funcionalidad del módulo de Proyectos y Kanban.
 
 ## Next Steps
-1. Esperar feedback del usuario.
-2. Proceder con el siguiente hito si no hay más ajustes.
+1. Crear planes 22.1, 22.2, etc.
+2. Ejecutar `/execute 22`.
