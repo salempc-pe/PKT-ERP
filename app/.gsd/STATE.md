@@ -3,16 +3,14 @@
 ## Current Position
 - **Milestone**: 3 — Admin UX Polish
 - **Phase**: 20
-- **Task**: Planning phase
-- **Status**: Not Started
+- **Task**: Planning complete
+- **Status**: Ready for execution
 
 ## Last Session Summary
-Se agregó la Fase 20 al roadmap para abordar mejoras de UX/UI solicitadas por el usuario:
-- Ajustes en Sidebar (remover punto del inventario).
-- Reubicación de botones en el módulo CRM según la pestaña seleccionada.
-- Eliminación de títulos de los módulos.
-- Pop-up de impresión de factura al marcar como "Pagada".
-- Solución al modal con fondo blanco en Inventario.
+Se generaron y separaron los planes de la Fase 20 en tres archivos:
+1. `20.1-PLAN.md` - Modificar ClientLayout para quitar dot, eliminar titles y subtitles de cabeceras en todos los modulos.
+2. `20.2-PLAN.md` - Mostrar botones del CRM basados en pestaña y eliminar los botones del top header.
+3. `20.3-PLAN.md` - Ajustar z-index/luz del modulo inventario para overlay, y agregar popup del invoice-print al marcar pagado.
 
 ## Next Steps
-1. Ejecutar el plan de la Fase 20 (/plan 20).
+1. Ejecutar el Phase 20 (`/execute 20`).
