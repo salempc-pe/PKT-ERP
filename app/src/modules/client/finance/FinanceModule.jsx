@@ -67,10 +67,6 @@ export default function FinanceModule() {
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#dee5ff] mb-2 tracking-tight">Finanzas</h2>
-          <p className="text-[#a3aac4]">Gestión de ingresos, egresos y flujo de caja.</p>
-        </div>
         <button 
           onClick={() => setIsModalOpen(true)}
           className="bg-gradient-to-br from-[#85adff] to-[#4b72ff] text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 shadow-lg shadow-[#4b72ff]/20 hover:scale-[1.02] transition-all"
