@@ -332,18 +332,18 @@
 
 ---
 
-### Phase 20: Mejoras de UX/UI y Flujos
-**Status**: ⬜ Not Started
-**Objective**: Limpiar la interfaz (quitar títulos, notificaciones innecesarias, alinear modales), optimizar la vista de botones en el CRM por pestañas y agregar un modal básico de impresión de facturas al confirmar un pago.
+### Phase 20: Refinamiento UI y UX Flows
+**Status**: ✅ Complete
+**Objective**: Limpiar la interfaz eliminando notificaciones redundantes, títulos de módulos y optimizar flujos de CRM y Facturación.
 **Depends on**: Phase 19
 
 **Tasks**:
-- [ ] Eliminar el punto de notificación en el botón de inventario del Sidebar.
-- [ ] En CRM: mover 'Nuevo cliente' a Base de Contactos y 'Iniciar Lead' a Pipeline.
-- [ ] Eliminar títulos y subtítulos de los módulos.
-- [ ] Agregar modal de impresión (básico) al marcar factura como Pagada en Ventas.
-- [ ] Corregir la visualización del modal en Inventario para mantener el fondo de la aplicación.
+- [x] Eliminar punto de notificación de Inventario en el Sidebar.
+- [x] Quitar títulos y subtítulos de cabecera en todos los módulos.
+- [x] Reubicación de botones de acción en CRM según pestaña activa.
+- [x] Corregir backdrop del modal en Inventario (transparencia).
+- [x] Implementar modal de impresión rápida al marcar factura como "Pagada" en Ventas.
 
 **Verification**:
-- [ ] Validar UI de Sidebar, CRM (botones por pestaña), Títulos removidos.
-- [ ] Probar impresión al cambiar a Pagado y Modal de Inventario con fondo correcto.
+- [x] Validar UI de Sidebar, CRM (botones por pestaña), Títulos removidos.
+- [x] Probar impresión al cambiar a Pagado y Modal de Inventario con fondo correcto.
