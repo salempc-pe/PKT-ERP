@@ -1,10 +1,9 @@
 # GSD State
 
 ## Current Position
-- **Milestone**: 3 — Admin UX Polish
-- **Phase**: 23 (Completed)
-- **Task**: Codebase mapping complete
-- **Status**: Updated Context
+- **Sprint**: real-auth-flow
+- **Status**: Sprint in progress
+- **Milestone**: (paused if active)
 
 ## Last Session Summary
 Mapping del codebase completado.
