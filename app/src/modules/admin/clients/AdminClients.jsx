@@ -31,8 +31,8 @@ export default function AdminClients() {
   const [activeModulesForEdit, setActiveModulesForEdit] = useState([]);
 
   // Forms State
-  const [newOrgData, setNewOrgData] = useState({ name: '', ruc: '', address: '' });
-  const [editOrgData, setEditOrgData] = useState({ name: '', ruc: '', address: '' });
+  const [newOrgData, setNewOrgData] = useState({ name: '', ruc: '', address: '', maxUsers: 5 });
+  const [editOrgData, setEditOrgData] = useState({ name: '', ruc: '', address: '', maxUsers: 5 });
   const [newUserInOrg, setNewUserInOrg] = useState({ name: '', email: '', role: 'client' });
 
   const clientUsers = getClientUsers();
@@ -78,7 +78,7 @@ export default function AdminClients() {
     
     try {
       await adminCreateOrg(newOrgData);
-      setNewOrgData({ name: '', ruc: '', address: '' });
+      setNewOrgData({ name: '', ruc: '', address: '', maxUsers: 5 });
       setIsNewOrgModalOpen(false);
     } catch (error) {
       alert("Error al crear la organización: " + error.message);
@@ -87,7 +87,12 @@ export default function AdminClients() {
 
   const handleOpenEditOrg = (org) => {
     setSelectedOrg(org);
-    setEditOrgData({ name: org.name, ruc: org.ruc || '', address: org.address || '' });
+    setEditOrgData({ 
+      name: org.name, 
+      ruc: org.ruc || '', 
+      address: org.address || '',
+      maxUsers: org.subscription?.maxUsers || org.maxUsers || 5
+    });
     setIsEditOrgModalOpen(true);
   };
 
@@ -201,9 +206,12 @@ export default function AdminClients() {
             </div>
 
             <div className="border border-[#40485d]/10 rounded-2xl bg-[#060e20]/50 p-4 flex-1">
-              <h4 className="text-xs uppercase tracking-widest text-[#a3aac4] font-bold mb-4 flex items-center gap-2">
-                <Users size={14} />
-                Usuarios ({org.users.length})
+              <h4 className="text-xs uppercase tracking-widest text-[#a3aac4] font-bold mb-4 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Users size={14} />
+                  Usuarios ({org.users.length})
+                </div>
+                <span className="text-[10px] text-[#85adff]/50">Límite: {org.subscription?.maxUsers || org.maxUsers || 5}</span>
               </h4>
               <div className="space-y-3 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
                 {org.users.map(u => (
@@ -262,8 +270,8 @@ export default function AdminClients() {
                   <input type="text" value={newOrgData.ruc} onChange={e => setNewOrgData({...newOrgData, ruc: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="10XXXXXXXXX" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Dirección</label>
-                  <input type="text" value={newOrgData.address} onChange={e => setNewOrgData({...newOrgData, address: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="Av. Principal 123" />
+                  <label className="text-xs font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Límite Usuarios</label>
+                  <input required type="number" min="1" value={newOrgData.maxUsers} onChange={e => setNewOrgData({...newOrgData, maxUsers: parseInt(e.target.value)})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" placeholder="5" />
                 </div>
               </div>
               <button type="submit" className="w-full py-3 rounded-xl font-bold bg-[#85adff] text-[#060e20] hover:bg-[#a6c3ff] transition-all">Crear Registro</button>
@@ -308,6 +316,10 @@ export default function AdminClients() {
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">Dirección</label>
                     <input type="text" value={editOrgData.address} onChange={e => setEditOrgData({...editOrgData, address: e.target.value})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" placeholder="Dirección" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-[#a3aac4] uppercase px-1">Límite Usuarios</label>
+                    <input type="number" min="1" value={editOrgData.maxUsers} onChange={e => setEditOrgData({...editOrgData, maxUsers: parseInt(e.target.value)})} className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm outline-none focus:border-[#85adff]/50" />
                   </div>
                 </div>
 

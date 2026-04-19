@@ -62,11 +62,23 @@ export const useCrm = (orgId = "default_org") => {
     }
 
     const leadsRef = collection(db, `organizations/${orgId}/leads`);
-    const q = query(leadsRef, orderBy("createdAt", "desc"));
+    // Usamos una query simple para evitar problemas de índices y manejamos el ordenamiento localmente
+    const q = query(leadsRef);
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setLeads(data);
+      
+      // Ordenamiento manual descendente por fecha de creación
+      const sortedData = data.sort((a, b) => {
+        const dateA = a.createdAt?.seconds || 0;
+        const dateB = b.createdAt?.seconds || 0;
+        return dateB - dateA;
+      });
+      
+      setLeads(sortedData);
+    }, (err) => {
+      console.error("[useCrm] Error en suscripción de leads:", err);
+      setError(err.message);
     });
 
     return () => unsub();
@@ -116,17 +128,25 @@ export const useCrm = (orgId = "default_org") => {
 
   const updateLeadStatus = async (leadId, newStatus) => {
     if (!isFirebaseConfigured) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
-          resolve();
-        }, 400);
-      });
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+      return;
     }
 
     const leadRef = doc(db, `organizations/${orgId}/leads`, leadId);
     return await updateDoc(leadRef, {
       status: newStatus,
+      updatedAt: serverTimestamp()
+    });
+  };
+
+  const updateLead = async (leadId, leadData) => {
+    if (!isFirebaseConfigured) {
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, ...leadData } : l));
+      return;
+    }
+    const leadRef = doc(db, `organizations/${orgId}/leads`, leadId);
+    return await updateDoc(leadRef, {
+      ...leadData,
       updatedAt: serverTimestamp()
     });
   };
@@ -138,6 +158,7 @@ export const useCrm = (orgId = "default_org") => {
     error,
     addContact,
     addLead,
-    updateLeadStatus
+    updateLeadStatus,
+    updateLead
   };
 };
