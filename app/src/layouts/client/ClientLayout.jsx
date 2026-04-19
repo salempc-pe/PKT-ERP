@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -19,13 +19,16 @@ export default function ClientLayout() {
     return <Navigate to="/" replace />;
   }
   const [tenantName, setTenantName] = useState(user?.organizationName || 'Mi Empresa S.A.');
+  const [tenantLogo, setTenantLogo] = useState(null);
 
   useEffect(() => {
     if (!isFirebaseConfigured || !user?.organizationId) return;
     
-    const unsub = onSnapshot(doc(db, 'tenants', user.organizationId), (configDoc) => {
-      if (configDoc.exists() && configDoc.data().name) {
-        setTenantName(configDoc.data().name);
+    const unsub = onSnapshot(doc(db, 'organizations', user.organizationId), (configDoc) => {
+      if (configDoc.exists()) {
+        const data = configDoc.data();
+        if (data.name) setTenantName(data.name);
+        if (data.logoUrl) setTenantLogo(data.logoUrl);
       }
     });
 
@@ -72,34 +75,55 @@ export default function ClientLayout() {
 
       {/* SideNavBar Shell */}
       <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 space-y-6 z-50 transition-all duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="px-6 mb-4 flex justify-between items-center">
-          <div>
-            <h1 style={{ color: 'var(--color-on-surface)' }} className="text-xl font-bold tracking-tighter">{tenantName}</h1>
-            <p style={{ color: 'var(--color-on-surface-variant)' }} className="text-xs font-bold mt-1">Suscripción Activa</p>
-          </div>
-          {/* Botón Toggle Tema */}
-          <button
-            id="theme-toggle-btn"
-            onClick={toggleTheme}
-            title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
-            style={{
-              backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
-            }}
-          >
-            <span
-              className="w-4 h-4 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+        <div className="px-6 mb-4">
+          <div className="flex justify-between items-start mb-4">
+            {/* Logo Container */}
+            <div className="group relative">
+               <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-110 shadow-lg"
+                style={{ 
+                  backgroundColor: 'var(--color-primary-container)', 
+                  color: 'var(--color-primary)',
+                  border: '1px solid var(--color-outline-variant)'
+                }}
+              >
+                {tenantLogo ? (
+                  <img src={tenantLogo} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Building size={24} />
+                )}
+              </div>
+            </div>
+
+            {/* Botón Toggle Tema */}
+            <button
+              id="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+              className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
               style={{
-                transform: isDark ? 'translateX(0)' : 'translateX(24px)',
-                backgroundColor: 'var(--color-primary)',
-                color: 'var(--color-on-primary)',
+                backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
               }}
             >
-              {isDark
-                ? <Moon size={10} strokeWidth={2.5} />
-                : <Sun size={10} strokeWidth={2.5} />}
-            </span>
-          </button>
+              <span
+                className="w-4 h-4 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+                style={{
+                  transform: isDark ? 'translateX(0)' : 'translateX(24px)',
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'var(--color-on-primary)',
+                }}
+              >
+                {isDark
+                  ? <Moon size={10} strokeWidth={2.5} />
+                  : <Sun size={10} strokeWidth={2.5} />}
+              </span>
+            </button>
+          </div>
+
+          <div>
+            <h1 style={{ color: 'var(--color-on-surface)' }} className="text-xl font-bold tracking-tighter truncate max-w-full" title={tenantName}>{tenantName}</h1>
+            <p style={{ color: 'var(--color-on-surface-variant)' }} className="text-[10px] font-bold mt-0.5 uppercase tracking-widest opacity-70">Empresa Verificada</p>
+          </div>
         </div>
            <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
           <Link 
@@ -203,23 +227,7 @@ export default function ClientLayout() {
             </Link>
           )}
 
-          <div style={{ color: 'var(--color-on-surface-variant)' }} className="pt-4 pb-2 px-4 text-[10px] font-bold uppercase tracking-widest opacity-50">Suscripción</div>
 
-          <Link 
-            to="/client/marketplace" 
-            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-bold text-sm mx-2"
-            style={{ 
-              color: 'var(--color-on-primary)', 
-              backgroundColor: 'var(--color-primary)',
-              boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent)'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 85%, black)'; }}
-            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--color-primary)'; }}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <Box size={20} />
-            <span>Comprar Módulos</span>
-          </Link>
         </nav>
         
         {/* Footer Sidebar: Profile & Settings */}

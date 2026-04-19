@@ -14,7 +14,7 @@ import SettingsModule from './modules/settings/SettingsModule';
 import FinanceModule from './modules/client/finance/FinanceModule';
 import CalendarModule from './modules/client/calendar/CalendarModule';
 import ProjectModule from './modules/client/projects/ProjectModule';
-import MarketplaceModule from './modules/client/marketplace/MarketplaceModule';
+
 import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
@@ -33,7 +33,7 @@ function App() {
           <Route path="/client" element={<ClientLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<ClientDashboard />} />
-            <Route path="marketplace" element={<MarketplaceModule />} />
+
             
             {/* Protected Modules */}
             <Route element={<ModuleRoute module="crm" />}>

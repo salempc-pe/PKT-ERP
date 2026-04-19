@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { useState, useEffect, useRef } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
-import { Save, CheckCircle2, User, Building, Mail, MapPin } from 'lucide-react';
+import { Save, CheckCircle2, User, Building, Mail, MapPin, Upload, Image as ImageIcon } from 'lucide-react';
 
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
 export default function BusinessProfileForm() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
+  const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
     name: user?.organizationName || '',
     email: '',
     sector: '',
-    address: ''
+    address: '',
+    logoUrl: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,7 +30,8 @@ export default function BusinessProfileForm() {
             name: user?.organizationName || 'Mock Enterprise',
             email: 'admin@mockenterprise.com',
             sector: 'Retail',
-            address: 'Av. Mock 123'
+            address: 'Av. Mock 123',
+            logoUrl: ''
           });
           setLoading(false);
         }, 600);
@@ -36,10 +39,10 @@ export default function BusinessProfileForm() {
       }
 
       try {
-        const docRef = doc(db, 'tenants', orgId);
+        const docRef = doc(db, 'organizations', orgId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setFormData({ ...formData, ...docSnap.data() });
+          setFormData(prev => ({ ...prev, ...docSnap.data() }));
         }
       } catch (err) {
         console.error("Error fetching profile", err);
@@ -55,6 +58,43 @@ export default function BusinessProfileForm() {
     setSuccess(false);
   };
 
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Determinar el lado más corto para el recorte cuadrado
+        const size = Math.min(img.width, img.height);
+        const offsetX = (img.width - size) / 2;
+        const offsetY = (img.height - size) / 2;
+
+        // Tamaño objetivo para ligereza (icono de 200x200)
+        const targetSize = 200;
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+
+        // Dibujar y recortar
+        ctx.drawImage(
+          img,
+          offsetX, offsetY, size, size, // Recorte de origen
+          0, 0, targetSize, targetSize  // Destino
+        );
+
+        const base64Logo = canvas.toDataURL('image/webp', 0.8);
+        setFormData(prev => ({ ...prev, logoUrl: base64Logo }));
+        setSuccess(false);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -68,8 +108,7 @@ export default function BusinessProfileForm() {
     }
 
     try {
-      const docRef = doc(db, 'tenants', orgId);
-      // We use setDoc with merge: true to create if it doesn't exist
+      const docRef = doc(db, 'organizations', orgId);
       await setDoc(docRef, {
         ...formData,
         updatedAt: new Date()
@@ -98,6 +137,38 @@ export default function BusinessProfileForm() {
           <Building className="text-[#85adff]" size={20} /> Información de la Empresa
         </h3>
         
+        {/* Logo Upload Section */}
+        <div className="mb-8 flex flex-col md:flex-row items-center gap-6 p-6 rounded-2xl bg-[#091328]/50 border border-[#85adff]/10">
+          <div className="relative group">
+            <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#141f38] border-2 border-dashed border-[#85adff]/30 flex items-center justify-center transition-all group-hover:border-[#85adff]/60">
+              {formData.logoUrl ? (
+                <img src={formData.logoUrl} alt="Logo preview" className="w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="text-[#40485d]" size={32} />
+              )}
+            </div>
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h4 className="text-sm font-bold text-[#dee5ff] mb-1">Logo de la Empresa</h4>
+            <p className="text-xs text-[#a3aac4] mb-4">Formato cuadrado optimizado (máx. 200x200).</p>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleLogoUpload} 
+              accept="image/*" 
+              className="hidden" 
+            />
+            <button 
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#85adff]/10 text-[#85adff] text-xs font-black hover:bg-[#85adff]/20 transition-all"
+            >
+              <Upload size={14} />
+              {formData.logoUrl ? 'Cambiar Logo' : 'Subir Logo'}
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-5">
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-[#a3aac4] mb-2">Nombre Comercial</label>
