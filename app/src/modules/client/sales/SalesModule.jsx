@@ -6,7 +6,7 @@ import { useFinance } from '../finance/useFinance';
 import { useAuth } from '../../../context/AuthContext';
 import { 
   FileText, Plus, Search, Filter, 
-  DollarSign, Loader2, X, AlertCircle, ShoppingCart, TrendingUp, PackageX
+  DollarSign, Loader2, X, AlertCircle, ShoppingCart, TrendingUp, PackageX, CheckCircle
 } from 'lucide-react';
 
 export default function SalesModule() {
@@ -21,6 +21,7 @@ export default function SalesModule() {
 
   // -- Modal State --
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [invoiceToPrint, setInvoiceToPrint] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // -- Form State --
@@ -312,6 +313,7 @@ export default function SalesModule() {
                                     date: new Date().toISOString(),
                                     source: 'sales_module',
                                   });
+                                  setInvoiceToPrint(sale);
                                 }}
                                 className="text-[9px] font-black uppercase tracking-tighter bg-green-500/20 text-green-400 px-2 py-0.5 border border-green-500/20 rounded hover:bg-green-500 hover:text-white transition-all shadow-sm"
                               >
@@ -495,6 +497,48 @@ export default function SalesModule() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* PRINT MODAL: Post-Payment Confirmation */}
+      {invoiceToPrint && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setInvoiceToPrint(null)}></div>
+          <div className="bg-[#0f1930] w-full max-w-sm border border-[#40485d]/30 rounded-3xl shadow-[0_0_50px_rgba(133,255,171,0.15)] overflow-hidden relative animate-in zoom-in duration-300 flex flex-col p-8 text-center">
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 mx-auto mb-6 shadow-glow-green">
+              <CheckCircle size={40} />
+            </div>
+            
+            <h3 className="text-2xl font-black text-[#dee5ff] mb-2">¡Venta Confirmada!</h3>
+            <p className="text-[#a3aac4] text-sm mb-8">El pago ha sido registrado con éxito. ¿Deseas imprimir el comprobante ahora?</p>
+            
+            <div className="bg-[#141f38] rounded-2xl p-4 border border-[#40485d]/20 mb-8 text-left">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] font-black text-[#65739e] uppercase">{invoiceToPrint.documentType}</span>
+                <span className="font-mono text-xs font-bold text-[#85adff]">{invoiceToPrint.invoiceNumber}</span>
+              </div>
+              <p className="font-bold text-[#dee5ff] text-base truncate">{invoiceToPrint.clientName}</p>
+              <div className="mt-3 pt-3 border-t border-[#40485d]/20 flex justify-between items-end">
+                <span className="text-[10px] font-black text-[#65739e] uppercase">Total Pagado</span>
+                <span className="text-xl font-black text-[#85ffab]">${invoiceToPrint.totalAmount?.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => window.print()}
+                className="w-full bg-[#85ffab] text-[#002b11] font-black py-4 rounded-2xl hover:shadow-[0_0_20px_rgba(133,255,171,0.4)] transition-all flex items-center justify-center gap-2"
+              >
+                <FileText size={20} /> Imprimir Comprobante
+              </button>
+              <button 
+                onClick={() => setInvoiceToPrint(null)}
+                className="w-full py-3 rounded-2xl font-bold text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+              >
+                Cerrar y continuar
+              </button>
+            </div>
           </div>
         </div>
       )}

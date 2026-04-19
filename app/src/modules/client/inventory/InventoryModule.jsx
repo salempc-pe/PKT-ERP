@@ -206,10 +206,10 @@ export default function InventoryModule() {
         </div>
       </div>
 
-      {/* Form Modal: Add/Edit Product */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#091328]/80 backdrop-blur animate-in fade-in">
-          <div className="w-full max-w-md bg-[#091328] rounded-2xl border border-[#40485d]/30 shadow-[0_0_50px_rgba(226,140,233,0.1)] overflow-hidden flex flex-col relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleCloseModal}></div>
+          <div className="w-full max-w-md bg-[#091328] rounded-2xl border border-[#40485d]/30 shadow-[0_0_50px_rgba(226,140,233,0.1)] overflow-hidden flex flex-col relative animate-in zoom-in duration-300">
             <div className="flex justify-between items-center p-6 border-b border-[#40485d]/20 bg-[#141f38]/60">
               <h3 className="text-xl font-bold text-[#dee5ff]">
                 {editingId ? 'Editar Producto' : 'Nuevo Producto'}
