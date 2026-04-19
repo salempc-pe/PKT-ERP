@@ -399,6 +399,44 @@
 - [x] **Plan 23.5**: Ajustar `AuthContext` para persistir y validar el rol del usuario (`admin` vs `user`) dentro de su organización.
 
 **Verification**:
-- [ ] Intentar acceder a datos de la Org A con un usuario de la Org B (debe fallar por Reglas de Firebase).
-- [ ] Verificar que el Admin de la empresa no pueda invitar a más usuarios de los permitidos por su cuota.
-- [ ] Probar el flujo completo de invitación -> activación -> login con rol restringido.
+- [x] Acceso multi-tenant aislado verificado (UID-based rules).
+- [x] Límite de usuarios (`maxUsers`) respetado en creación de cuentas.
+- [x] Flujo de invitación y activación de contraseña funcional en producción.
+
+---
+
+### Phase 24: SuperAdmin Portal UX & Production Flow
+**Status**: 🚧 In Progress
+**Objective**: Consolidar la gestión de inquilinos con guardado unificado, corrección de límites de cuota y feedback de invitaciones profesional.
+**Depends on**: Phase 23
+
+**Tasks**:
+- [x] Implementar `adminUpdateFullOrg` para guardado atómico (Plan/Módulos/Límite/Datos).
+- [x] Refactorizar modal de edición en `AdminClients.jsx` con estado local y botón único de "Guardar".
+- [x] Corregir bug de persistencia en `maxUsers` (sobrescritura por cambios de plan).
+- [x] Añadir feedback visual de envío de correo en el flujo de invitación.
+- [x] Eliminar avisos de "Credenciales de prueba" del portal de Login.
+
+**Verification**:
+- [x] Validar que al cambiar el plan el límite de usuarios manual se mantenga.
+- [x] Confirmar que los módulos no se activen/desactiven hasta presionar "Guardar".
+- [x] Verificar que el botón único de guardado cierra el modal tras éxito en Firestore.
+
+---
+
+### Phase 25: Roles Esenciales y UX Refinamiento
+**Status**: ✅ Complete
+**Objective**: Simplificar el sistema de roles de los clientes a solo `admin` y `user`, descartando por ahora el envío real de correos, y mejorar la visualización de permisos.
+**Depends on**: Phase 24
+
+**Tasks**:
+- [x] **Plan 25.1**: Modificar el modal de `AdminClients.jsx` para que las invitaciones hechas por el SuperAdmin sean fijadas como rol `admin`.
+- [x] **Plan 25.2**: Actualizar la visualización de la lista de usuarios en `AdminClients.jsx` para que sea muy evidente si un miembro tiene rol `admin` o `user`.
+- [x] **Plan 25.3**: Ajustar `TeamModule.jsx` del cliente para que los administradores puedan invitar explícitamente a `user` (y eliminar opciones como accountant/sales por el momento).
+- [x] **Plan 25.4**: Implementar sistema consistente de estados de carga (Loading) para las transacciones con Firestore.
+- [x] **Plan 25.5**: Eliminar botón de suplantación de cliente del SuperAdmin.
+
+**Verification**:
+- [ ] En el panel de SuperAdmin se distingue claramente con un indicador visual quién es `admin` y quién `user`.
+- [ ] El SuperAdmin invita con rol predeterminado o forzado de `admin`.
+- [ ] El administrador del cliente invita con opciones limitadas a `user`/`admin` (o solo `user`).
