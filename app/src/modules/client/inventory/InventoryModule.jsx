@@ -98,10 +98,10 @@ export default function InventoryModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+      <div className="flex flex-col md:flex-row justify-end items-start md:items-end gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-gradient-to-br from-[#e28ce9] to-[#fbabff] text-[#3e0047] font-bold px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_20px_rgba(241,153,247,0.3)] transition-all"
+          className="bg-[#85adff] text-[#091328] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <Plus size={18} /> Agregar Producto
         </button>

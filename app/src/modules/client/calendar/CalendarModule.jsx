@@ -74,10 +74,10 @@ export default function CalendarModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-gradient-to-br from-[#85adff] to-[#4b72ff] text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 shadow-lg shadow-[#4b72ff]/20 hover:scale-[1.02] transition-all"
+          className="bg-[#85adff] text-[#001b5c] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <Plus size={18} /> Nueva Cita
         </button>
