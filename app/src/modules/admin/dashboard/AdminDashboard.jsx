@@ -1,4 +1,4 @@
-import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus, Download, Bell } from 'lucide-react';
+import { TrendingUp, Users, Clock, AlertCircle, Sparkles, ArrowRight, Plus, Download, Bell, Package, Briefcase, Activity, CheckCircle, Percent } from 'lucide-react';
 import { useAdminAnalytics } from '../../../hooks/useAdminAnalytics';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -78,33 +78,100 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Activity & Featured Projects */}
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12">
-          
-          <div className="bg-[#091328] rounded-2xl p-8 space-y-6">
-            {Object.entries(analytics.modulePopularity).map(([modId, count]) => {
-              const maxCount = Math.max(...Object.values(analytics.modulePopularity), 1);
-              const percentage = Math.round((count / maxCount) * 100);
-              
-              return (
-                <div key={modId} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-bold text-[#dee5ff] uppercase tracking-wider">{modId}</span>
-                    <span className="text-[#85adff] font-black">{count} activaciones</span>
-                  </div>
-                  <div className="w-full h-3 bg-[#141f38] rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#85adff] to-[#fbabff] rounded-full transition-all duration-1000" 
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
+      {/* SaaS Stickiness Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* GMV Global */}
+        <div className="bg-[#141f38] border border-white/5 rounded-2xl p-6 hover:translate-y-[-4px] transition-all duration-300 group">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#85adff]/10 flex items-center justify-center group-hover:bg-[#85adff]/20 transition-colors">
+              <TrendingUp size={20} className="text-[#85adff]" />
+            </div>
+            <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+12.5%</span>
           </div>
+          <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">GMV Transaccional Global</p>
+          <h4 className="text-2xl font-black text-[#dee5ff]">S/ {analytics.stickiness.globalGMV.toLocaleString()}</h4>
+          <p className="text-[10px] text-[#40485d] mt-2 font-medium">Impacto económico procesado</p>
+        </div>
+
+        {/* CRM Contacts */}
+        <div className="bg-[#141f38] border border-white/5 rounded-2xl p-6 hover:translate-y-[-4px] transition-all duration-300 group">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#fbabff]/10 flex items-center justify-center group-hover:bg-[#fbabff]/20 transition-colors">
+              <Users size={20} className="text-[#fbabff]" />
+            </div>
+            <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+8%</span>
+          </div>
+          <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Contactos en CRM</p>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.globalContacts.toLocaleString()}</h4>
+          <p className="text-[10px] text-[#40485d] mt-2 font-medium">Leads y clientes capturados</p>
+        </div>
+
+        {/* Inventory SKUs */}
+        <div className="bg-[#141f38] border border-white/5 rounded-2xl p-6 hover:translate-y-[-4px] transition-all duration-300 group">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#85adff]/10 flex items-center justify-center group-hover:bg-[#85adff]/20 transition-colors">
+              <Package size={20} className="text-[#85adff]" />
+            </div>
+            <span className="text-[10px] font-black text-[#85adff] bg-[#85adff]/10 px-2 py-0.5 rounded-full">Sano</span>
+          </div>
+          <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">SKUs en Inventario</p>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.globalSkus.toLocaleString()}</h4>
+          <p className="text-[10px] text-[#40485d] mt-2 font-medium">Productos controlados</p>
+        </div>
+
+        {/* Seat Utilization */}
+        <div className="bg-[#141f38] border border-white/5 rounded-2xl p-6 hover:translate-y-[-4px] transition-all duration-300 group">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#ff716c]/10 flex items-center justify-center group-hover:bg-[#ff716c]/20 transition-colors">
+              <Activity size={20} className="text-[#ff716c]" />
+            </div>
+            <span className="text-[10px] font-black text-[#ff716c] bg-[#ff716c]/10 px-2 py-0.5 rounded-full">ALTA</span>
+          </div>
+          <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Utilización de Asientos</p>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.seatUtilization}%</h4>
+          <div className="w-full h-1 bg-[#1a264a] mt-3 rounded-full overflow-hidden">
+            <div className="h-full bg-[#ff716c]" style={{ width: `${analytics.stickiness.seatUtilization}%` }}></div>
+          </div>
+          <p className="text-[10px] text-[#40485d] mt-2 font-medium">{analytics.totalUsers} ocupados de {analytics.stickiness.totalMaxUsers}</p>
+        </div>
+      </div>
+
+      {/* Module Popularity List */}
+      <div className="bg-[#091328] rounded-2xl p-8 border border-white/5 relative overflow-hidden mb-12">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-2 h-2 bg-[#fbabff] rounded-full animate-pulse"></div>
+          <h3 className="text-[#dee5ff] font-black uppercase tracking-tighter text-base">Adopción por Módulo</h3>
         </div>
         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+          {Object.entries(analytics.modulePopularity).map(([modId, count]) => {
+            const maxCount = Math.max(...Object.values(analytics.modulePopularity), 1);
+            const percentage = Math.round((count / maxCount) * 100);
+            
+            return (
+              <div key={modId} className="space-y-3">
+                <div className="flex justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#85adff]"></span>
+                    <span className="font-bold text-[#dee5ff] uppercase tracking-[0.15em]">{modId}</span>
+                  </div>
+                  <span className="text-[#85adff] font-black">{count} organizadores</span>
+                </div>
+                <div className="w-full h-2 bg-[#141f38] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#85adff] via-[#fbabff] to-[#85adff] rounded-full transition-all duration-1000 bg-[length:200%_100%] animate-gradient-x" 
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Background Decorative */}
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none">
+          <Activity size={200} />
+        </div>
       </div>
       
       {/* Floating Action Button */}

@@ -37,10 +37,6 @@ export default function AdminBillingModule() {
   return (
     <div className="space-y-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-[#dee5ff] tracking-tight mb-2">Facturación SaaS</h1>
-          <p className="text-[#a3aac4] text-sm">Gestión de ingresos y suscripciones activas.</p>
-        </div>
         
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -73,7 +69,7 @@ export default function AdminBillingModule() {
           </div>
           <div>
             <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider">MRR Total</p>
-            <h3 className="text-2xl font-black text-[#dee5ff]">${totalMRR}</h3>
+            <h3 className="text-2xl font-black text-[#dee5ff]">S/ {totalMRR}</h3>
           </div>
         </div>
 
@@ -105,7 +101,6 @@ export default function AdminBillingModule() {
       {/* Tabla de Suscripciones */}
       <div className="bg-[#091328]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
         <div className="p-5 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]">
-          <h2 className="text-lg font-bold text-[#dee5ff]">Detalle de Suscripciones</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -135,7 +130,7 @@ export default function AdminBillingModule() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-[#dee5ff]">${planPrice ?? fallbackPrice}</span>
+                      <span className="text-sm font-bold text-[#dee5ff]">S/ {planPrice ?? fallbackPrice}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2 py-1 rounded bg-[#4ADE80]/10 text-[#4ADE80] text-[10px] uppercase font-bold">

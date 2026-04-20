@@ -32,12 +32,7 @@ const SUBSCRIPTION_PLANS = {
   business: { 
     name: 'Business', 
     modules: ['crm', 'inventory', 'sales', 'projects'], 
-    limits: { users: 10 } 
-  },
-  enterprise: { 
-    name: 'Enterprise', 
-    modules: ['crm', 'inventory', 'sales', 'projects', 'finance', 'calendar'], 
-    limits: { users: 100 } 
+    limits: { users: 4 } 
   }
 };
 
@@ -64,18 +59,25 @@ export function AuthProvider({ children }) {
         const isUserAdmin = user.role === 'admin';
         
         if (isUserAdmin) {
-          // SUPER ADMIN: Cargar todas las organizaciones y todos los usuarios
-          const [orgsSnap, usersSnap] = await Promise.all([
+          // SUPER ADMIN: Cargar todas las organizaciones, usuarios y LOGS
+          const [orgsSnap, usersSnap, logsSnap] = await Promise.all([
             getDocs(collection(db, 'organizations')),
-            getDocs(collection(db, 'users'))
+            getDocs(collection(db, 'users')),
+            getDocs(query(collection(db, 'audit_logs'), where('timestamp', '!=', null))) // Usamos query con filtro para asegurar orden o limit si se desea
           ]);
           
           const orgData = orgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           const userData = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+          const logsData = logsSnap.docs.map(d => ({ 
+            id: d.id, 
+            ...d.data(),
+            timestamp: d.data().timestamp?.toDate().toISOString() || new Date().toISOString()
+          })).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
           
           setMockOrganizations(orgData);
           setMockUsers(userData);
-          console.log("SuperAdmin data loaded:", orgData.length, "orgs");
+          setMockActivityLogs(logsData);
+          console.log("SuperAdmin data loaded:", orgData.length, "orgs,", logsData.length, "logs");
         } else if (user.organizationId) {
           // CLIENTE: Cargar solo su organización y su equipo
           const usersRef = collection(db, 'users');
@@ -100,17 +102,27 @@ export function AuthProvider({ children }) {
   }, [user]);
 
 
-  const addLog = (action, details, type = 'info') => {
+  const addLog = async (action, details, type = 'info', orgId = null) => {
     const newLog = {
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
+      timestamp: serverTimestamp(),
       user: user?.name || 'Sistema',
-      userId: user?.id,
+      userId: user?.id || 'system',
+      orgId: orgId || user?.organizationId || null,
       action,
       details,
       type
     };
-    setMockActivityLogs(prev => [newLog, ...prev]);
+
+    try {
+      // 1. Guardar en Firestore para persistencia real
+      const docRef = await addDoc(collection(db, 'audit_logs'), newLog);
+      
+      // 2. Actualizar estado local para UI inmediata
+      const logWithId = { id: docRef.id, ...newLog, timestamp: new Date().toISOString() };
+      setMockActivityLogs(prev => [logWithId, ...prev]);
+    } catch (error) {
+      console.error("Error saving audit log:", error);
+    }
   };
 
   useEffect(() => {
@@ -304,7 +316,7 @@ export function AuthProvider({ children }) {
     setUser(userWithSub);
     sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
     
-    addLog('Impersonation Start', `Administrador inició suplantación de ${targetUser.name} (Org: ${targetUser.organizationName || 'N/A'})`, 'warning');
+    addLog('Impersonation Start', `Administrador inició suplantación de ${targetUser.name} (Org: ${targetUser.organizationName || 'N/A'})`, 'warning', targetUser.organizationId);
 
     // Redirigir al dashboard cliente
     navigate('/client/dashboard');
@@ -353,38 +365,49 @@ export function AuthProvider({ children }) {
         } : o
       ));
       
-      addLog('Modules Updated', `Módulos actualizados para organización ${orgId}`, 'info');
+      addLog('Modules Updated', `Módulos actualizados para organización ${orgId}`, 'info', orgId);
     } catch (error) {
       console.error("Error updating org modules:", error);
     }
   };
 
-  // Crear Organización Real en Firestore
+  // Crear Organización COMPLETA en Firestore (con opción de primer admin)
   const adminCreateOrg = async (orgData) => {
-    const planId = 'startup'; // Por defecto para nuevas orgs
+    const planId = orgData.planId || 'startup';
     const newOrg = {
       name: orgData.name,
       ruc: orgData.ruc || '',
       address: orgData.address || '',
       status: 'active',
-      industry: 'Tecnología',
+      industry: 'Tecnología', // Fallback
       createdAt: serverTimestamp(),
       subscription: {
         planId,
-        activeModules: SUBSCRIPTION_PLANS[planId].modules,
+        activeModules: orgData.activeModules && orgData.activeModules.length > 0 
+          ? orgData.activeModules 
+          : SUBSCRIPTION_PLANS[planId].modules,
         limits: SUBSCRIPTION_PLANS[planId].limits,
-        maxUsers: orgData.maxUsers || SUBSCRIPTION_PLANS[planId].limits.users
+        maxUsers: Number(orgData.maxUsers) || SUBSCRIPTION_PLANS[planId].limits.users
       }
     };
 
     try {
+      // 1. Crear Organización
       const docRef = await addDoc(collection(db, 'organizations'), newOrg);
       const createdOrg = { id: docRef.id, ...newOrg };
       
-      // Actualizamos localmente para feedback inmediato (opcional, mejor con listeners)
       setMockOrganizations(prev => [...prev, createdOrg]);
-      
-      addLog('Org Created', `Nueva organización creada en DB: ${newOrg.name}`, 'success');
+      addLog('Org Created', `Nueva organización creada: ${newOrg.name}`, 'success', docRef.id);
+
+      // 2. Si se proporcionó email de admin, crearlo automáticamente
+      if (orgData.adminEmail && orgData.adminName) {
+        await adminCreateUser(docRef.id, orgData.name, {
+          email: orgData.adminEmail,
+          name: orgData.adminName,
+          role: 'admin'
+        });
+      }
+
       return createdOrg;
     } catch (error) {
       console.error("Error creating org in Firestore:", error);
@@ -430,7 +453,7 @@ export function AuthProvider({ children }) {
         } : o
       ));
 
-      addLog('Org Updated', `Organización ${data.name} actualizada completamente en DB`, 'success');
+      addLog('Org Updated', `Organización ${data.name} actualizada completamente en DB`, 'success', orgId);
       return { success: true };
     } catch (error) {
       console.error("Error updating full org in Firestore:", error);
@@ -471,7 +494,7 @@ export function AuthProvider({ children }) {
 
       setMockUsers(prev => [...prev, createdUser]);
       
-      addLog('User Invited', `Usuario invitado en DB a ${orgName}: ${userData.email}`, 'info');
+      addLog('User Invited', `Usuario invitado en DB a ${orgName}: ${userData.email}`, 'info', orgId);
 
       return { success: true, inviteToken };
     } catch (error) {
@@ -520,7 +543,7 @@ export function AuthProvider({ children }) {
         } : u
       ));
 
-      addLog('Password Setup', `Usuario ${targetUser.email} configuró su cuenta correctamente en Auth y DB.`, 'success');
+      addLog('Password Setup', `Usuario ${targetUser.email} configuró su cuenta correctamente en Auth y DB.`, 'success', targetUser.organizationId);
 
       return { success: true };
     } catch (error) {
@@ -555,7 +578,7 @@ export function AuthProvider({ children }) {
         o.id === orgId ? { ...o, ...updateData } : o
       ));
 
-      addLog('Org Updated', `Datos de organización ${orgId} actualizados en DB`, 'info');
+      addLog('Org Updated', `Datos de organización ${orgId} actualizados en DB`, 'info', orgId);
     } catch (error) {
       console.error("Error updating org:", error);
     }
@@ -566,7 +589,7 @@ export function AuthProvider({ children }) {
     try {
       await deleteDoc(doc(db, 'organizations', orgId));
       setMockOrganizations(prev => prev.filter(o => o.id !== orgId));
-      addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger');
+      addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger', orgId);
     } catch (error) {
       console.error("Error removing org:", error);
     }
