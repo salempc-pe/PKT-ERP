@@ -32,7 +32,16 @@ export default function AdminClients() {
   const [isInviting, setIsInviting] = useState(false);
 
   // Forms State
-  const [newOrgData, setNewOrgData] = useState({ name: '', ruc: '', address: '', maxUsers: 5 });
+  const [newOrgData, setNewOrgData] = useState({ 
+    name: '', 
+    ruc: '', 
+    address: '', 
+    maxUsers: 5,
+    planId: 'startup',
+    activeModules: [],
+    adminName: '',
+    adminEmail: ''
+  });
   
   // Unified Edit State
   const [editOrgState, setEditOrgState] = useState({
@@ -60,17 +69,42 @@ export default function AdminClients() {
     org.users.some(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  // --- Handlers Generales ---
+  const handleToggleModule = (moduleId, setState) => {
+    setState(prev => ({
+      ...prev,
+      activeModules: prev.activeModules.includes(moduleId)
+        ? prev.activeModules.filter(id => id !== moduleId)
+        : [...prev.activeModules, moduleId]
+    }));
+  };
+
+  const handleSetPlan = (planId, plan, setState) => {
+    setState(prev => ({
+      ...prev,
+      planId,
+      maxUsers: plan.limits.users
+    }));
+  };
+
   // --- Handlers para Organizaciones ---
   const handleCreateOrg = async (e) => {
     e.preventDefault();
     if (!newOrgData.name.trim()) return;
     
+    setIsSaving(true);
     try {
       await adminCreateOrg(newOrgData);
-      setNewOrgData({ name: '', ruc: '', address: '', maxUsers: 5 });
+      setNewOrgData({ 
+        name: '', ruc: '', address: '', maxUsers: 5, 
+        planId: 'startup', activeModules: [], 
+        adminName: '', adminEmail: '' 
+      });
       setIsNewOrgModalOpen(false);
     } catch (error) {
       alert("Error al crear la organización: " + error.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -87,14 +121,6 @@ export default function AdminClients() {
     setIsEditOrgModalOpen(true);
   };
 
-  const handleToggleModuleInEdit = (moduleId) => {
-    setEditOrgState(prev => ({
-      ...prev,
-      activeModules: prev.activeModules.includes(moduleId)
-        ? prev.activeModules.filter(id => id !== moduleId)
-        : [...prev.activeModules, moduleId]
-    }));
-  };
 
   const handleSaveFullOrg = async () => {
     setIsSaving(true);
@@ -153,10 +179,6 @@ export default function AdminClients() {
     <div className="space-y-8 animate-fade-in relative pb-20">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-[#dee5ff] tracking-tight mb-2">Inquilinos & Organizaciones</h1>
-          <p className="text-[#a3aac4] text-sm">Panel de control de empresas y acceso a módulos real.</p>
-        </div>
         
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -171,9 +193,9 @@ export default function AdminClients() {
           </div>
           <button 
             onClick={() => setIsNewOrgModalOpen(true)}
-            className="bg-gradient-to-r from-[#85adff] to-[#fbabff] hover:opacity-90 text-[#060e20] flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-lg"
+            className="group bg-[#85adff] hover:bg-[#a3c4ff] text-[#060e20] flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shadow-xl shadow-[#85adff]/10 hover:scale-105 active:scale-95"
           >
-            <Plus size={18} />
+            <Plus size={20} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
             <span>Nueva Organización</span>
           </button>
         </div>
@@ -250,36 +272,184 @@ export default function AdminClients() {
       {/* --- MODAL: NUEVA ORGANIZACIÓN --- */}
       {isNewOrgModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-[#091328] border border-[#40485d]/50 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden shadow-[#85adff]/5">
-            <div className="p-8 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]/60">
-              <h2 className="text-2xl font-black text-[#dee5ff] tracking-tight">Nueva Organización</h2>
-              <button onClick={() => setIsNewOrgModalOpen(false)} className="text-[#a3aac4] hover:text-[#fbabff] transition-colors">
+          <div className="bg-[#091328] border border-[#40485d]/50 rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden relative">
+            {isSaving && (
+              <div className="absolute inset-0 z-[60] bg-[#060e20]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
+                  <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#85adff] animate-pulse" size={24} />
+                </div>
+                <p className="mt-4 text-[#85adff] font-bold tracking-[0.3em] text-[10px] uppercase animate-pulse">
+                  Creando organización...
+                </p>
+              </div>
+            )}
+            {/* CABECERA FIJA */}
+            <div className="p-8 border-b border-[#40485d]/30 flex justify-between items-center bg-[#060e20]/90 backdrop-blur-md">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff]">
+                  <Building2 size={24} />
+                </div>
+                <div>
+                  <p className="text-xs text-[#a3aac4] font-medium uppercase tracking-widest leading-none mb-1">Nueva Organización</p>
+                  <h2 className="text-2xl font-black text-[#dee5ff] leading-none">{newOrgData.name || 'Registro de Empresa'}</h2>
+                </div>
+              </div>
+              <button onClick={() => setIsNewOrgModalOpen(false)} className="p-3 text-[#a3aac4] hover:text-[#fbabff] transition-all">
                 <X size={24} />
               </button>
             </div>
-            
-            <form onSubmit={handleCreateOrg} className="p-8 space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#a3aac4] uppercase mb-2 ml-1">Nombre de la Empresa</label>
-                  <input 
-                    required type="text" placeholder="Ej. TechCorp S.A.C" 
-                    value={newOrgData.name} onChange={e => setNewOrgData({...newOrgData, name: e.target.value})}
-                    className="w-full bg-[#060e20] border border-[#40485d]/50 text-[#dee5ff] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#85adff]/50 transition-all shadow-inner" 
-                  />
+
+            {/* CONTENIDO DESPLAZABLE */}
+            <form onSubmit={handleCreateOrg} className="flex-grow overflow-y-auto custom-scrollbar p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                {/* Columna Izquierda: Datos y Plan */}
+                <div className="lg:col-span-3 space-y-10">
+                  {/* Datos Básicos */}
+                  <section className="space-y-6">
+                    <h3 className="text-sm font-black text-[#85adff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Box size={16} /> Información General
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">Razón Social</label>
+                        <input 
+                          required type="text" value={newOrgData.name} 
+                          onChange={e => setNewOrgData({...newOrgData, name: e.target.value})}
+                          placeholder="Ej. TechCorp S.A.C"
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">RUC</label>
+                        <input 
+                          type="text" value={newOrgData.ruc} 
+                          onChange={e => setNewOrgData({...newOrgData, ruc: e.target.value})}
+                          placeholder="20123456789"
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase ml-1">Dirección Fiscal</label>
+                        <input 
+                          type="text" value={newOrgData.address} 
+                          onChange={e => setNewOrgData({...newOrgData, address: e.target.value})}
+                          className="w-full bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-2xl px-5 py-4 text-sm focus:border-[#85adff]/50 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Planes y Límite */}
+                  <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
+                    <h3 className="text-sm font-black text-[#fbabff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <HeartPulse size={16} /> Plan & Capacidad
+                    </h3>
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      {Object.entries(SUBSCRIPTION_PLANS).map(([id, plan]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => handleSetPlan(id, plan, setNewOrgData)}
+                          className={`p-4 rounded-2xl border text-left transition-all ${newOrgData.planId === id ? 'bg-[#85adff]/10 border-[#85adff]/50 ring-1 ring-[#85adff]/50' : 'bg-[#141f38]/50 border-[#40485d]/20 hover:border-[#40485d]/50'}`}
+                        >
+                          <p className={`text-[10px] font-black uppercase mb-1 ${newOrgData.planId === id ? 'text-[#85adff]' : 'text-[#a3aac4]'}`}>{plan.name}</p>
+                          <p className="text-white text-xs font-bold">{plan.limits.users} Users</p>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-[#40485d]/10">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase">Límite de Usuarios Manual</label>
+                        <span className="text-lg font-black text-[#fbabff]">{newOrgData.maxUsers}</span>
+                      </div>
+                      <input 
+                        type="range" min="1" max="500" step="1"
+                        value={newOrgData.maxUsers} 
+                        onChange={e => setNewOrgData({...newOrgData, maxUsers: Number(e.target.value)})}
+                        className="w-full h-1.5 bg-[#091328] rounded-lg appearance-none cursor-pointer accent-[#fbabff]"
+                      />
+                    </div>
+                  </section>
+
+                  {/* Cuenta de Administrador */}
+                  <section className="space-y-6 bg-[#f0f7ff] p-6 rounded-[2rem] border border-[#85adff]/30 shadow-xl">
+                    <p className="text-[10px] font-black text-[#5676b8] uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                      <Mail size={14} /> Cuenta de Administrador
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#5676b8]/70 uppercase ml-1">Nombre Completo</label>
+                        <input 
+                          required type="text" placeholder="Primer Admin" 
+                          value={newOrgData.adminName} onChange={e => setNewOrgData({...newOrgData, adminName: e.target.value})}
+                          className="w-full bg-white border border-[#85adff]/30 text-[#060e20] rounded-xl px-4 py-3 text-sm focus:border-[#85adff] outline-none transition-all placeholder:text-[#5676b8]/30" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-[#5676b8]/70 uppercase ml-1">Correo Corporativo</label>
+                        <input 
+                          required type="email" placeholder="admin@empresa.com" 
+                          value={newOrgData.adminEmail} onChange={e => setNewOrgData({...newOrgData, adminEmail: e.target.value})}
+                          className="w-full bg-white border border-[#85adff]/30 text-[#060e20] rounded-xl px-4 py-3 text-sm focus:border-[#85adff] outline-none transition-all placeholder:text-[#5676b8]/30" 
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-[#5676b8]/50 italic text-center">Se enviará automáticamente un enlace de activación de contraseña a este correo.</p>
+                  </section>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#a3aac4] uppercase mb-2 ml-1">RUC (Opcional)</label>
-                  <input 
-                    type="text" placeholder="20123456789" 
-                    value={newOrgData.ruc} onChange={e => setNewUserInOrg({...newOrgData, ruc: e.target.value})}
-                    className="w-full bg-[#060e20] border border-[#40485d]/50 text-[#dee5ff] rounded-2xl px-5 py-4 focus:outline-none focus:border-[#85adff]/50 transition-all" 
-                  />
+
+                {/* Columna Derecha: Módulos */}
+                <div className="lg:col-span-2 space-y-8 flex flex-col pt-2">
+                  <section className="space-y-6 flex-grow">
+                    <h3 className="text-sm font-black text-[#4ADE80] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Box size={16} /> Módulos Incluidos
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      {AVAILABLE_MODULES.map(module => {
+                        const isActive = newOrgData.activeModules.includes(module.id);
+                        return (
+                          <div
+                            key={module.id}
+                            onClick={() => handleToggleModule(module.id, setNewOrgData)}
+                            className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-200 group ${isActive ? 'bg-[#4ADE80]/10 border-[#4ADE80]/40 text-[#4ADE80] shadow-[0_0_15px_rgba(74,222,128,0.05)]' : 'bg-[#060e20]/40 border-[#40485d]/20 text-[#a3aac4] hover:border-[#40485d]/50'}`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Box size={18} className={isActive ? 'animate-pulse' : 'opacity-40'} />
+                              <span className="text-sm font-bold tracking-tight">{module.name}</span>
+                            </div>
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-[#4ADE80] text-[#060e20] scale-110' : 'bg-[#091328] border border-[#40485d]/30 group-hover:border-[#40485d]/60'}`}>
+                              {isActive && <Check size={14} strokeWidth={4} />}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+
+                  {/* PIE DE PÁGINA (Botón de Envío) */}
+                  <div className="pt-8">
+                    <button 
+                      type="submit"
+                      disabled={isSaving}
+                      className="w-full py-6 bg-[#85adff] text-[#060e20] font-black rounded-2xl shadow-xl shadow-[#85adff]/10 hover:bg-[#a3c4ff] hover:shadow-[#85adff]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-lg"
+                    >
+                      {isSaving ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-[#060e20] border-t-transparent animate-spin rounded-full"></div>
+                          Iniciando...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={20} /> Crear Organización
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button type="submit" className="w-full py-5 bg-gradient-to-r from-[#85adff] to-[#fbabff] text-[#060e20] font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                Crear Registro
-              </button>
             </form>
           </div>
         </div>
@@ -307,7 +477,6 @@ export default function AdminClients() {
                   <Building2 size={24} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-[#dee5ff] leading-none mb-1">Configurar Equipo</h2>
                   <p className="text-xs text-[#a3aac4] font-medium uppercase tracking-widest">{selectedOrg?.name}</p>
                 </div>
               </div>
@@ -369,11 +538,8 @@ export default function AdminClients() {
                       {Object.entries(SUBSCRIPTION_PLANS).map(([id, plan]) => (
                         <button
                           key={id}
-                          onClick={() => setEditOrgState(prev => ({ 
-                            ...prev, 
-                            planId: id,
-                            maxUsers: plan.limits.users 
-                          }))}
+                          type="button"
+                          onClick={() => handleSetPlan(id, plan, setEditOrgState)}
                           className={`p-4 rounded-2xl border text-left transition-all ${editOrgState.planId === id ? 'bg-[#85adff]/10 border-[#85adff]/50 ring-1 ring-[#85adff]/50' : 'bg-[#141f38]/50 border-[#40485d]/20 hover:border-[#40485d]/50'}`}
                         >
                           <p className={`text-[10px] font-black uppercase mb-1 ${editOrgState.planId === id ? 'text-[#85adff]' : 'text-[#a3aac4]'}`}>{plan.name}</p>
@@ -437,20 +603,20 @@ export default function AdminClients() {
                     </div>
 
                     {/* Invitación por Correo */}
-                    <form onSubmit={handleAddUser} className="bg-gradient-to-br from-[#141f38] to-[#091328] p-6 rounded-[2rem] border border-[#85adff]/20 space-y-4 shadow-xl">
-                      <p className="text-[10px] font-black text-[#85adff] uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                    <form onSubmit={handleAddUser} className="bg-[#f0f7ff] p-6 rounded-[2rem] border border-[#85adff]/30 space-y-4 shadow-xl">
+                      <p className="text-[10px] font-black text-[#5676b8] uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
                         <Mail size={14} /> Invitar Administrador
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input 
                           required type="text" placeholder="Nombre completo" 
                           value={newUserInOrg.name} onChange={e => setNewUserInOrg({...newUserInOrg, name: e.target.value})}
-                          className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff]/50" 
+                          className="bg-white border border-[#85adff]/30 text-[#060e20] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff] placeholder:text-[#5676b8]/30" 
                         />
                         <input 
                           required type="email" placeholder="Correo corporativo" 
                           value={newUserInOrg.email} onChange={e => setNewUserInOrg({...newUserInOrg, email: e.target.value})}
-                          className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff]/50" 
+                          className="bg-white border border-[#85adff]/30 text-[#060e20] rounded-xl px-4 py-3 text-xs outline-none focus:border-[#85adff] placeholder:text-[#5676b8]/30" 
                         />
                       </div>
                       <button 
@@ -485,7 +651,7 @@ export default function AdminClients() {
                         return (
                           <div
                             key={module.id}
-                            onClick={() => handleToggleModuleInEdit(module.id)}
+                            onClick={() => handleToggleModule(module.id, setEditOrgState)}
                             className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all duration-200 group ${isActive ? 'bg-[#4ADE80]/10 border-[#4ADE80]/40 text-[#4ADE80] shadow-[0_0_15px_rgba(74,222,128,0.05)]' : 'bg-[#060e20]/40 border-[#40485d]/20 text-[#a3aac4] hover:border-[#40485d]/50'}`}
                           >
                             <div className="flex items-center gap-3">
@@ -509,7 +675,7 @@ export default function AdminClients() {
               <button 
                 onClick={handleSaveFullOrg}
                 disabled={isSaving}
-                className="w-full py-6 bg-gradient-to-r from-[#4ADE80] to-[#85adff] text-[#060e20] font-black rounded-2xl shadow-xl shadow-[#4ADE80]/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg"
+                className="w-full py-6 bg-[#4ADE80] text-[#060e20] font-black rounded-2xl shadow-xl shadow-[#4ADE80]/10 hover:bg-[#63e695] hover:shadow-[#4ADE80]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-lg"
               >
                 {isSaving ? (
                   <>

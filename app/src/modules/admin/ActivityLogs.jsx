@@ -37,10 +37,6 @@ export default function ActivityLogs() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-[#dee5ff] tracking-tight mb-2">Auditoría de Actividad</h1>
-          <p className="text-[#a3aac4] text-sm">Historial cronológico de acciones en la plataforma.</p>
-        </div>
 
         <div className="flex gap-4">
           <div className="relative">

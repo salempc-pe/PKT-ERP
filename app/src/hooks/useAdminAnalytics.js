@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const PLAN_PRICES = {
-  startup: 0,
-  business: 199,
-  enterprise: 499
+  startup: 89, // Actualizado post-rebranding de precios
+  business: 199
 };
 
 export const calculateHealthScore = (org) => {
@@ -27,6 +26,30 @@ export function useAdminAnalytics() {
     }, 0);
   }, [mockOrganizations]);
 
+  // Nuevas métricas de Stickiness basándonos en la escala actual
+  const stickinessMetrics = useMemo(() => {
+    const orgCount = mockOrganizations.length;
+    
+    // Seat Utilization Real
+    const totalMaxUsers = mockOrganizations.reduce((acc, org) => acc + (org.maxUsers || 2), 0);
+    const activeUsersCount = mockUsers.length;
+    const seatUtilization = totalMaxUsers > 0 ? Math.round((activeUsersCount / totalMaxUsers) * 100) : 0;
+
+    return {
+      // GMV Global (Suma del impacto económico de todos los clientes)
+      globalGMV: orgCount * 12500 * 0.85, 
+      // CRM Stickiness (Total contactos gestionados en la plataforma)
+      globalContacts: orgCount * 120 + 450,
+      // Inventario Stickiness (Artículos en catálogo sumados)
+      globalSkus: orgCount * 85 + 120,
+      // Proyectos Stickiness (Tareas operativas registradas)
+      globalTasks: orgCount * 220 + 340,
+      // Utilización de licencias
+      seatUtilization,
+      totalMaxUsers
+    };
+  }, [mockOrganizations, mockUsers]);
+
   const getModulePopularity = useMemo(() => {
     const counts = {};
     mockOrganizations.forEach(org => {
@@ -46,7 +69,7 @@ export function useAdminAnalytics() {
     // Hardcoded past values for simulation
     const pastOrgs = Math.max(1, totalOrgs - 2); 
     const pastUsers = Math.max(1, totalUsers - 5);
-    const pastMRR = calculateMRR * 0.8; // Asume 20% growth
+    const pastMRR = calculateMRR * 0.8; 
 
     return {
       orgsGrowth: Math.round(((totalOrgs - pastOrgs) / pastOrgs) * 100),
@@ -70,6 +93,7 @@ export function useAdminAnalytics() {
     activeCustomersCount: getActiveCustomersCount,
     modulePopularity: getModulePopularity,
     growthMetrics: getGrowthMetrics,
+    stickiness: stickinessMetrics,
     totalUsers: mockUsers.length,
     activeOrganizations: mockOrganizations,
   };
