@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
           const [orgsSnap, usersSnap, logsSnap] = await Promise.all([
             getDocs(collection(db, 'organizations')),
             getDocs(collection(db, 'users')),
-            getDocs(query(collection(db, 'audit_logs'), where('timestamp', '!=', null))) // Usamos query con filtro para asegurar orden o limit si se desea
+            getDocs(collection(db, 'audit_logs')) 
           ]);
           
           const orgData = orgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
