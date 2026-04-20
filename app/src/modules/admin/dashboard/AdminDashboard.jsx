@@ -34,10 +34,10 @@ export default function AdminDashboard() {
                 <Download size={14} strokeWidth={3} /> Exportar JSON
               </button>
             </div>
-            <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">S/ {analytics.mrr}</h3>
+            <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">S/ {analytics?.mrr || 0}</h3>
             <div className="flex items-center gap-2 text-[#fbabff]">
               <TrendingUp size={16} />
-              <span className="text-sm font-bold">{analytics.growthMetrics.mrrGrowth > 0 ? '+' : ''}{analytics.growthMetrics.mrrGrowth}% vs mes anterior</span>
+              <span className="text-sm font-bold">{analytics.growthMetrics?.mrrGrowth > 0 ? '+' : ''}{analytics.growthMetrics?.mrrGrowth || 0}% vs mes anterior</span>
             </div>
           </div>
           
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
           <div className="bg-[#141f38] rounded-xl p-6 flex items-center justify-between group hover:bg-[#192540] transition-colors">
             <div>
               <p className="text-[#a3aac4] text-sm font-semibold mb-1">Total Organizaciones</p>
-              <h4 className="text-4xl font-black text-[#dee5ff]">{analytics.activeOrganizations.length}</h4>
+              <h4 className="text-4xl font-black text-[#dee5ff]">{analytics?.activeOrganizations?.length || 0}</h4>
             </div>
             <div className="w-14 h-14 rounded-full bg-[#192540] flex items-center justify-center group-hover:scale-110 transition-transform">
               <Users size={28} className="text-[#85adff]" />
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
           <div className="bg-[#141f38] rounded-xl p-6 flex items-center justify-between group hover:bg-[#192540] transition-colors">
             <div>
               <p className="text-[#a3aac4] text-sm font-semibold mb-1">ARPU (Ingreso Promedio)</p>
-              <h4 className="text-4xl font-black text-[#dee5ff]">S/ {analytics.arpu}</h4>
+              <h4 className="text-4xl font-black text-[#dee5ff]">S/ {analytics?.arpu || 0}</h4>
             </div>
             <div className="w-14 h-14 rounded-full bg-[#ff716c]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Clock size={28} className="text-[#ff716c]" />
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+12.5%</span>
           </div>
           <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">GMV Transaccional Global</p>
-          <h4 className="text-2xl font-black text-[#dee5ff]">S/ {analytics.stickiness.globalGMV.toLocaleString()}</h4>
+          <h4 className="text-2xl font-black text-[#dee5ff]">S/ {analytics.stickiness?.globalGMV?.toLocaleString() || '0'}</h4>
           <p className="text-[10px] text-[#40485d] mt-2 font-medium">Impacto económico procesado</p>
         </div>
 
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
             <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+8%</span>
           </div>
           <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Contactos en CRM</p>
-          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.globalContacts.toLocaleString()}</h4>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness?.globalContacts?.toLocaleString() || '0'}</h4>
           <p className="text-[10px] text-[#40485d] mt-2 font-medium">Leads y clientes capturados</p>
         </div>
 
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
             <span className="text-[10px] font-black text-[#85adff] bg-[#85adff]/10 px-2 py-0.5 rounded-full">Sano</span>
           </div>
           <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">SKUs en Inventario</p>
-          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.globalSkus.toLocaleString()}</h4>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness?.globalSkus?.toLocaleString() || '0'}</h4>
           <p className="text-[10px] text-[#40485d] mt-2 font-medium">Productos controlados</p>
         </div>
 
@@ -128,11 +128,11 @@ export default function AdminDashboard() {
             <span className="text-[10px] font-black text-[#ff716c] bg-[#ff716c]/10 px-2 py-0.5 rounded-full">ALTA</span>
           </div>
           <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Utilización de Asientos</p>
-          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness.seatUtilization}%</h4>
+          <h4 className="text-2xl font-black text-[#dee5ff]">{analytics.stickiness?.seatUtilization || 0}%</h4>
           <div className="w-full h-1 bg-[#1a264a] mt-3 rounded-full overflow-hidden">
-            <div className="h-full bg-[#ff716c]" style={{ width: `${analytics.stickiness.seatUtilization}%` }}></div>
+            <div className="h-full bg-[#ff716c]" style={{ width: `${analytics.stickiness?.seatUtilization || 0}%` }}></div>
           </div>
-          <p className="text-[10px] text-[#40485d] mt-2 font-medium">{analytics.totalUsers} ocupados de {analytics.stickiness.totalMaxUsers}</p>
+          <p className="text-[10px] text-[#40485d] mt-2 font-medium">{analytics.totalUsers || 0} ocupados de {analytics.stickiness?.totalMaxUsers || 0}</p>
         </div>
       </div>
 
@@ -144,8 +144,8 @@ export default function AdminDashboard() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-          {Object.entries(analytics.modulePopularity).map(([modId, count]) => {
-            const maxCount = Math.max(...Object.values(analytics.modulePopularity), 1);
+          {Object.entries(analytics?.modulePopularity || {}).map(([modId, count]) => {
+            const maxCount = Math.max(...Object.values(analytics?.modulePopularity || {}), 1);
             const percentage = Math.round((count / maxCount) * 100);
             
             return (
