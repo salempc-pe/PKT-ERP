@@ -60,19 +60,25 @@ export function AuthProvider({ children }) {
         
         if (isUserAdmin) {
           // SUPER ADMIN: Cargar todas las organizaciones, usuarios y LOGS
-          const [orgsSnap, usersSnap, logsSnap] = await Promise.all([
+          const [orgsSnap, usersSnap] = await Promise.all([
             getDocs(collection(db, 'organizations')),
-            getDocs(collection(db, 'users')),
-            getDocs(collection(db, 'audit_logs')) 
+            getDocs(collection(db, 'users'))
           ]);
+          
+          let logsData = [];
+          try {
+            const logsSnap = await getDocs(collection(db, 'audit_logs'));
+            logsData = logsSnap.docs.map(d => ({ 
+              id: d.id, 
+              ...d.data(),
+              timestamp: d.data().timestamp?.toDate().toISOString() || new Date().toISOString()
+            })).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+          } catch (logError) {
+            console.warn("Could not load audit logs (permissions?):", logError);
+          }
           
           const orgData = orgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           const userData = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-          const logsData = logsSnap.docs.map(d => ({ 
-            id: d.id, 
-            ...d.data(),
-            timestamp: d.data().timestamp?.toDate().toISOString() || new Date().toISOString()
-          })).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
           
           setMockOrganizations(orgData);
           setMockUsers(userData);
