@@ -438,5 +438,18 @@
 
 **Verification**:
 - [ ] En el panel de SuperAdmin se distingue claramente con un indicador visual quién es `admin` y quién `user`.
-- [ ] El SuperAdmin invita con rol predeterminado o forzado de `admin`.
-- [ ] El administrador del cliente invita con opciones limitadas a `user`/`admin` (o solo `user`).
+- [x] El SuperAdmin invita con rol predeterminado o forzado de `admin`.
+- [x] El administrador del cliente invita con opciones limitadas a `user`/`admin` (o solo `user`).
+
+---
+
+### Phase 26: Rediseño Analítico del SuperAdmin Dashboard
+**Status**: ⬜ Not Started
+**Objective**: Transformar el Dashboard del SuperAdmin en un panel de inteligencia de producto SaaS. Implementar tarjetas de estado por módulo y métricas de "stickiness" basadas en utilización real.
+**Depends on**: Phase 25
+
+**Tasks**:
+- [ ] TBD (run /plan 26 to create)
+
+**Verification**:
+- TBD

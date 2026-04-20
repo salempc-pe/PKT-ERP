@@ -1,15 +1,12 @@
 # GSD State
 
 ## Current Position
-- **Sprint**: real-auth-flow
-- **Status**: Sprint in progress
-- **Milestone**: (paused if active)
+- **Sprint**: none
+- **Status**: Fase 26 agregada al roadmap
+- **Milestone**: Dashboard Analytics & Reporting
 
 ## Last Session Summary
-Fase 25 ejecutada exitosamente.
-- Finalizada simplificación de roles (Admin/User).
-- Implementados estados de carga visuales en modales críticos.
-- Depuración de UI: eliminada suplantación y corregidas etiquetas de rol.
+Fase 26 (Rediseño Analítico del SuperAdmin Dashboard) agregada con tarjetas de KPIs por uso de módulos y remoción de tarjetas obsoletas del sistema.
 
 ## Next Steps
-1. /plan 26 - Dashboard Analytics & Reporting
+1. Executar /plan 26 para definir las tareas del rediseño del dashboard.
