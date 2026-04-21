@@ -470,3 +470,18 @@
 
 **Verification**:
 - [x] VERIFICATION.md (PASS)
+
+---
+
+### Phase 28: Módulo de Compras (Gestión de Proveedores)
+**Status**: 🚀 In Progress (run /execute 28 to start)
+**Objective**: Implementar la gestión de proveedores y órdenes de compra, integrando la recepción de mercadería con el stock del Inventario.
+**Depends on**: Phase 27
+
+**Tasks**:
+- [ ] Plan 28.1: Maestros de Proveedores (Hook y CRUD)
+- [ ] Plan 28.2: Órdenes de Compra e Integración con Inventario
+- [ ] Plan 28.3: Registro del Módulo y UI Integration
+
+**Verification**:
+- TBD
