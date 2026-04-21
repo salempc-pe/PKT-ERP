@@ -31,7 +31,7 @@ const SUBSCRIPTION_PLANS = {
   },
   business: { 
     name: 'Business', 
-    modules: ['crm', 'inventory', 'sales', 'projects'], 
+    modules: ['crm', 'inventory', 'sales', 'projects', 'purchases'], 
     limits: { users: 4 } 
   }
 };

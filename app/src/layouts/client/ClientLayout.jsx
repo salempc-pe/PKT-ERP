@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield, ShoppingCart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -209,6 +209,20 @@ export default function ClientLayout() {
             >
               <FileText size={20} />
               <span>Ventas y Facturas</span>
+            </Link>
+          )}
+
+          {user?.subscription?.activeModules?.includes('purchases') && (
+            <Link 
+              to="/client/purchases" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+              style={isActive('/client/purchases') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+              onMouseEnter={e => { if (!isActive('/client/purchases')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
+              onMouseLeave={e => { if (!isActive('/client/purchases')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <ShoppingCart size={20} />
+              <span>Compras y Proveedores</span>
             </Link>
           )}
   
