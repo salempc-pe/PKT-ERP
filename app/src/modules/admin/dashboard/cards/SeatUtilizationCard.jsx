@@ -11,7 +11,6 @@ export default function SeatUtilizationCard({ analytics }) {
         <div className="w-10 h-10 rounded-xl bg-[#ff716c]/10 flex items-center justify-center group-hover:bg-[#ff716c]/20 transition-colors">
           <Activity size={20} className="text-[#ff716c]" />
         </div>
-        <span className="text-[10px] font-black text-[#ff716c] bg-[#ff716c]/10 px-2 py-0.5 rounded-full">ALTA</span>
       </div>
       <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Utilización de Asientos</p>
       <h4 className="text-2xl font-black text-[#dee5ff]">{utilization}%</h4>

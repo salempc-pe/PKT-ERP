@@ -3,11 +3,11 @@ import { Building2, CreditCard, TrendingUp, DollarSign, Filter } from 'lucide-re
 import { useAuth } from '../../../context/AuthContext';
 
 export default function AdminBillingModule() {
-  const { mockOrganizations, SUBSCRIPTION_PLANS } = useAuth();
+  const { allOrganizations, SUBSCRIPTION_PLANS } = useAuth();
   const [selectedOrgId, setSelectedOrgId] = useState('all');
 
   // Calcular métricas
-  const activeOrgs = mockOrganizations.filter(org => org.status === 'active');
+  const activeOrgs = allOrganizations.filter(org => org.status === 'active');
   const totalMRR = activeOrgs.reduce((total, org) => {
     const planPrice = SUBSCRIPTION_PLANS[org.subscription?.planId]?.price;
     // Fallbacks si no hay precio definido en el plan
@@ -47,7 +47,7 @@ export default function AdminBillingModule() {
               className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-8 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all appearance-none"
             >
               <option value="all">Todas las organizaciones</option>
-              {mockOrganizations.map(org => (
+              {allOrganizations.map(org => (
                 <option key={org.id} value={org.id}>{org.name}</option>
               ))}
             </select>

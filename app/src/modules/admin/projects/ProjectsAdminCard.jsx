@@ -9,7 +9,6 @@ export default function ProjectsAdminCard({ analytics }) {
         <div className="w-10 h-10 rounded-xl bg-orange-400/10 flex items-center justify-center group-hover:bg-orange-400/20 transition-colors">
           <CheckSquare size={20} className="text-orange-400" />
         </div>
-        <span className="text-[10px] font-black text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full">Activo</span>
       </div>
       <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">Tareas en Proyectos</p>
       <h4 className="text-2xl font-black text-[#dee5ff]">{tasks}</h4>

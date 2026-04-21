@@ -3,12 +3,12 @@ import { Clock, User, Info, AlertTriangle, CheckCircle, Search } from 'lucide-re
 import { useState } from 'react';
 
 export default function ActivityLogs() {
-  const { mockActivityLogs, mockOrganizations } = useAuth();
+  const { allActivityLogs, allOrganizations } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [orgFilter, setOrgFilter] = useState('all');
   const [actorFilter, setActorFilter] = useState('all');
 
-  const filteredLogs = mockActivityLogs.filter(log => 
+  const filteredLogs = allActivityLogs.filter(log => 
     (log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.details.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -55,7 +55,7 @@ export default function ActivityLogs() {
             className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all"
           >
             <option value="all">Todas las Org.</option>
-            {mockOrganizations.map(org => (
+            {allOrganizations.map(org => (
               <option key={org.id} value={org.id}>{org.name}</option>
             ))}
           </select>
@@ -101,7 +101,7 @@ export default function ActivityLogs() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs text-[#a3aac4]">
-                      {log.orgId ? (mockOrganizations.find(o => o.id === log.orgId)?.name || log.orgId) : '—'}
+                      {log.orgId ? (allOrganizations.find(o => o.id === log.orgId)?.name || log.orgId) : '—'}
                     </span>
                   </td>
                   <td className="px-6 py-4">

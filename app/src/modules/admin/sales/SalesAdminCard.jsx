@@ -9,7 +9,6 @@ export default function SalesAdminCard({ analytics }) {
         <div className="w-10 h-10 rounded-xl bg-emerald-400/10 flex items-center justify-center group-hover:bg-emerald-400/20 transition-colors">
           <TrendingUp size={20} className="text-emerald-400" />
         </div>
-        <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+12.5%</span>
       </div>
       <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-wider mb-1">GMV Transaccional Global</p>
       <h4 className="text-2xl font-black text-[#dee5ff]">S/ {gmv}</h4>

@@ -41,16 +41,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const [mockUsers, setMockUsers] = useState([]);
-  const [mockOrganizations, setMockOrganizations] = useState([]);
-  const [mockActivityLogs, setMockActivityLogs] = useState([]);
-  const [mockSystemAlerts, setMockSystemAlerts] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [allOrganizations, setAllOrganizations] = useState([]);
+  const [allActivityLogs, setAllActivityLogs] = useState([]);
+  const [systemAlerts, setSystemAlerts] = useState([]);
 
   // Carga reactiva de datos según el rol y organización
   useEffect(() => {
     if (!user) {
-      setMockUsers([]);
-      setMockOrganizations([]);
+      setAllUsers([]);
+      setAllOrganizations([]);
       return;
     }
 
@@ -80,9 +80,9 @@ export function AuthProvider({ children }) {
           const orgData = orgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           const userData = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           
-          setMockOrganizations(orgData);
-          setMockUsers(userData);
-          setMockActivityLogs(logsData);
+          setAllOrganizations(orgData);
+          setAllUsers(userData);
+          setAllActivityLogs(logsData);
           console.log("SuperAdmin data loaded:", orgData.length, "orgs,", logsData.length, "logs");
         } else if (user.organizationId) {
           // CLIENTE: Cargar solo su organización y su equipo
@@ -95,9 +95,9 @@ export function AuthProvider({ children }) {
           ]);
 
           if (orgSnap.exists()) {
-            setMockOrganizations([{ id: orgSnap.id, ...orgSnap.data() }]);
+            setAllOrganizations([{ id: orgSnap.id, ...orgSnap.data() }]);
           }
-          setMockUsers(teamSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+          setAllUsers(teamSnap.docs.map(d => ({ id: d.id, ...d.data() })));
         }
       } catch (error) {
         console.error("Error loading scoped data:", error);
@@ -637,7 +637,7 @@ export function AuthProvider({ children }) {
   const adminRemoveUser = async (userId) => {
     try {
       await deleteDoc(doc(db, 'users', userId));
-      setMockUsers(prev => prev.filter(u => u.id !== userId));
+      setAllUsers(prev => prev.filter(u => u.id !== userId));
       addLog('User Removed', `Usuario ${userId} eliminado de la base de datos`, 'danger');
     } catch (error) {
       console.error("Error removing user:", error);
@@ -715,7 +715,7 @@ export function AuthProvider({ children }) {
   };
 
   const getClientUsers = () => {
-    return mockUsers.filter(u => u.role === 'client');
+    return allUsers.filter(u => u.role === 'client');
   };
 
   if (loading) return null; // Or a fancy spinner
@@ -724,11 +724,11 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       user, login, logout, updateUser, 
       adminUpdateOrgModules, getClientUsers, adminCreateUser,
-      mockUsers, mockOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
+      allUsers, allOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
       adminUpdateFullOrg, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
-      mockActivityLogs, mockSystemAlerts, addLog,
+      allActivityLogs, systemAlerts, addLog,
       seedDatabase,
       isAdmin: user?.role === 'superadmin' || user?.role === 'admin'
     }}>

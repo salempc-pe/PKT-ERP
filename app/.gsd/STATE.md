@@ -1,13 +1,12 @@
 # Project State
 
 ## Current Position
-- **Sprint**: remove-mock-data
-- **Status**: Sprint in progress
-- **Milestone**: (paused)
+- **Sprint**: None
+- **Status**: Idle
+- **Milestone**: (none active)
 
 ## Last Session Summary
-Sprint `refine-admin-org-cards` completado. Ahora iniciando limpieza de datos de muestra.
+Sprint `remove-mock-data` completado. Se eliminaron todas las métricas simuladas del dashboard de administrador, se renombraron los estados internos de "mock" a nombres reales y se limpiaron las tarjetas modulares de porcentajes hardcoded.
 
 ## Next Steps
-1. Refactorizar `AuthContext.jsx` para eliminar el prefijo `mock` de los estados.
-2. Limpiar `useAdminAnalytics.js` de cálculos simulados.
+1. Validar integridad de datos en el dashboard de administrador tras la limpieza.
