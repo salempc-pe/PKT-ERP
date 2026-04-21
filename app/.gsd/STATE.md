@@ -1,13 +1,12 @@
 # Project State
 
 ## Current Position
-- **Sprint**: fix-invitation-permissions
-- **Status**: Sprint in progress
-- **Milestone**: (paused)
+- **Sprint**: None
+- **Status**: Idle
+- **Milestone**: (none active)
 
 ## Last Session Summary
-Fase 28 ejecutada exitosamente. Se ha implementado el Módulo de Compras completo.
+Sprint `fix-invitation-permissions` completado. Se resolvió el error de permisos de Firebase al configurar contraseñas desde invitaciones.
 
 ## Next Steps
-1. Finalizar sprint de corrección de permisos en invitaciones.
-2. Definir la siguiente fase en ROADMAP.
+1. Iniciar planificación de la siguiente fase del proyecto.
