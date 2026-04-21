@@ -10,6 +10,18 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
+import { z } from "zod";
+
+// Esquema de Validación de Producto
+const ProductSchema = z.object({
+  sku: z.string().min(1, "SKU requerido").max(50),
+  name: z.string().min(1, "Nombre del producto requerido").max(100),
+  category: z.string().max(50).optional(),
+  price: z.number().min(0, "Precio no puede ser negativo").optional(),
+  stock: z.number().int().min(0, "Stock no puede ser negativo").default(0),
+  lowStockThreshold: z.number().int().min(0).default(5),
+  status: z.enum(["Normal", "Bajo Stock", "Agotado"]).optional()
+});
 
 // Constante para verificar si Firebase está configurado
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
@@ -54,57 +66,79 @@ export const useInventory = (orgId = "default_org") => {
   // -- Métodos MUTADORES --
 
   const addProduct = async (productData) => {
-    const lowStockThreshold = Number(productData.lowStockThreshold) || 5;
-    const stock = Number(productData.stock);
-    const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
-    
-    const newProduct = { 
-      ...productData, 
-      stock,
-      lowStockThreshold,
-      status 
-    };
+    try {
+      const stock = Number(productData.stock) || 0;
+      const lowStockThreshold = Number(productData.lowStockThreshold) || 5;
+      const price = typeof productData.price === 'string' 
+        ? Number(productData.price.replace(/[^0-9.-]+/g, "")) 
+        : Number(productData.price);
 
-    if (!isFirebaseConfigured) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          setProducts(prev => [{ id: "p_" + Date.now(), ...newProduct, createdAt: new Date() }, ...prev]);
-          resolve({ id: "p_" + Date.now() });
-        }, 600);
+      const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
+      
+      const validatedData = ProductSchema.parse({ 
+        ...productData, 
+        price,
+        stock,
+        lowStockThreshold,
+        status 
       });
-    }
 
-    const productsRef = collection(db, `organizations/${orgId}/products`);
-    return await addDoc(productsRef, {
-      ...newProduct,
-      createdAt: serverTimestamp()
-    });
+      if (!isFirebaseConfigured) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            setProducts(prev => [{ id: "p_" + Date.now(), ...validatedData, createdAt: new Date() }, ...prev]);
+            resolve({ id: "p_" + Date.now() });
+          }, 600);
+        });
+      }
+
+      const productsRef = collection(db, `organizations/${orgId}/products`);
+      return await addDoc(productsRef, {
+        ...validatedData,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Validation Error:", err);
+      throw err;
+    }
   };
 
   const updateProduct = async (productId, productData) => {
-    const lowStockThreshold = Number(productData.lowStockThreshold) || 5;
-    const stock = Number(productData.stock);
-    const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
+    try {
+      const stock = Number(productData.stock);
+      const lowStockThreshold = Number(productData.lowStockThreshold);
+      const price = typeof productData.price === 'string' 
+        ? Number(productData.price.replace(/[^0-9.-]+/g, "")) 
+        : Number(productData.price);
 
-    const updatedData = {
-      ...productData,
-      stock,
-      lowStockThreshold,
-      status,
-      updatedAt: serverTimestamp()
-    };
+      const status = stock === 0 ? "Agotado" : stock <= lowStockThreshold ? "Bajo Stock" : "Normal";
 
-    if (!isFirebaseConfigured) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          setProducts(prev => prev.map(p => p.id === productId ? { ...p, ...updatedData, updatedAt: new Date() } : p));
-          resolve();
-        }, 400);
+      const validatedData = ProductSchema.partial().parse({
+        ...productData,
+        price,
+        stock,
+        lowStockThreshold,
+        status
       });
-    }
 
-    const productRef = doc(db, `organizations/${orgId}/products`, productId);
-    return await updateDoc(productRef, updatedData);
+      if (!isFirebaseConfigured) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            setProducts(prev => prev.map(p => p.id === productId ? { ...p, ...validatedData, updatedAt: new Date() } : p));
+            resolve();
+          }, 400);
+        });
+      }
+
+      const productRef = doc(db, `organizations/${orgId}/products`, productId);
+      return await updateDoc(productRef, {
+        ...validatedData,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Validation Error:", err);
+      throw err;
+    }
   };
 
   return {

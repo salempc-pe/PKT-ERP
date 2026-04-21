@@ -11,6 +11,16 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
+import { z } from "zod";
+
+const SaleSchema = z.object({
+  invoiceNumber: z.string().optional(),
+  clientName: z.string().min(1, "Cliente requerido"),
+  totalAmount: z.number().min(0),
+  status: z.enum(["Borrador", "Pendiente", "Pagada", "Anulada"]).default("Pendiente"),
+  documentType: z.enum(["Factura", "Boleta", "Nota de Venta"]).default("Factura"),
+  items: z.array(z.any()).min(1, "Debe incluir al menos un ítem")
+});
 
 // Constante para verificar si Firebase está configurado
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
@@ -86,50 +96,55 @@ export const useSales = (orgId = "default_org") => {
   // -- Métodos MUTADORES --
 
   const addSale = async (saleData) => {
-    const docType = saleData.documentType || "Factura";
-    const prefix = docType === 'Factura' ? 'F001' : 'B001';
-    
-    // Calcular el siguiente número basado en lo que ya tenemos en el estado local
-    const count = sales.filter(s => s.documentType === docType).length + 1;
-    const invoiceNumber = `${prefix}-${String(count).padStart(4, '0')}`;
+    try {
+      const docType = saleData.documentType || "Factura";
+      const prefix = docType === 'Factura' ? 'F001' : 'B001';
+      const count = sales.filter(s => s.documentType === docType).length + 1;
+      const invoiceNumber = `${prefix}-${String(count).padStart(4, '0')}`;
 
-    const newSale = { 
-      ...saleData, 
-      invoiceNumber,
-      status: saleData.status || "Pendiente",
-      documentType: docType,
-      issueDate: saleData.issueDate || new Date(),
-      dueDate: saleData.dueDate || new Date(Date.now() + 86400000 * 30) // 30 días por defecto
-    };
-
-    if (!isFirebaseConfigured) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          setSales(prev => [{ 
-            id: "s_" + Date.now(), 
-            ...newSale, 
-            createdAt: new Date() 
-          }, ...prev]);
-          resolve({ id: "s_" + Date.now() });
-        }, 600);
+      const validatedData = SaleSchema.parse({ 
+        ...saleData, 
+        invoiceNumber,
+        status: saleData.status || "Pendiente",
+        documentType: docType
       });
-    }
 
-    const salesRef = collection(db, `organizations/${orgId}/invoices`);
-    return await addDoc(salesRef, {
-      ...newSale,
-      createdAt: serverTimestamp()
-    });
+      if (!isFirebaseConfigured) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            setSales(prev => [{ id: "s_" + Date.now(), ...validatedData, createdAt: new Date() }, ...prev]);
+            resolve({ id: "s_" + Date.now() });
+          }, 600);
+        });
+      }
+
+      const salesRef = collection(db, `organizations/${orgId}/invoices`);
+      return await addDoc(salesRef, {
+        ...validatedData,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Sale Validation Error:", err);
+      throw err;
+    }
   };
 
   const updateSaleStatus = async (saleId, newStatus) => {
+    const currentSale = sales.find(s => s.id === saleId);
+    
+    // GUARDIA: No permitir cambios si la factura está Anulada
+    if (currentSale?.status === 'Anulada') {
+      throw new Error("No se puede modificar una factura anulada");
+    }
+
+    // GUARDIA: No permitir volver a Pendiente si ya está Pagada (Seguridad financiera básica)
+    if (currentSale?.status === 'Pagada' && newStatus === 'Pendiente') {
+      throw new Error("No se puede revertir una factura pagada a pendiente");
+    }
+
     if (!isFirebaseConfigured) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          setSales(prev => prev.map(s => s.id === saleId ? { ...s, status: newStatus } : s));
-          resolve();
-        }, 400);
-      });
+      setSales(prev => prev.map(s => s.id === saleId ? { ...s, status: newStatus } : s));
+      return;
     }
 
     const saleRef = doc(db, `organizations/${orgId}/invoices`, saleId);
