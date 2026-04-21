@@ -1,12 +1,13 @@
 # Project State
 
 ## Current Position
-- **Sprint**: None
-- **Status**: Idle
-- **Milestone**: (none active)
+- **Sprint**: fix-user-dashboard-and-modules
+- **Status**: Sprint in progress
+- **Milestone**: (paused)
 
 ## Last Session Summary
-Sprint `fix-invitation-permissions` completado. Se resolvió el error de permisos de Firebase al configurar contraseñas desde invitaciones.
+Sprint `fix-invitation-permissions` completado.
 
 ## Next Steps
-1. Iniciar planificación de la siguiente fase del proyecto.
+1. Corregir visibilidad de 'Mi Equipo' para usuarios no-administradores.
+2. Resolver dashboard vacío para usuarios estándar.
