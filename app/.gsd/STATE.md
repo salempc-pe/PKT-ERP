@@ -1,13 +1,13 @@
 # Project State
 
 ## Current Position
-- **Sprint**: fix-user-dashboard-and-modules
+- **Sprint**: fix-stuck-invitations
 - **Status**: Sprint in progress
 - **Milestone**: (paused)
 
 ## Last Session Summary
-Sprint `fix-invitation-permissions` completado.
+Sprint `fix-user-dashboard-and-modules` completado.
 
 ## Next Steps
-1. Corregir visibilidad de 'Mi Equipo' para usuarios no-administradores.
-2. Resolver dashboard vacío para usuarios estándar.
+1. Investigar por qué `setDoc` en `setupUserPassword` parece estar fallando o no persistiendo.
+2. Asegurar que las invitaciones se limpien correctamente.
