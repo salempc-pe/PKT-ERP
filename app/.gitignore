@@ -28,6 +28,3 @@ dist-ssr
 
 # Firebase
 .firebase/
-
-# GSD (AI internal state)
-.gsd/
