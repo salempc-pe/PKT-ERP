@@ -56,9 +56,9 @@ export function AuthProvider({ children }) {
 
     const loadData = async () => {
       try {
-        const isUserAdmin = user.role === 'admin';
+        const isSuperAdmin = user.role === 'superadmin';
         
-        if (isUserAdmin) {
+        if (isSuperAdmin) {
           // SUPER ADMIN: Cargar todas las organizaciones, usuarios y LOGS
           const [orgsSnap, usersSnap] = await Promise.all([
             getDocs(collection(db, 'organizations')),
@@ -150,7 +150,7 @@ export function AuthProvider({ children }) {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 name: 'Paulo Salem (Super Admin)',
-                role: 'admin',
+                role: 'superadmin',
                 status: 'active',
                 createdAt: serverTimestamp()
               };
@@ -190,7 +190,7 @@ export function AuthProvider({ children }) {
               ...userWithoutPassword,
               uid: firebaseUser.uid,
               subscription: orgSubscription || null,
-              isAdmin: userData.role === 'admin' || userData.role === 'client'
+              isAdmin: userData.role === 'superadmin' || userData.role === 'admin' || userData.role === 'user'
             };
             
             setUser(userWithSub);
@@ -269,7 +269,7 @@ export function AuthProvider({ children }) {
         addLog('Login', `Usuario ${foundUser.name} inició sesión (Auth Real)`, 'success');
 
         // Redirección
-        if (foundUser.role === 'admin') {
+        if (foundUser.role === 'superadmin') {
           navigate('/admin/dashboard');
         } else {
           navigate('/client/dashboard');
@@ -305,8 +305,8 @@ export function AuthProvider({ children }) {
   };
 
   const impersonateUser = (targetUser) => {
-    // Solo permitir si el usuario actual es admin y no está ya suplantando
-    if (user?.role !== 'admin') return;
+    // Solo permitir si el usuario actual es superadmin y no está ya suplantando
+    if (user?.role !== 'superadmin') return;
 
     // Guardar admin original
     sessionStorage.setItem('pkt_original_admin', JSON.stringify(user));
@@ -616,7 +616,7 @@ export function AuthProvider({ children }) {
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
       mockActivityLogs, mockSystemAlerts, addLog,
-      isAdmin: user?.role === 'admin' || user?.role === 'client'
+      isAdmin: user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'user'
     }}>
       {children}
     </AuthContext.Provider>

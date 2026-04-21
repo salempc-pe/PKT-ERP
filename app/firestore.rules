@@ -13,22 +13,37 @@ service cloud.firestore {
       return userExists() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizationId : null;
     }
 
-    // Función para verificar si el usuario es Super Admin del SaaS
+    // Función para verificar si el usuario es Super Admin del SaaS (Gestiona todo)
     function isSuperAdmin() {
+      return userExists() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin';
+    }
+
+    // Función para verificar si el usuario es administrador de SU propia organización
+    function isOrgAdmin() {
       return userExists() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // --- Colección de Usuarios ---
     match /users/{userId} {
-      // Un usuario SIEMPRE puede intentar leer su propio perfil (necesario para el login inicial)
-      // Sin depender de isSuperAdmin() para evitar recursión o fallos si el doc no existe.
-      allow read: if request.auth != null && request.auth.uid == userId;
+      // Lectura individual permitida para el propio usuario o el Super Admin
+      allow read: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
       
-      // Escritura permitida para el propio usuario o el Super Admin
-      allow write: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      // Escritura permitida: 
+      // 1. El propio usuario (solo sus datos)
+      // 2. El Org Admin de su organización (para gestionar equipo)
+      // 3. El Super Admin (para soporte)
+      allow write: if request.auth != null && (
+        request.auth.uid == userId || 
+        isSuperAdmin() || 
+        (isOrgAdmin() && getUserOrg() == request.resource.data.organizationId) ||
+        (isOrgAdmin() && getUserOrg() == resource.data.organizationId)
+      );
       
-      // Permitir que otros vean perfiles si son de la misma organización (para el equipo)
-      allow list: if request.auth != null && (getUserOrg() != null || isSuperAdmin());
+      // Listado permitido SIEMPRE Y CUANDO se filtre por la organización propia
+      allow list: if request.auth != null && (
+        isSuperAdmin() || 
+        (getUserOrg() != null && resource.data.organizationId == getUserOrg())
+      );
     }
 
     // --- Colección de Organizaciones (Multi-tenancy) ---
