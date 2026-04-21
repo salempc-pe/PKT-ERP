@@ -1,33 +1,31 @@
-# Sprint 3 — fix-stuck-invitations
+# Sprint 4 — refine-admin-org-cards
 
-> **Duration**: 2026-04-21 to 2026-04-22
+> **Duration**: 2026-04-21 to 2026-04-21
 > **Status**: In Progress
 
 ## Goal
-Resolver el problema donde las invitaciones se quedan en estado "pendiente" y no logran crear el documento de usuario final con el UID de Auth.
+Refinar el diseño de las tarjetas de organización en el panel de administrador para mejorar el acceso a la configuración y optimizar el espacio.
 
 ## Scope
 
 ### Included
-- Investigar fallos silenciosos en `setupUserPassword`.
-- Mejorar el manejo de errores en la activación de cuenta.
-- Asegurar que el documento temporal se elimine SOLO si el nuevo se creó correctamente.
-- Validar consistencia de datos entre Auth y Firestore.
+- Modificar el layout de los botones de acción en la tarjeta de organización.
+- Agregar botón de "Configuración" junto al de suplantación.
+- Eliminar el menú de tres puntos (MoreVertical) de la esquina superior.
 
 ### Explicitly Excluded
-- Cambios en el diseño del dashboard.
-- Modificación de la lógica de roles (ya ajustada).
+- Cambios en el modal de edición.
+- Cambios en otros módulos de administración.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Analizar logs y flujo de `setupUserPassword` | Antigravity | ⏳ Todo | 1 |
-| Implementar verificaciones de integridad | Antigravity | ⏳ Todo | 1 |
-| Corregir posible fallo en `setDoc` | Antigravity | ⏳ Todo | 2 |
-| Verificar limpieza de invitaciones huérfanas | Antigravity | ⏳ Todo | 1 |
+| Eliminar menú MoreVertical de la tarjeta | Antigravity | ⏳ Todo | 0.2 |
+| Implementar layout 50/50 para botones de acción | Antigravity | ⏳ Todo | 0.5 |
+| Vincular botón Configuración al modal de edición | Antigravity | ⏳ Todo | 0.3 |
 
 ## Daily Log
 
 ### 2026-04-21
-- Sprint iniciado para investigar por qué las invitaciones no se activan correctamente en Firestore a pesar de que el proceso parece avanzar.
+- Sprint iniciado para refinar UI de tarjetas de admin.
