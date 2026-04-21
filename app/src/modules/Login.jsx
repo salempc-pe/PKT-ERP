@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, Mail, ArrowRight, Activity } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,7 +8,19 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirigir si ya hay una sesión activa (el rol ya fue determinado por AuthContext)
+  useEffect(() => {
+    if (user && user.role) {
+      if (user.role === 'superadmin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/client/dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

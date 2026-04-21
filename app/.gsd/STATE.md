@@ -1,12 +1,12 @@
 # Project State
 
 ## Current Position
-- **Sprint**: refine-admin-org-cards
-- **Status**: Sprint in progress
-- **Milestone**: (paused)
+- **Sprint**: None
+- **Status**: Idle
+- **Milestone**: (none active)
 
 ## Last Session Summary
-Sprint `fix-stuck-invitations` completado con éxito.
+Sprint `refine-admin-org-cards` completado. Se optimizó el diseño de las tarjetas de organización en el panel de administrador, eliminando menús redundantes y mejorando la accesibilidad a la configuración.
 
 ## Next Steps
-1. Modificar `AdminClients.jsx` para ajustar el diseño de los botones de las tarjetas de organización.
+1. Validar responsividad de los nuevos botones de acción.

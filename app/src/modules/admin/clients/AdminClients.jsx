@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2 } from 'lucide-react';
+import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2, ShieldAlert, Settings } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 
@@ -18,7 +18,8 @@ export default function AdminClients() {
     mockUsers: allUsers,
     adminCreateOrg, adminRemoveUser, 
     adminUpdateFullOrg, adminCreateUser, 
-    SUBSCRIPTION_PLANS, adminRemoveOrg
+    SUBSCRIPTION_PLANS, adminRemoveOrg,
+    impersonateUser
   } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -228,12 +229,6 @@ export default function AdminClients() {
                   </div>
                 </div>
               </div>
-              <button 
-                onClick={() => handleOpenEditOrg(org)}
-                className="p-2 hover:bg-[#85adff]/10 text-[#a3aac4] hover:text-[#85adff] rounded-xl transition-all"
-              >
-                <MoreVertical size={20} />
-              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -264,7 +259,31 @@ export default function AdminClients() {
               </div>
             </div>
 
-            {/* Se eliminó el botón de suplantación */}
+            {/* Botones de Acción */}
+            <div className="pt-4 border-t border-[#40485d]/10 grid grid-cols-2 gap-3">
+              <button 
+                onClick={() => handleOpenEditOrg(org)}
+                className="flex items-center justify-center gap-2 py-3 bg-[#141f38] hover:bg-[#1c2a4d] text-[#a3aac4] hover:text-[#dee5ff] rounded-xl text-xs font-black transition-all border border-[#40485d]/30 hover:border-[#85adff]/30"
+              >
+                <Settings size={14} />
+                Configuración
+              </button>
+              
+              <button 
+                onClick={() => {
+                  const mainAdmin = org.users.find(u => u.role === 'admin' && u.status === 'active') || org.users[0];
+                  if (mainAdmin) {
+                    impersonateUser(mainAdmin);
+                  } else {
+                    alert("No hay usuarios activos en esta organización para suplantar.");
+                  }
+                }}
+                className="flex items-center justify-center gap-2 py-3 bg-[#85adff]/5 hover:bg-[#85adff]/10 text-[#85adff] rounded-xl text-xs font-black transition-all border border-[#85adff]/10 hover:border-[#85adff]/30"
+              >
+                <ShieldAlert size={14} />
+                Entrar Admin
+              </button>
+            </div>
           </div>
         ))}
       </div>

@@ -14,13 +14,20 @@ service cloud.firestore {
     }
 
     // Función para verificar si el usuario es Super Admin del SaaS (Gestiona todo)
+    // Un SuperAdmin puede tener rol 'superadmin' O rol 'admin' sin organización asignada
     function isSuperAdmin() {
-      return userExists() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin';
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return userExists() && (
+        userData.role == 'superadmin' ||
+        (userData.role == 'admin' && !('organizationId' in userData))
+      );
     }
 
     // Función para verificar si el usuario es administrador de SU propia organización
+    // Solo aplica a admins QUE sí tienen organizationId (admins de empresa cliente)
     function isOrgAdmin() {
-      return userExists() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return userExists() && userData.role == 'admin' && 'organizationId' in userData;
     }
 
     // --- Colección de Usuarios ---
@@ -28,21 +35,38 @@ service cloud.firestore {
       // Lectura individual permitida para el propio usuario o el Super Admin
       allow read: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
       
-      // Escritura permitida: 
+      // Crear/Actualizar permitido: 
       // 1. El propio usuario (solo sus datos)
       // 2. El Org Admin de su organización (para gestionar equipo)
       // 3. El Super Admin (para soporte)
-      allow write: if request.auth != null && (
+      // 4. Usuario sin auth activando su cuenta (Onboarding)
+      allow create, update: if (request.auth != null && (
         request.auth.uid == userId || 
         isSuperAdmin() || 
         (isOrgAdmin() && getUserOrg() == request.resource.data.organizationId) ||
         (isOrgAdmin() && getUserOrg() == resource.data.organizationId)
+      )) || (
+        // Permiso especial para la activación de cuenta
+        (resource == null || resource.data.status == 'pending') && 
+        request.resource.data.status == 'active'
+      );
+
+      // Eliminar permitido:
+      // 1. Super Admin
+      // 2. Proceso de Onboarding (para eliminar el documento temporal una vez usado el token)
+      allow delete: if (request.auth != null && (request.auth.uid == userId || isSuperAdmin())) || (
+        resource.data.status == 'pending' && resource.data.inviteToken != null
       );
       
-      // Listado permitido SIEMPRE Y CUANDO se filtre por la organización propia
-      allow list: if request.auth != null && (
+      // Listado permitido:
+      // 1. Super Admin o admin de la misma organización
+      // 2. Usuario sin auth buscando su propio token de invitación (Onboarding)
+      allow list: if (request.auth != null && (
         isSuperAdmin() || 
         (getUserOrg() != null && resource.data.organizationId == getUserOrg())
+      )) || (
+        // Permitir buscar por token si el estado es pendiente
+        resource.data.status == 'pending' && resource.data.inviteToken != null
       );
     }
 

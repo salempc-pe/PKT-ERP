@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useAdminAnalytics } from '../../../hooks/useAdminAnalytics';
+import { useAuth } from '../../../context/AuthContext';
 import { 
   Users, TrendingUp, 
-  Activity, Clock, Download, Globe, Box
+  Activity, Clock, Download, Globe, Box, Database, Loader2
 } from 'lucide-react';
 
 // Registro Modular de Tarjetas de Administrador
@@ -12,6 +13,7 @@ import SalesAdminCard from '../sales/SalesAdminCard';
 import ProjectsAdminCard from '../projects/ProjectsAdminCard';
 import CalendarAdminCard from '../calendar/CalendarAdminCard';
 import FinanceAdminCard from '../finance/FinanceAdminCard';
+import PurchasesAdminCard from '../purchases/PurchasesAdminCard';
 import SeatUtilizationCard from '../dashboard/cards/SeatUtilizationCard';
 
 // Mapeo dinámico de módulos a sus componentes de tarjeta de administración
@@ -21,11 +23,12 @@ const ADMIN_MODULE_CARDS = {
   sales: SalesAdminCard,
   projects: ProjectsAdminCard,
   calendar: CalendarAdminCard,
-  finance: FinanceAdminCard
+  finance: FinanceAdminCard,
+  purchases: PurchasesAdminCard
 };
 
 // Lista de módulos para los que queremos mostrar analíticas
-const ANALYTICS_ENABLED_MODULES = ['sales', 'crm', 'inventory', 'projects', 'calendar', 'finance'];
+const ANALYTICS_ENABLED_MODULES = ['sales', 'crm', 'inventory', 'projects', 'calendar', 'finance', 'purchases'];
 
 export default function AdminDashboard() {
   const analytics = useAdminAnalytics();
@@ -56,7 +59,7 @@ export default function AdminDashboard() {
               </div>
               <span className="text-xs font-black tracking-[0.2em] text-[#85adff] uppercase">Panorama Global SaaS</span>
             </div>
-            
+
             <p className="text-[#a3aac4] text-sm font-bold uppercase tracking-wider mb-2">MRR (Ingreso Mensual Recurrente)</p>
             <h3 className="text-7xl font-extrabold tracking-tighter text-[#dee5ff] mb-2">S/ {analytics?.mrr || 0}</h3>
             <div className="flex items-center gap-2 text-[#fbabff]">
