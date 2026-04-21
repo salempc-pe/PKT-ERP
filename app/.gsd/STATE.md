@@ -1,13 +1,12 @@
 # Project State
 
 ## Current Position
-- **Sprint**: fix-stuck-invitations
+- **Sprint**: refine-admin-org-cards
 - **Status**: Sprint in progress
 - **Milestone**: (paused)
 
 ## Last Session Summary
-Sprint `fix-user-dashboard-and-modules` completado.
+Sprint `fix-stuck-invitations` completado con éxito.
 
 ## Next Steps
-1. Investigar por qué `setDoc` en `setupUserPassword` parece estar fallando o no persistiendo.
-2. Asegurar que las invitaciones se limpien correctamente.
+1. Modificar `AdminClients.jsx` para ajustar el diseño de los botones de las tarjetas de organización.
