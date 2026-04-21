@@ -1,32 +1,33 @@
-# Sprint 2 — fix-user-dashboard-and-modules
+# Sprint 3 — fix-stuck-invitations
 
 > **Duration**: 2026-04-21 to 2026-04-22
 > **Status**: In Progress
 
 ## Goal
-Corregir la visibilidad de módulos para usuarios no-administradores y asegurar que el dashboard cargue correctamente los módulos activos de la organización.
+Resolver el problema donde las invitaciones se quedan en estado "pendiente" y no logran crear el documento de usuario final con el UID de Auth.
 
 ## Scope
 
 ### Included
-- Investigar y corregir la lógica de renderizado del Sidebar en `ClientLayout.jsx`.
-- Investigar y corregir la carga de tarjetas en `ClientDashboard.jsx` para usuarios estándar.
-- Asegurar que 'Mi Equipo' sea exclusivo para administradores.
+- Investigar fallos silenciosos en `setupUserPassword`.
+- Mejorar el manejo de errores en la activación de cuenta.
+- Asegurar que el documento temporal se elimine SOLO si el nuevo se creó correctamente.
+- Validar consistencia de datos entre Auth y Firestore.
 
 ### Explicitly Excluded
-- Cambios en el diseño visual de los módulos.
-- Modificación de permisos en Firestore (ya revisados en el sprint anterior).
+- Cambios en el diseño del dashboard.
+- Modificación de la lógica de roles (ya ajustada).
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Analizar Sidebar en `ClientLayout.jsx` | Antigravity | ⏳ Todo | 1 |
-| Analizar Dashboard en `ClientDashboard.jsx` | Antigravity | ⏳ Todo | 1 |
-| Corregir lógica de visibilidad | Antigravity | ⏳ Todo | 2 |
-| Verificar con diferentes roles | Antigravity | ⏳ Todo | 1 |
+| Analizar logs y flujo de `setupUserPassword` | Antigravity | ⏳ Todo | 1 |
+| Implementar verificaciones de integridad | Antigravity | ⏳ Todo | 1 |
+| Corregir posible fallo en `setDoc` | Antigravity | ⏳ Todo | 2 |
+| Verificar limpieza de invitaciones huérfanas | Antigravity | ⏳ Todo | 1 |
 
 ## Daily Log
 
 ### 2026-04-21
-- Sprint iniciado para corregir acceso de usuarios estándar.
+- Sprint iniciado para investigar por qué las invitaciones no se activan correctamente en Firestore a pesar de que el proceso parece avanzar.
