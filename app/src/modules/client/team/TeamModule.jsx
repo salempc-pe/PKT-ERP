@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function TeamModule() {
-  const { user, mockUsers, adminCreateUser, adminRemoveUser, mockOrganizations } = useAuth();
+  const { user, allUsers, adminCreateUser, adminRemoveUser, allOrganizations } = useAuth();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const [loading, setLoading] = useState(false);
@@ -17,12 +17,12 @@ export default function TeamModule() {
   });
 
   const orgId = user?.organizationId;
-  const currentOrg = mockOrganizations.find(o => o.id === orgId);
+  const currentOrg = allOrganizations.find(o => o.id === orgId);
   const maxUsers = currentOrg?.subscription?.maxUsers || currentOrg?.maxUsers || 5;
 
   const teamMembers = useMemo(() => {
-    return mockUsers.filter(u => u.organizationId === orgId);
-  }, [mockUsers, orgId]);
+    return allUsers.filter(u => u.organizationId === orgId);
+  }, [allUsers, orgId]);
 
   const isLimitReached = teamMembers.length >= maxUsers;
 

@@ -14,8 +14,8 @@ const AVAILABLE_MODULES = [
 
 export default function AdminClients() {
   const { 
-    mockOrganizations: organizations,
-    mockUsers: allUsers,
+    allOrganizations: organizations,
+    allUsers,
     adminCreateOrg, adminRemoveUser, 
     adminUpdateFullOrg, adminCreateUser, 
     SUBSCRIPTION_PLANS, adminRemoveOrg,
