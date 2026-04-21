@@ -1,12 +1,13 @@
 # Project State
 
 ## Current Position
-- **Sprint**: None
-- **Status**: Idle
-- **Milestone**: (none active)
+- **Sprint**: remove-mock-data
+- **Status**: Sprint in progress
+- **Milestone**: (paused)
 
 ## Last Session Summary
-Sprint `refine-admin-org-cards` completado. Se optimizó el diseño de las tarjetas de organización en el panel de administrador, eliminando menús redundantes y mejorando la accesibilidad a la configuración.
+Sprint `refine-admin-org-cards` completado. Ahora iniciando limpieza de datos de muestra.
 
 ## Next Steps
-1. Validar responsividad de los nuevos botones de acción.
+1. Refactorizar `AuthContext.jsx` para eliminar el prefijo `mock` de los estados.
+2. Limpiar `useAdminAnalytics.js` de cálculos simulados.
