@@ -1,33 +1,32 @@
-# Sprint 1 — fix-invitation-permissions
+# Sprint 2 — fix-user-dashboard-and-modules
 
 > **Duration**: 2026-04-21 to 2026-04-22
 > **Status**: In Progress
 
 ## Goal
-Resolver el error "FirebaseError: Missing or insufficient permissions" que impide a los usuarios invitados configurar su contraseña inicial.
+Corregir la visibilidad de módulos para usuarios no-administradores y asegurar que el dashboard cargue correctamente los módulos activos de la organización.
 
 ## Scope
 
 ### Included
-- Investigar el flujo de configuración de contraseña en `SetupPassword.jsx`.
-- Revisar las reglas de seguridad de Firestore relacionadas con invitaciones y creación de usuarios.
-- Corregir el error de permisos.
-- Validar el flujo completo de aceptación de invitación.
+- Investigar y corregir la lógica de renderizado del Sidebar en `ClientLayout.jsx`.
+- Investigar y corregir la carga de tarjetas en `ClientDashboard.jsx` para usuarios estándar.
+- Asegurar que 'Mi Equipo' sea exclusivo para administradores.
 
 ### Explicitly Excluded
-- Rediseño de la interfaz de invitación.
-- Cambios en el flujo de login general (a menos que sea necesario para el fix).
+- Cambios en el diseño visual de los módulos.
+- Modificación de permisos en Firestore (ya revisados en el sprint anterior).
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Analizar el código de `SetupPassword.jsx` | Antigravity | ⏳ Todo | 1 |
-| Investigar reglas de seguridad de Firestore | Antigravity | ⏳ Todo | 1 |
-| Implementar corrección | Antigravity | ⏳ Todo | 2 |
-| Verificar el fix | Antigravity | ⏳ Todo | 1 |
+| Analizar Sidebar en `ClientLayout.jsx` | Antigravity | ⏳ Todo | 1 |
+| Analizar Dashboard en `ClientDashboard.jsx` | Antigravity | ⏳ Todo | 1 |
+| Corregir lógica de visibilidad | Antigravity | ⏳ Todo | 2 |
+| Verificar con diferentes roles | Antigravity | ⏳ Todo | 1 |
 
 ## Daily Log
 
 ### 2026-04-21
-- Sprint iniciado para resolver error de permisos en invitaciones.
+- Sprint iniciado para corregir acceso de usuarios estándar.
