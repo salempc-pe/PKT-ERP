@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2 } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function TeamModule() {
@@ -7,6 +8,13 @@ export default function TeamModule() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+
+  const InviteSchema = z.object({
+    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+    email: z.string().email("Correo electrónico inválido"),
+    role: z.enum(['user', 'admin'], "Rol inválido")
+  });
 
   const orgId = user?.organizationId;
   const currentOrg = mockOrganizations.find(o => o.id === orgId);
@@ -21,6 +29,18 @@ export default function TeamModule() {
   const handleInvite = async (e) => {
     e.preventDefault();
     if (isLimitReached) return;
+    setValidationErrors({});
+
+    const validation = InviteSchema.safeParse(newUser);
+    if (!validation.success) {
+      const errors = {};
+      validation.error.errors.forEach(err => {
+        errors[err.path[0]] = err.message;
+      });
+      setValidationErrors(errors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -214,6 +234,11 @@ export default function TeamModule() {
                   className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" 
                   placeholder="Ej: Ana García" 
                 />
+                {validationErrors.name && (
+                  <p className="text-[10px] text-red-400 mt-1 flex items-center gap-1 font-bold">
+                    <AlertCircle size={10} /> {validationErrors.name}
+                  </p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Correo Electrónico</label>
@@ -225,6 +250,11 @@ export default function TeamModule() {
                   className="w-full bg-[#141f38] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-3 text-sm focus:border-[#85adff]/50 outline-none" 
                   placeholder="ana@empresa.com" 
                 />
+                {validationErrors.email && (
+                  <p className="text-[10px] text-red-400 mt-1 flex items-center gap-1 font-bold">
+                    <AlertCircle size={10} /> {validationErrors.email}
+                  </p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-[#a3aac4] uppercase tracking-wider ml-1">Rol en el Equipo</label>

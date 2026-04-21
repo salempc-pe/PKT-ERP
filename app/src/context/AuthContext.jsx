@@ -482,7 +482,7 @@ export function AuthProvider({ children }) {
         };
       }
       
-      const inviteToken = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+      const inviteToken = crypto.randomUUID();
       
       const newUser = {
         email: userData.email,
