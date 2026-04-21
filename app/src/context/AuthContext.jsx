@@ -355,6 +355,7 @@ export function AuthProvider({ children }) {
 
   // Actualizar módulos de una organización en Firestore
   const adminUpdateOrgModules = async (orgId, modules) => {
+    if (user?.role !== 'superadmin') throw new Error("Acción restringida a SuperAdmin");
     try {
       const orgRef = doc(db, 'organizations', orgId);
       await updateDoc(orgRef, {
@@ -379,6 +380,7 @@ export function AuthProvider({ children }) {
 
   // Crear Organización COMPLETA en Firestore (con opción de primer admin)
   const adminCreateOrg = async (orgData) => {
+    if (user?.role !== 'superadmin') throw new Error("Acción restringida a SuperAdmin");
     const planId = orgData.planId || 'startup';
     const newOrg = {
       name: orgData.name,
@@ -423,6 +425,7 @@ export function AuthProvider({ children }) {
 
   // Actualizar Organización COMPLETA en Firestore (Unificado)
   const adminUpdateFullOrg = async (orgId, data) => {
+    if (user?.role !== 'superadmin') throw new Error("Acción restringida a SuperAdmin");
     try {
       const orgRef = doc(db, 'organizations', orgId);
       
@@ -592,6 +595,7 @@ export function AuthProvider({ children }) {
 
   // Eliminar Organización en Firestore y mock local
   const adminRemoveOrg = async (orgId) => {
+    if (user?.role !== 'superadmin') throw new Error("Acción restringida a SuperAdmin");
     try {
       await deleteDoc(doc(db, 'organizations', orgId));
       setMockOrganizations(prev => prev.filter(o => o.id !== orgId));
