@@ -240,7 +240,7 @@ export default function ClientLayout() {
             </Link>
           )}
 
-          {user?.role === 'client' && (
+          {(user?.role === 'client' || user?.role === 'admin') && (
             <Link 
               to="/client/team" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
@@ -278,8 +278,10 @@ export default function ClientLayout() {
               {user?.name?.substring(0, 2).toUpperCase() || 'JU'}
             </div>
             <div className="flex-1 min-w-0 pr-1">
-              <p className="text-xs font-black truncate" style={{ color: 'var(--color-on-surface)' }}>{user?.name || 'Juan Dueño'}</p>
-              <p className="text-[10px] font-bold opacity-50 truncate" style={{ color: 'var(--color-on-surface-variant)' }}>Administrador</p>
+              <p className="text-xs font-black truncate" style={{ color: 'var(--color-on-surface)' }}>{user?.name || 'Usuario'}</p>
+              <p className="text-[10px] font-bold opacity-50 truncate" style={{ color: 'var(--color-on-surface-variant)' }}>
+                {user?.role || 'no-role'} | {user?.isAdmin ? 'S' : 'N'} | {user?.organizationId ? 'OrgOK' : 'NoOrg'}
+              </p>
             </div>
             <button 
               onClick={logout}

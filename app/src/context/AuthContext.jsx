@@ -132,78 +132,94 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    // Escuchar cambios en la autenticación de Firebase
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // 1. Obtener usuario de Firestore por UID (recomendado para reglas de seguridad)
-          let userDocRef = doc(db, 'users', firebaseUser.uid);
-          let userSnap = await getDoc(userDocRef);
+          // Obtener el perfil del usuario de Firestore por UID
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userDocRef);
           
           let userData = null;
           if (userSnap.exists()) {
             userData = { id: userSnap.id, ...userSnap.data() };
           } else {
-            // AUTO-SEED ADMIN: Si el correo es el del dueño, lo creamos como admin por ser el primer login
-            if (firebaseUser.email === 'paulosalem8@gmail.com') {
-              userData = {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                name: 'Paulo Salem (Super Admin)',
-                role: 'superadmin',
-                status: 'active',
-                createdAt: serverTimestamp()
-              };
-              await setDoc(userDocRef, userData);
-              console.log("Super Admin profile auto-created in Firestore!");
-            } else {
-              // Fallback: buscar por email si el ID no es el UID (usuarios antiguos o pendientes)
-              try {
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where('email', '==', firebaseUser.email));
-                const querySnapshot = await getDocs(q);
+            // Fallback: buscar por email si no existe por UID (posible activación incompleta)
+            try {
+              const usersRef = collection(db, 'users');
+              const q = query(usersRef, where('email', '==', firebaseUser.email));
+              const querySnapshot = await getDocs(q);
+              
+              if (!querySnapshot.empty) {
+                const oldDoc = querySnapshot.docs[0];
+                const oldData = oldDoc.data();
                 
-                if (!querySnapshot.empty) {
-                  userData = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
-                  // OPCIONAL: Migrar el documento para que use el UID como ID
-                  await setDoc(doc(db, 'users', firebaseUser.uid), { ...userData, uid: firebaseUser.uid });
+                // Reparación automática: migrar a UID y activar
+                userData = { 
+                  ...oldData, 
+                  id: firebaseUser.uid,
+                  uid: firebaseUser.uid,
+                  status: 'active', // Forzar activo si ya logramos loguearnos
+                  inviteToken: null,
+                  updatedAt: serverTimestamp()
+                };
+
+                // Crear el nuevo documento con ID=UID
+                await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+                
+                // Eliminar el documento anterior si tenía un ID diferente
+                if (oldDoc.id !== firebaseUser.uid) {
+                  await deleteDoc(doc(db, 'users', oldDoc.id));
                 }
-              } catch (queryError) {
-                console.warn("No se pudo realizar la búsqueda por email en AuthStateChanged:", queryError.message);
+                
+                addLog('User Fixed', `Perfil reparado automáticamente para ${firebaseUser.email}`, 'warning', userData.organizationId);
               }
+            } catch (queryError) {
+              console.warn('Fallback por email falló:', queryError.message);
             }
           }
 
           if (userData) {
             let orgSubscription = null;
             if (userData.organizationId) {
-              // Obtener organización de Firestore
-              const orgDocRef = doc(db, 'organizations', userData.organizationId);
-              const orgSnap = await getDoc(orgDocRef);
-              if (orgSnap.exists()) {
-                orgSubscription = orgSnap.data().subscription;
+              try {
+                const orgDocRef = doc(db, 'organizations', userData.organizationId);
+                const orgSnap = await getDoc(orgDocRef);
+                if (orgSnap.exists()) {
+                  orgSubscription = orgSnap.data().subscription;
+                }
+              } catch (orgError) {
+                console.warn('Error al cargar suscripción de la organización:', orgError.message);
               }
             }
 
             const { password, ...userWithoutPassword } = userData;
+            
+            // SuperAdmin ÚNICO = correo exacto admin@admin.com + rol admin/superadmin sin organizaciónId
+            const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
+              (userData.role === 'superadmin' || (userData.role === 'admin' && !userData.organizationId));
+
+            const role = isSuperAdmin ? 'superadmin' : (userData.role || 'user');
+            const isAdmin = isSuperAdmin || role === 'admin' || role === 'client';
+
             const userWithSub = {
               ...userWithoutPassword,
+              email: firebaseUser.email,
               uid: firebaseUser.uid,
+              role: role,
               subscription: orgSubscription || null,
-              isAdmin: userData.role === 'superadmin' || userData.role === 'admin' || userData.role === 'user'
+              isAdmin: isAdmin
             };
             
             setUser(userWithSub);
             sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
           } else {
-            setUser({ email: firebaseUser.email, role: 'client', status: 'pending' });
+            setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
           }
         } catch (error) {
-          console.error("Error fetching user session from Firestore:", error);
-          setUser({ email: firebaseUser.email, role: 'client', status: 'pending' });
+          console.error('Error cargando sesión desde Firestore:', error);
+          setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
         }
       } else {
-        // No hay sesión
         setUser(null);
         sessionStorage.removeItem('pkt_user');
       }
@@ -248,28 +264,40 @@ export function AuthProvider({ children }) {
       if (foundUser) {
         let orgSubscription = null;
         if (foundUser.organizationId) {
-          const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
-          const orgSnap = await getDoc(orgDocRef);
-          if (orgSnap.exists()) {
-            orgSubscription = orgSnap.data().subscription;
+          try {
+            const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
+            const orgSnap = await getDoc(orgDocRef);
+            if (orgSnap.exists()) {
+              orgSubscription = orgSnap.data().subscription;
+            }
+          } catch (orgError) {
+            console.warn('Error al cargar suscripción durante login:', orgError.message);
           }
         }
 
         const { password: _, ...userWithoutPassword } = foundUser;
         
+        // SuperAdmin ÚNICO = correo exacto admin@admin.com + rol admin/superadmin sin organizaciónId
+        const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
+          (foundUser.role === 'superadmin' || (foundUser.role === 'admin' && !foundUser.organizationId));
+        
+        const role = isSuperAdmin ? 'superadmin' : (foundUser.role || 'user');
+        const isAdmin = isSuperAdmin || role === 'admin' || role === 'client';
+
         const userWithSub = {
           ...userWithoutPassword,
           uid: firebaseUser.uid,
-          subscription: orgSubscription || null
+          role: role,
+          subscription: orgSubscription || null,
+          isAdmin: isAdmin
         };
 
         setUser(userWithSub);
         sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
         
-        addLog('Login', `Usuario ${foundUser.name} inició sesión (Auth Real)`, 'success');
+        addLog('Login', `Usuario ${foundUser.name} inició sesión`, 'success');
 
-        // Redirección
-        if (foundUser.role === 'superadmin') {
+        if (role === 'superadmin') {
           navigate('/admin/dashboard');
         } else {
           navigate('/client/dashboard');
@@ -490,7 +518,7 @@ export function AuthProvider({ children }) {
       const newUser = {
         email: userData.email,
         name: userData.name,
-        role: userData.role || 'client',
+        role: userData.role || 'user', // Default to 'user', not 'client'
         organizationId: orgId,
         organizationName: orgName,
         status: 'pending',
@@ -515,44 +543,83 @@ export function AuthProvider({ children }) {
   // Configurar contraseña de usuario (Onboarding)
   const setupUserPassword = async (token, newPassword) => {
     try {
-      const targetUser = mockUsers.find(u => u.inviteToken === token);
-      
-      if (!targetUser) {
+      // 1. Buscar al usuario directamente en Firestore usando el token
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('inviteToken', '==', token), where('status', '==', 'pending'));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
         return { success: false, error: 'Token de invitación inválido o expirado' };
       }
 
-      // 1. Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, targetUser.email, newPassword);
-      const firebaseUser = userCredential.user;
+      const userDoc = querySnapshot.docs[0];
+      const targetUser = { id: userDoc.id, ...userDoc.data() };
 
-      // 2. Persistir en Firestore usando UID como ID (para aislamiento de reglas)
+      // 2. Manejo de Auth con Reintentos
+      let firebaseUser;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, targetUser.email, newPassword);
+        firebaseUser = userCredential.user;
+      } catch (authError) {
+        if (authError.code === 'auth/email-already-in-use') {
+          // Si el usuario ya existe en Auth, intentamos loguearlo con la contraseña que acaba de poner
+          // Esto soluciona problemas de activaciones interrumpidas a la mitad
+          const loginCredential = await signInWithEmailAndPassword(auth, targetUser.email, newPassword);
+          firebaseUser = loginCredential.user;
+        } else {
+          throw authError;
+        }
+      }
+
+      // 3. Crear el documento oficial con el UID PRIMERO
       const userDocRef = doc(db, 'users', firebaseUser.uid);
+      
+      // Limpiar y preparar datos finales
+      const { id: unusedId, ...cleanTargetUser } = targetUser;
       const updatedData = { 
-        ...targetUser, 
+        ...cleanTargetUser, 
         uid: firebaseUser.uid,
+        id: firebaseUser.uid,
         status: 'active', 
         inviteToken: null,
         updatedAt: serverTimestamp() 
       };
       
-      // Eliminar el documento anterior si el ID era temporal (antes del Auth)
+      await setDoc(userDocRef, updatedData);
+
+      // 4. ELIMINAR el documento temporal
+      // Usamos el ID original que encontramos al buscar por token
       if (targetUser.id && targetUser.id !== firebaseUser.uid) {
         try {
           await deleteDoc(doc(db, 'users', targetUser.id));
-        } catch(e) { console.warn("Could not delete old user doc", e); }
+        } catch (delError) {
+          console.warn("No se pudo eliminar el doc temporal (quizás ya no existe):", delError.message);
+        }
       }
 
-      await setDoc(userDocRef, updatedData);
+      // 5. Obtener suscripción/módulos de la organización
+      // Ahora getUserOrg() en las reglas pasará porque el doc del usuario ya existe
+      let orgSubscription = null;
+      if (targetUser.organizationId) {
+        const orgDocRef = doc(db, 'organizations', targetUser.organizationId);
+        const orgSnap = await getDoc(orgDocRef);
+        if (orgSnap.exists()) {
+          orgSubscription = orgSnap.data().subscription;
+        }
+      }
 
-      // 3. Actualizar estado local (Simulando DB)
-      setMockUsers(prev => prev.map(u => 
-        u.inviteToken === token ? { 
-          ...updatedData,
-          password: 'ENC'
-        } : u
-      ));
+      // 6. Preparar objeto de usuario completo para la sesión inmediata
+      const { password: unusedPassword, ...userWithoutPassword } = updatedData;
+      const userWithSub = {
+        ...userWithoutPassword,
+        subscription: orgSubscription || null,
+        isAdmin: updatedData.role === 'admin' || updatedData.role === 'superadmin' || updatedData.role === 'client'
+      };
 
-      addLog('Password Setup', `Usuario ${targetUser.email} configuró su cuenta correctamente en Auth y DB.`, 'success', targetUser.organizationId);
+      setUser(userWithSub);
+      sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
+
+      addLog('Password Setup', `Usuario ${targetUser.email} activado con éxito`, 'success', targetUser.organizationId);
 
       return { success: true };
     } catch (error) {
@@ -605,6 +672,48 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Función para poblar la base de datos con datos de prueba si está vacía
+  const seedDatabase = async () => {
+    if (user?.role !== 'superadmin') return;
+    
+    try {
+      console.log("🌱 Iniciando seeding de base de datos...");
+      
+      // 1. Crear algunas organizaciones de prueba
+      const demoOrgs = [
+        { name: 'Empresa Alpha S.A.C.', ruc: '20123456789', planId: 'business', modules: ['crm', 'inventory', 'sales', 'projects'], users: 3 },
+        { name: 'Beta Tech Solutions', ruc: '20987654321', planId: 'startup', modules: ['crm', 'calendar'], users: 1 },
+        { name: 'Gamarra Fashion ERP', ruc: '20555555555', planId: 'business', modules: ['crm', 'inventory', 'sales', 'finance', 'purchases'], users: 5 }
+      ];
+
+      for (const org of demoOrgs) {
+        await adminCreateOrg({
+          name: org.name,
+          ruc: org.ruc,
+          planId: org.planId,
+          activeModules: org.modules,
+          maxUsers: 10
+        });
+      }
+
+      // 2. Crear algunos logs de prueba
+      const demoLogs = [
+        { action: 'Configuración Inicial', details: 'Se activaron módulos base para la organización Alpha', type: 'info' },
+        { action: 'Alerta de Inventario', details: 'Stock crítico detectado en Almacén Central', type: 'warning' },
+        { action: 'Nueva Venta', details: 'Factura F001-0005 generada satisfactoriamente', type: 'success' }
+      ];
+
+      for (const log of demoLogs) {
+        await addLog(log.action, log.details, log.type);
+      }
+
+      console.log("✅ Seeding completado.");
+      window.location.reload(); // Recargar para ver los cambios
+    } catch (error) {
+      console.error("Error durane el seeding:", error);
+    }
+  };
+
   const getClientUsers = () => {
     return mockUsers.filter(u => u.role === 'client');
   };
@@ -620,7 +729,8 @@ export function AuthProvider({ children }) {
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
       mockActivityLogs, mockSystemAlerts, addLog,
-      isAdmin: user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'user'
+      seedDatabase,
+      isAdmin: user?.role === 'superadmin' || user?.role === 'admin'
     }}>
       {children}
     </AuthContext.Provider>

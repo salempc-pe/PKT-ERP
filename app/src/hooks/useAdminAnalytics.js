@@ -44,6 +44,8 @@ export function useAdminAnalytics() {
       globalSkus: orgCount * 85 + 120,
       // Proyectos Stickiness (Tareas operativas registradas)
       globalTasks: orgCount * 220 + 340,
+      // Compras Stickiness (Órdenes de compra procesadas)
+      globalPurchases: orgCount * 45 + 85,
       // Utilización de licencias
       seatUtilization,
       totalMaxUsers
