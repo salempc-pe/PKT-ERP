@@ -31,8 +31,6 @@ const LeadSchema = z.object({
 });
 
 // Constante para verificar si Firebase está configurado
-const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
-
 export const useCrm = (orgId = "default_org") => {
   const [contacts, setContacts] = useState([]);
   const [leads, setLeads] = useState([]);
@@ -41,19 +39,6 @@ export const useCrm = (orgId = "default_org") => {
 
   // -- Suscripción a CONTACTOS --
   useEffect(() => {
-    if (!isFirebaseConfigured) {
-      // Mock Data inicial
-      setTimeout(() => {
-        setContacts([
-          { id: "mock1", name: "Agencia CreaTiva", company: "CreaTiva SAC", email: "ventas@creativa.pe", phone: "+51999888777", source: "Directo", creditDays: 15, createdAt: new Date() },
-          { id: "mock2", name: "Inversiones Globales SAC", company: "IG SAC", email: "hola@globalsac.com", phone: "+51988776655", source: "Referido", creditDays: 30, createdAt: new Date() },
-          { id: "mock3", name: "David Paredes", company: "", email: "david@paredes.com", phone: "+51944556677", source: "Web", creditDays: 0, createdAt: new Date() }
-        ]);
-        setLoading(false);
-      }, 800);
-      return;
-    }
-
     const contactsRef = collection(db, `organizations/${orgId}/contacts`);
     const q = query(contactsRef, orderBy("createdAt", "desc"));
 
@@ -71,15 +56,6 @@ export const useCrm = (orgId = "default_org") => {
 
   // -- Suscripción a LEADS (Prospectos) --
   useEffect(() => {
-    if (!isFirebaseConfigured) {
-      // Mock Data inicial para leads
-      setLeads([
-        { id: "mlead1", name: "Proyecto X", company: "Tech Solutions", status: "prospect", createdAt: new Date() },
-        { id: "mlead2", name: "Website V2", company: "Retail Co", status: "negotiating", createdAt: new Date() }
-      ]);
-      return;
-    }
-
     const leadsRef = collection(db, `organizations/${orgId}/leads`);
     // Usamos una query simple para evitar problemas de índices y manejamos el ordenamiento localmente
     const q = query(leadsRef);
@@ -112,15 +88,6 @@ export const useCrm = (orgId = "default_org") => {
         creditDays: parseInt(contactData.creditDays) || 0
       });
 
-      if (!isFirebaseConfigured) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            setContacts(prev => [{ id: "c_" + Date.now(), ...validatedData, createdAt: new Date() }, ...prev]);
-            resolve({ id: "c_" + Date.now() });
-          }, 600);
-        });
-      }
-
       const contactsRef = collection(db, `organizations/${orgId}/contacts`);
       return await addDoc(contactsRef, {
         ...validatedData,
@@ -136,15 +103,6 @@ export const useCrm = (orgId = "default_org") => {
     try {
       const validatedData = LeadSchema.parse(leadData);
 
-      if (!isFirebaseConfigured) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            setLeads(prev => [{ id: "l_" + Date.now(), ...validatedData, createdAt: new Date() }, ...prev]);
-            resolve({ id: "l_" + Date.now() });
-          }, 600);
-        });
-      }
-
       const leadsRef = collection(db, `organizations/${orgId}/leads`);
       return await addDoc(leadsRef, {
         ...validatedData,
@@ -157,11 +115,6 @@ export const useCrm = (orgId = "default_org") => {
   };
 
   const updateLeadStatus = async (leadId, newStatus) => {
-    if (!isFirebaseConfigured) {
-      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
-      return;
-    }
-
     const leadRef = doc(db, `organizations/${orgId}/leads`, leadId);
     return await updateDoc(leadRef, {
       status: newStatus,
@@ -174,10 +127,6 @@ export const useCrm = (orgId = "default_org") => {
       // Para actualizaciones, permitimos validación parcial (solo los campos enviados)
       const validatedData = LeadSchema.partial().parse(leadData);
 
-      if (!isFirebaseConfigured) {
-        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, ...validatedData } : l));
-        return;
-      }
       const leadRef = doc(db, `organizations/${orgId}/leads`, leadId);
       return await updateDoc(leadRef, {
         ...validatedData,
