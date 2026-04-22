@@ -608,9 +608,6 @@ export default function AdminClients() {
                                 {u.status === 'pending' && (
                                   <button onClick={() => copyInviteLink(u.inviteToken)} className="text-[#fbabff] hover:underline text-[10px] font-bold">Copy Link</button>
                                 )}
-                                <button onClick={() => adminRemoveUser(u.id)} className="p-2 text-[#a3aac4] hover:text-red-400 transition-colors">
-                                  <Trash2 size={14} />
-                                </button>
                               </div>
                             </div>
                           ))}

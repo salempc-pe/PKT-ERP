@@ -33,6 +33,11 @@ const SUBSCRIPTION_PLANS = {
     name: 'Business', 
     modules: ['crm', 'inventory', 'sales', 'projects', 'purchases'], 
     limits: { users: 4 } 
+  },
+  enterprise: {
+    name: 'Enterprise',
+    modules: ['crm', 'inventory', 'sales', 'projects', 'purchases', 'finance', 'calendar'],
+    limits: { users: 10 }
   }
 };
 
@@ -267,7 +272,7 @@ export function AuthProvider({ children }) {
           }
         }
 
-        const { password: _, ...userWithoutPassword } = foundUser;
+        const { password: unusedPassword, ...userWithoutPassword } = foundUser;
         
         // SuperAdmin ÚNICO = correo exacto admin@admin.com + rol admin/superadmin sin organizaciónId
         const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
@@ -710,12 +715,21 @@ export function AuthProvider({ children }) {
     return allUsers.filter(u => u.role === 'client');
   };
 
-  if (loading) return null; // Or a fancy spinner
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#060e20] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
+          <p className="text-[#85adff] font-black tracking-widest text-xs uppercase animate-pulse">Iniciando PKT ERP...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, updateUser, 
-      adminUpdateOrgModules, getClientUsers, adminCreateUser,
+      getClientUsers, adminCreateUser, adminUpdateOrgModules,
       allUsers, allOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
       adminUpdateFullOrg, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
