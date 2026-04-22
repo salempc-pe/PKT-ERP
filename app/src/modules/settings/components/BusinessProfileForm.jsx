@@ -4,7 +4,6 @@ import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
 import { Save, CheckCircle2, User, Building, Mail, MapPin, Upload, Image as ImageIcon } from 'lucide-react';
 
-const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
 export default function BusinessProfileForm() {
   const { user } = useAuth();
@@ -24,20 +23,6 @@ export default function BusinessProfileForm() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!isFirebaseConfigured) {
-        setTimeout(() => {
-          setFormData({
-            name: user?.organizationName || 'Mock Enterprise',
-            email: 'admin@mockenterprise.com',
-            sector: 'Retail',
-            address: 'Av. Mock 123',
-            logoUrl: ''
-          });
-          setLoading(false);
-        }, 600);
-        return;
-      }
-
       try {
         const docRef = doc(db, 'organizations', orgId);
         const docSnap = await getDoc(docRef);
@@ -99,13 +84,6 @@ export default function BusinessProfileForm() {
     e.preventDefault();
     setSaving(true);
     
-    if (!isFirebaseConfigured) {
-      setTimeout(() => {
-        setSaving(false);
-        setSuccess(true);
-      }, 800);
-      return;
-    }
 
     try {
       const docRef = doc(db, 'organizations', orgId);

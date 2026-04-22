@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, MoreVertical, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2, ShieldAlert, Settings } from 'lucide-react';
+import { Search, Building2, Users, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2, ShieldAlert, Settings } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 
@@ -150,24 +150,21 @@ export default function AdminClients() {
     if (!newUserInOrg.name || !newUserInOrg.email) return;
     
     setIsInviting(true);
-    // Simulamos envío de correo
-    setTimeout(async () => {
-      const result = await adminCreateUser(selectedOrg.id, editOrgState.name, newUserInOrg);
-      setIsInviting(false);
-      
-      if (result && !result.success) {
-        alert(result.error);
-        return;
-      }
+    const result = await adminCreateUser(selectedOrg.id, editOrgState.name, newUserInOrg);
+    setIsInviting(false);
+    
+    if (result && !result.success) {
+      alert(result.error);
+      return;
+    }
 
-      if (result && result.inviteToken) {
-        const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
-        navigator.clipboard.writeText(inviteUrl);
-        alert('📩 ¡Invitación enviada por sistema!\n\nSe ha generado el acceso para ' + newUserInOrg.email + '.\nEl enlace de activación ha sido copiado al portapapeles por si deseas enviarlo manualmente.');
-      }
+    if (result && result.inviteToken) {
+      const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
+      navigator.clipboard.writeText(inviteUrl);
+      alert('📩 ¡Invitación generada!\n\nSe ha creado el acceso para ' + newUserInOrg.email + '.\nEl enlace de activación ha sido copiado al portapapeles por si deseas enviarlo manualmente.');
+    }
 
-      setNewUserInOrg({ name: '', email: '', role: 'admin' });
-    }, 1500);
+    setNewUserInOrg({ name: '', email: '', role: 'admin' });
   };
 
   const copyInviteLink = (token) => {

@@ -125,7 +125,7 @@ export function AuthProvider({ children }) {
       
       // 2. Actualizar estado local para UI inmediata
       const logWithId = { id: docRef.id, ...newLog, timestamp: new Date().toISOString() };
-      setMockActivityLogs(prev => [logWithId, ...prev]);
+      setAllActivityLogs(prev => [logWithId, ...prev]);
     } catch (error) {
       console.error("Error saving audit log:", error);
     }
@@ -158,20 +158,15 @@ export function AuthProvider({ children }) {
                   ...oldData, 
                   id: firebaseUser.uid,
                   uid: firebaseUser.uid,
-                  status: 'active', // Forzar activo si ya logramos loguearnos
+                  status: 'active',
                   inviteToken: null,
                   updatedAt: serverTimestamp()
                 };
 
-                // Crear el nuevo documento con ID=UID
                 await setDoc(doc(db, 'users', firebaseUser.uid), userData);
-                
-                // Eliminar el documento anterior si tenía un ID diferente
                 if (oldDoc.id !== firebaseUser.uid) {
                   await deleteDoc(doc(db, 'users', oldDoc.id));
                 }
-                
-                addLog('User Fixed', `Perfil reparado automáticamente para ${firebaseUser.email}`, 'warning', userData.organizationId);
               }
             } catch (queryError) {
               console.warn('Fallback por email falló:', queryError.message);
@@ -182,24 +177,21 @@ export function AuthProvider({ children }) {
             let orgSubscription = null;
             if (userData.organizationId) {
               try {
-                const orgDocRef = doc(db, 'organizations', userData.organizationId);
-                const orgSnap = await getDoc(orgDocRef);
+                const orgSnap = await getDoc(doc(db, 'organizations', userData.organizationId));
                 if (orgSnap.exists()) {
                   orgSubscription = orgSnap.data().subscription;
                 }
               } catch (orgError) {
-                console.warn('Error al cargar suscripción de la organización:', orgError.message);
+                console.warn('Error al cargar suscripción:', orgError.message);
               }
             }
 
             const { password, ...userWithoutPassword } = userData;
-            
-            // SuperAdmin ÚNICO = correo exacto admin@admin.com + rol admin/superadmin sin organizaciónId
             const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
-              (userData.role === 'superadmin' || (userData.role === 'admin' && !userData.organizationId));
+                               (userData.role === 'superadmin' || (userData.role === 'admin' && !userData.organizationId));
 
             const role = isSuperAdmin ? 'superadmin' : (userData.role || 'user');
-            const isAdmin = isSuperAdmin || role === 'admin' || role === 'client';
+            const isAdmin = role === 'admin' || role === 'superadmin';
 
             const userWithSub = {
               ...userWithoutPassword,
@@ -340,7 +332,7 @@ export function AuthProvider({ children }) {
     sessionStorage.setItem('pkt_original_admin', JSON.stringify(user));
 
     // Preparar cliente con suscripción
-    const org = targetUser.organizationId ? mockOrganizations.find(o => o.id === targetUser.organizationId) : null;
+    const org = targetUser.organizationId ? allOrganizations.find(o => o.id === targetUser.organizationId) : null;
     const userWithSub = {
       ...targetUser,
       subscription: org?.subscription || null
@@ -375,8 +367,8 @@ export function AuthProvider({ children }) {
     setUser(updatedUser);
     sessionStorage.setItem('pkt_user', JSON.stringify(updatedUser));
     
-    // Update also in mock database
-    setMockUsers(prevUsers => 
+    // Update also in database
+    setAllUsers(prevUsers => 
       prevUsers.map(u => u.id === user.id ? { ...u, ...data } : u)
     );
   };
@@ -390,7 +382,7 @@ export function AuthProvider({ children }) {
         "subscription.activeModules": modules
       });
 
-      setMockOrganizations(prev => prev.map(o => 
+      setAllOrganizations(prev => prev.map(o => 
         o.id === orgId ? { 
           ...o, 
           subscription: {
@@ -432,7 +424,7 @@ export function AuthProvider({ children }) {
       const docRef = await addDoc(collection(db, 'organizations'), newOrg);
       const createdOrg = { id: docRef.id, ...newOrg };
       
-      setMockOrganizations(prev => [...prev, createdOrg]);
+      setAllOrganizations(prev => [...prev, createdOrg]);
       addLog('Org Created', `Nueva organización creada: ${newOrg.name}`, 'success', docRef.id);
 
       // 2. Si se proporcionó email de admin, crearlo automáticamente
@@ -471,7 +463,7 @@ export function AuthProvider({ children }) {
       await updateDoc(orgRef, updatePayload);
 
       // Actualizar estado local
-      setMockOrganizations(prev => prev.map(o => 
+      setAllOrganizations(prev => prev.map(o => 
         o.id === orgId ? { 
           ...o, 
           name: data.name,
@@ -502,8 +494,8 @@ export function AuthProvider({ children }) {
   const adminCreateUser = async (orgId, orgName, userData) => {
     try {
       // 1. Verificar límites de cuota (maxUsers)
-      const currentOrg = mockOrganizations.find(o => o.id === orgId);
-      const activeUsersCount = mockUsers.filter(u => u.organizationId === orgId).length;
+      const currentOrg = allOrganizations.find(o => o.id === orgId);
+      const activeUsersCount = allUsers.filter(u => u.organizationId === orgId).length;
       const limit = currentOrg?.subscription?.maxUsers || 5;
 
       if (activeUsersCount >= limit) {
@@ -513,7 +505,7 @@ export function AuthProvider({ children }) {
         };
       }
       
-      const inviteToken = crypto.randomUUID();
+      const inviteToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       
       const newUser = {
         email: userData.email,
@@ -529,7 +521,7 @@ export function AuthProvider({ children }) {
       const docRef = await addDoc(collection(db, 'users'), newUser);
       const createdUser = { id: docRef.id, ...newUser };
 
-      setMockUsers(prev => [...prev, createdUser]);
+      setAllUsers(prev => [...prev, createdUser]);
       
       addLog('User Invited', `Usuario invitado en DB a ${orgName}: ${userData.email}`, 'info', orgId);
 
@@ -612,8 +604,8 @@ export function AuthProvider({ children }) {
       const { password: unusedPassword, ...userWithoutPassword } = updatedData;
       const userWithSub = {
         ...userWithoutPassword,
-        subscription: orgSubscription || null,
-        isAdmin: updatedData.role === 'admin' || updatedData.role === 'superadmin' || updatedData.role === 'client'
+        subscription: orgSubscription || { planId: 'startup', activeModules: [] },
+        isAdmin: updatedData.role === 'admin' || updatedData.role === 'superadmin'
       };
 
       setUser(userWithSub);
@@ -650,7 +642,7 @@ export function AuthProvider({ children }) {
       const orgRef = doc(db, 'organizations', orgId);
       await updateDoc(orgRef, updateData);
 
-      setMockOrganizations(prev => prev.map(o => 
+      setAllOrganizations(prev => prev.map(o => 
         o.id === orgId ? { ...o, ...updateData } : o
       ));
 
@@ -660,12 +652,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Eliminar Organización en Firestore y mock local
+  // Eliminar Organización en Firestore
   const adminRemoveOrg = async (orgId) => {
     if (user?.role !== 'superadmin') throw new Error("Acción restringida a SuperAdmin");
     try {
       await deleteDoc(doc(db, 'organizations', orgId));
-      setMockOrganizations(prev => prev.filter(o => o.id !== orgId));
+      setAllOrganizations(prev => prev.filter(o => o.id !== orgId));
       addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger', orgId);
     } catch (error) {
       console.error("Error removing org:", error);

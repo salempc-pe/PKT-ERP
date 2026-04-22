@@ -240,7 +240,7 @@ export default function ClientLayout() {
             </Link>
           )}
 
-          {(user?.role === 'client' || user?.role === 'admin') && (
+          {(user?.role === 'admin') && (
             <Link 
               to="/client/team" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"

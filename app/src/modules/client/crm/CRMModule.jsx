@@ -331,7 +331,7 @@ export default function CRMModule() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
-                    placeholder="mail@ejemplo.com"
+                    placeholder="admin@empresa.com"
                   />
                 </div>
                 <div className="space-y-1.5">

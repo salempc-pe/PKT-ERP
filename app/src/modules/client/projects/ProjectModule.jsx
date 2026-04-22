@@ -110,21 +110,21 @@ export default function ProjectModule() {
             
             <div className="space-y-4">
               <div className="flex justify-between items-center text-xs font-bold uppercase tracking-tight">
-                <span className="text-[#a3aac4]">Progreso</span>
-                <span className="text-[#dee5ff]">45%</span> {/* Mock Progress */}
+                <span className="text-[#a3aac4]">Actividad</span>
+                <span className="text-[#dee5ff]">Reciente</span>
               </div>
               <div className="w-full bg-[#141f38] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#85adff] h-full rounded-full" style={{ width: '45%' }}></div>
+                <div className="bg-[#85adff] h-full rounded-full" style={{ width: '100%' }}></div>
               </div>
               
               <div className="flex justify-between items-center pt-2">
                 <div className="flex -space-x-2">
-                    {/* Mock Team Members */}
-                    <div className="w-7 h-7 rounded-full bg-[#1d2b4a] border-2 border-[#091328] flex items-center justify-center text-[10px] font-bold text-[#85adff]">JD</div>
-                    <div className="w-7 h-7 rounded-full bg-[#2a1d4a] border-2 border-[#091328] flex items-center justify-center text-[10px] font-bold text-[#fbabff]">AS</div>
+                    <div className="w-7 h-7 rounded-full bg-[#1d2b4a] border-2 border-[#091328] flex items-center justify-center text-[10px] font-bold text-[#85adff] uppercase">
+                      {user?.name?.substring(0, 2) || 'US'}
+                    </div>
                 </div>
                 <div className="flex items-center gap-1.5 text-[#a3aac4] text-xs font-bold">
-                    <Clock size={14} /> 12 Tareas
+                    <Clock size={14} /> Gestión Activa
                 </div>
               </div>
             </div>

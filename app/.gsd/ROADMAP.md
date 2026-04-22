@@ -473,6 +473,25 @@
 
 ---
 
+### Phase 29: Refinamiento de Jerarquía, Roles y Persistencia de Usuarios
+**Status**: ✅ Complete
+**Objective**: Asegurar que todos los usuarios invitados (por SuperAdmin o Administradores de Empresa) se persistan correctamente en Firestore y que la jerarquía de roles (Admin/User) se respete en la navegación y acceso a módulos.
+**Depends on**: Phase 28
+
+**Tasks**:
+- [x] Corregir nombres de variables en `AuthContext.jsx` (remanentes de `mock`).
+- [x] Asegurar persistencia de usuarios `pending` y su posterior activación con UID en Firestore.
+- [x] Implementar ocultación dinámica del módulo "Mi Equipo" para usuarios con rol `user`.
+- [x] Sincronizar permisos de módulos de usuarios con los de su organización.
+- [x] Verificar visibilidad de usuarios en el portal SuperAdmin.
+
+**Verification**:
+- [x] Los usuarios creados por administradores de empresa aparecen en la colección `users` de Firestore.
+- [x] Los usuarios con rol `user` no ven el módulo "Mi Equipo" en el sidebar.
+- [x] Los usuarios invitados heredan correctamente los módulos activados para su organización.
+
+---
+
 ### Phase 28: Módulo de Compras (Gestión de Proveedores)
 **Status**: ✅ Complete
 
