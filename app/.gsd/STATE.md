@@ -1,7 +1,7 @@
 # GSD State
 
 ## Current Position
-- **Sprint**: remove-mock-data
+- **Sprint**: fix-firebase-auth-error
 - **Status**: Sprint in progress
 - **Milestone**: 3 — Admin UX Polish (paused)
 
