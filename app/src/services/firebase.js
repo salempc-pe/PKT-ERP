@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+// Configuración de Firebase
+// Nota: Las variables deben empezar con VITE_ para que sean accesibles en el cliente
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -12,9 +14,10 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Validación inicial para avisar al desarrollador
-if (!import.meta.env.VITE_FIREBASE_API_KEY) {
-    console.warn("⚠️ Firebase: VITE_FIREBASE_API_KEY no detectado. Revisa tu archivo .env local.");
+// Validación detallada para el entorno de desarrollo
+if (import.meta.env.DEV && !import.meta.env.VITE_FIREBASE_API_KEY) {
+    console.error("❌ Firebase Error: VITE_FIREBASE_API_KEY no detectado.");
+    console.info("Asegúrate de que el archivo /app/.env existe y contiene las variables correctas.");
 }
 
 // Initialize Firebase
