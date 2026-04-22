@@ -19,7 +19,9 @@ export default function AdminLayout() {
       <aside className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-40">
         <div className="px-6 mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">PKT ERP (Admin)</h1>
+            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">
+              PKT <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#85adff] to-[#fbabff]">ERP</span>
+            </h1>
           </div>
           {/* Botón Toggle Tema */}
           <button

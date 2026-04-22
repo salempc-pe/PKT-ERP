@@ -35,4 +35,5 @@ Resolver el error `auth/invalid-api-key` y realizar ajustes estéticos en el pan
 - Se re-escribió el archivo `.env` en UTF-8 para evitar problemas de codificación.
 - Se mejoraron los diagnósticos en `src/services/firebase.js`.
 - Actualizado el branding del SuperAdmin: "Studio Alpha" -> "PKT ERP" y removido subtítulo.
+- Refinado el título: Removido "(Admin)" y aplicado gradiente a "ERP" (branding unificado).
 - Renombrado el módulo "Tenants / Clients" a "Clientes" en el sidebar.
