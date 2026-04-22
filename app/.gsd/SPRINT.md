@@ -4,7 +4,7 @@
 > **Status**: In Progress
 
 ## Goal
-Resolver el error `auth/invalid-api-key` y asegurar que las variables de entorno de Firebase estén correctamente configuradas en el entorno local.
+Resolver el error `auth/invalid-api-key` y realizar ajustes estéticos en el panel de SuperAdmin (PKT ERP branding).
 
 ## Scope
 
@@ -22,11 +22,17 @@ Resolver el error `auth/invalid-api-key` y asegurar que las variables de entorno
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Verificar `.env` y contrastar con `firebase.js` | Antigravity | ⬜ Todo | 0.5 |
-| Corregir mapeo de variables en `firebase.js` | Antigravity | ⬜ Todo | 0.5 |
+| Verificar `.env` y contrastar con `firebase.js` | Antigravity | ✅ Done | 0.5 |
+| Corregir mapeo de variables en `firebase.js` | Antigravity | ✅ Done | 0.5 |
 | Validar inicialización en consola | Antigravity | ⬜ Todo | 0.5 |
+| Branding: Cambiar "Studio Alpha" a "PKT ERP" en AdminLayout | Antigravity | ✅ Done | 0.2 |
+| Branding: Renombrar "Tenants / Clients" a "Clientes" | Antigravity | ✅ Done | 0.1 |
 
 ## Daily Log
 
 ### 2026-04-22
 - Sprint creado para solucionar el error de API Key detectado en consola.
+- Se re-escribió el archivo `.env` en UTF-8 para evitar problemas de codificación.
+- Se mejoraron los diagnósticos en `src/services/firebase.js`.
+- Actualizado el branding del SuperAdmin: "Studio Alpha" -> "PKT ERP" y removido subtítulo.
+- Renombrado el módulo "Tenants / Clients" a "Clientes" en el sidebar.
