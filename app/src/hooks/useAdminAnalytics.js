@@ -29,8 +29,10 @@ export function useAdminAnalytics() {
   // Métricas de Stickiness Basadas en Datos Reales
   const stickinessMetrics = useMemo(() => {
     // Seat Utilization Real
-    const totalMaxUsers = allOrganizations.reduce((acc, org) => acc + (org.maxUsers || 2), 0);
-    const activeUsersCount = allUsers.length;
+    const totalMaxUsers = allOrganizations.reduce((acc, org) => 
+      acc + (org.subscription?.maxUsers || org.maxUsers || 0), 0
+    );
+    const activeUsersCount = allUsers.filter(u => u.organizationId).length;
     const seatUtilization = totalMaxUsers > 0 ? Math.round((activeUsersCount / totalMaxUsers) * 100) : 0;
 
     return {

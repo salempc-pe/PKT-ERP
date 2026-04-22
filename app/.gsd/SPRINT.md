@@ -27,6 +27,7 @@ Resolver el error `auth/invalid-api-key` y realizar ajustes estéticos en el pan
 | Validar inicialización en consola | Antigravity | ⬜ Todo | 0.5 |
 | Branding: Cambiar "Studio Alpha" a "PKT ERP" en AdminLayout | Antigravity | ✅ Done | 0.2 |
 | Branding: Renombrar "Tenants / Clients" a "Clientes" | Antigravity | ✅ Done | 0.1 |
+| Fix: Corregir conteo de asientos en el Dashboard | Antigravity | ✅ Done | 0.3 |
 
 ## Daily Log
 
@@ -37,3 +38,4 @@ Resolver el error `auth/invalid-api-key` y realizar ajustes estéticos en el pan
 - Actualizado el branding del SuperAdmin: "Studio Alpha" -> "PKT ERP" y removido subtítulo.
 - Refinado el título: Removido "(Admin)" y aplicado gradiente a "ERP" (branding unificado).
 - Renombrado el módulo "Tenants / Clients" a "Clientes" en el sidebar.
+- Bugfix: Corregido el cálculo de utilización de asientos en `useAdminAnalytics.js` (ahora filtra superadmins y usa el path correcto de suscripción).
