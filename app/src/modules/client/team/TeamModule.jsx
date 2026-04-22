@@ -179,7 +179,7 @@ export default function TeamModule() {
                             adminRemoveUser(member.id);
                           }
                         }}
-                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                         title="Eliminar Miembro"
                       >
                         <Trash2 size={16} />
