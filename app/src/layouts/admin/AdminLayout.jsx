@@ -19,8 +19,7 @@ export default function AdminLayout() {
       <aside className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-40">
         <div className="px-6 mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">Studio Alpha (Admin)</h1>
-            <p className="text-xs text-[#a3aac4] uppercase tracking-widest font-bold mt-1">Design & Planning</p>
+            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">PKT ERP (Admin)</h1>
           </div>
           {/* Botón Toggle Tema */}
           <button
@@ -58,7 +57,7 @@ export default function AdminLayout() {
           
           <Link to="/admin/clients" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/clients') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
             <Users size={20} />
-            <span className="font-semibold text-sm">Tenants / Clients</span>
+            <span className="font-semibold text-sm">Clientes</span>
           </Link>
           
           <Link to="/admin/sales" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/sales') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
