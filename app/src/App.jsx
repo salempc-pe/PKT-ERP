@@ -70,6 +70,10 @@ function App() {
             <Route path="sales" element={<AdminBillingModule />} />
             <Route path="logs" element={<ActivityLogs />} />
           </Route>
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          
+          {/* Fallback for undefined routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
       </ThemeProvider>

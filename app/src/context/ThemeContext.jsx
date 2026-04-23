@@ -7,7 +7,7 @@ export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(() => {
     const stored = localStorage.getItem('pkt_theme');
     if (stored !== null) return stored === 'dark';
-    return true; // Oscuro por defecto
+    return false; // Claro por defecto
   });
 
   useEffect(() => {
