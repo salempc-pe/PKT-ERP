@@ -526,15 +526,16 @@
 ---
 
 ### Phase 31: Conversión a PWA y Experiencia Nativa
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Transformar la aplicación en una PWA funcional con estética de aplicación nativa, eliminando comportamientos web como el "pull-to-refresh" y la selección accidental de texto.
 **Depends on**: Phase 30
 
 **Tasks**:
-- [ ] TBD (run /plan 31 to create)
+- [x] Plan 31.1: Ajustes CSS para Experiencia Nativa (overscroll y user-select).
+- [x] Plan 31.2: Implementación de PWA y Logo Provisional.
 
 **Verification**:
-- [ ] La aplicación es instalable como PWA (Manifest & Service Worker básico).
-- [ ] No ocurre refresco de página al arrastrar hacia abajo en el móvil.
-- [ ] El texto no se selecciona ni aparece el menú contextual de búsqueda al mantener presionado.
-- [ ] Se incluye un logo provisional para el icono de la aplicación.
+- [x] La aplicación es instalable como PWA (Manifest & Service Worker básico).
+- [x] No ocurre refresco de página al arrastrar hacia abajo en el móvil.
+- [x] El texto no se selecciona ni aparece el menú contextual de búsqueda al mantener presionado.
+- [x] Se incluye un logo provisional para el icono de la aplicación.
