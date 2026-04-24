@@ -76,6 +76,16 @@
     font-family: var(--font-body);
     background-color: var(--color-background);
     color: var(--color-on-surface);
+    /* Ajustes Experiencia Nativa (PWA) */
+    overscroll-behavior-y: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  input, textarea, [contenteditable="true"] {
+    user-select: auto;
+    -webkit-user-select: auto;
   }
 }
 
