@@ -107,8 +107,8 @@ export default function InventoryModule() {
         </button>
       </div>
 
-      {/* Stats Indicators */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Indicators - Ocultos en móvil */}
+      <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {inventoryStats.map((stat, idx) => (
           <div key={idx} className="bg-[#141f38] p-5 rounded-2xl flex items-center gap-4 group hover:bg-[#192540] transition-colors border border-[#40485d]/10">
             <div className="w-12 h-12 rounded-xl bg-[#091328] flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -122,9 +122,9 @@ export default function InventoryModule() {
         ))}
       </div>
 
-      {/* Main Inventory Table */}
-      <div className="bg-[#091328] rounded-2xl border border-[#40485d]/10 overflow-hidden">
-        <div className="p-4 lg:p-6 border-b border-[#40485d]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      {/* Main Inventory List */}
+      <div className="w-full">
+        <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={16} />
@@ -140,7 +140,7 @@ export default function InventoryModule() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-auto border border-[#40485d]/10 rounded-xl bg-[#091328]">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#0f1930] text-[#a3aac4] text-xs uppercase tracking-widest font-black">
