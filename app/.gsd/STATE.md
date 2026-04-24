@@ -1,17 +1,21 @@
 # GSD State
 
 ## Current Position
-- **Sprint**: fix-firebase-auth-error
-- **Status**: Sprint in progress
-- **Milestone**: 3 — Admin UX Polish (paused)
+- **Phase**: 30
+- **Task**: Planning complete
+- **Status**: Ready for execution
+- **Milestone**: 3 — Admin UX Polish
 
 ## Phase 29 Progress
 - [x] Variables mock eliminadas (allUsers, allOrganizations, setAllActivityLogs)
 - [x] Persistencia de usuarios pending y activación con UID
 - [x] Ocultación de "Mi Equipo" para rol user en sidebar
 - [x] Guard de ruta para /client/team (AdminRoute.jsx)
-- [x] Sincronización de módulos heredados (AuthContext hydration)
+- [x] Sincronización de permisos de módulos de usuarios
 - [x] Verificación E2E en portal SuperAdmin (UI refinada)
+
+## Phase 30 Progress
+- [ ] TBD (run /plan 30 to create)
 
 ## Last Session Summary
 Codebase mapping complete.
