@@ -202,8 +202,8 @@ export default function SalesModule() {
         </div>
       </div>
 
-      {/* KPI Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* KPI Stats - Ocultos en móvil */}
+      <div className="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#141f38] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1d2b4a] to-[#091328] flex items-center justify-center text-[#85adff] shadow-inner">
              <TrendingUp size={24} />
@@ -233,9 +233,9 @@ export default function SalesModule() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-[#091328] rounded-2xl border border-[#40485d]/10 overflow-hidden shadow-2xl">
-         <div className="p-4 lg:p-6 border-b border-[#40485d]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      {/* Main Sales List */}
+      <div className="w-full">
+         <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={16} />
             <input 
@@ -249,7 +249,7 @@ export default function SalesModule() {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-auto border border-[#40485d]/10 rounded-xl bg-[#091328]">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
