@@ -1,7 +1,9 @@
 ## Current Position
-- **Phase**: 31 (completed)
-- **Task**: All tasks complete
-- **Status**: Verified
+- **Sprint**: pwa-ux-refinement
+- **Status**: Sprint in progress
+- **Phase**: 31 (paused)
+- **Task**: Refinando comportamientos PWA (refresco y barra de estado)
+
 
 ## Last Session Summary
 Fase 31 ejecutada exitosamente. Se convirtió la aplicación en una PWA funcional usando `vite-plugin-pwa`, se generó un logo profesional minimalista y se ajustó el CSS para proporcionar una experiencia de usuario nativa (bloqueo de refresco al arrastrar y desactivación de selección de texto/menú contextual en móvil).

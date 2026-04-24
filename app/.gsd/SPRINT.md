@@ -1,41 +1,31 @@
-# Sprint 16 — Fix Firebase Config
+# Sprint: pwa-ux-refinement
 
-> **Duration**: 2026-04-22 to 2026-04-23
+> **Duration**: 2026-04-24
 > **Status**: In Progress
 
 ## Goal
-Resolver el error `auth/invalid-api-key` y realizar ajustes estéticos en el panel de SuperAdmin (PKT ERP branding).
+Solucionar el refresco persistente al arrastrar hacia abajo y sincronizar el color de la barra de estado de Android con el fondo de la aplicación (Modo Claro/Oscuro).
 
 ## Scope
 
 ### Included
-- Verificar el archivo `.env` local.
-- Validar la carga de variables de entorno en la configuración de Firebase (`src/services/firebase.js`).
-- Corregir la inicialización de Firebase.
-- Asegurar que `.env.example` tenga todas las claves necesarias (sin valores).
+- Extender `overscroll-behavior: none` al elemento `html` para asegurar el bloqueo del pull-to-refresh en Chrome/Android.
+- Implementar etiquetas meta dinámicas o CSS para el `theme-color` que cambie según el modo (oscuro/claro).
+- Asegurar que la barra de estado de Android se camufle con el fondo de la app.
 
 ### Explicitly Excluded
-- Nuevas funcionalidades de autenticación.
-- Despliegue a Netlify/Firebase hosting.
+- Cambios en el manifiesto PWA fuera de los colores.
+- Nuevos iconos.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Verificar `.env` y contrastar con `firebase.js` | Antigravity | ✅ Done | 0.5 |
-| Corregir mapeo de variables en `firebase.js` | Antigravity | ✅ Done | 0.5 |
-| Validar inicialización en consola | Antigravity | ⬜ Todo | 0.5 |
-| Branding: Cambiar "Studio Alpha" a "PKT ERP" en AdminLayout | Antigravity | ✅ Done | 0.2 |
-| Branding: Renombrar "Tenants / Clients" a "Clientes" | Antigravity | ✅ Done | 0.1 |
-| Fix: Corregir conteo de asientos en el Dashboard | Antigravity | ✅ Done | 0.3 |
+| Arreglar pull-to-refresh (html/body CSS) | Claude | ⬜ Todo | 0.5 |
+| Sincronizar theme-color de la barra de estado | Claude | ⬜ Todo | 1.0 |
+| Verificación en simulador/código | Claude | ⬜ Todo | 0.5 |
 
 ## Daily Log
 
-### 2026-04-22
-- Sprint creado para solucionar el error de API Key detectado en consola.
-- Se re-escribió el archivo `.env` en UTF-8 para evitar problemas de codificación.
-- Se mejoraron los diagnósticos en `src/services/firebase.js`.
-- Actualizado el branding del SuperAdmin: "Studio Alpha" -> "PKT ERP" y removido subtítulo.
-- Refinado el título: Removido "(Admin)" y aplicado gradiente a "ERP" (branding unificado).
-- Renombrado el módulo "Tenants / Clients" a "Clientes" en el sidebar.
-- Bugfix: Corregido el cálculo de utilización de asientos en `useAdminAnalytics.js` (ahora filtra superadmins y usa el path correcto de suscripción).
+### 2026-04-24
+- Sprint creado para refinar la experiencia PWA.
