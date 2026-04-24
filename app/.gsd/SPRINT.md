@@ -21,11 +21,14 @@ Solucionar el refresco persistente al arrastrar hacia abajo y sincronizar el col
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Arreglar pull-to-refresh (html/body CSS) | Claude | ⬜ Todo | 0.5 |
-| Sincronizar theme-color de la barra de estado | Claude | ⬜ Todo | 1.0 |
-| Verificación en simulador/código | Claude | ⬜ Todo | 0.5 |
+| Arreglar pull-to-refresh (html/body CSS) | Claude | ✅ Hecho | 0.5 |
+| Sincronizar theme-color de la barra de estado | Claude | ✅ Hecho | 1.0 |
+| Verificación en simulador/código | Claude | ✅ Hecho | 0.5 |
 
 ## Daily Log
 
 ### 2026-04-24
 - Sprint creado para refinar la experiencia PWA.
+- Se aplicó `overscroll-behavior-y: none` tanto a `html` como a `body`.
+- Se integró lógica dinámica en `ThemeContext.jsx` para actualizar el `theme-color` según el modo (oscuro/claro).
+- Sprint completado satisfactoriamente.
