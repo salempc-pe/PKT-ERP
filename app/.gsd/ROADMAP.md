@@ -79,7 +79,7 @@
 **Tasks**:
 - [x] Implementar DashboardModule con KPIs agregados (CRM, Inventario, Ventas)
 - [x] Crear SettingsModule para gestión de Perfil de Empresa
-- [x] Integrar navegación y rutas para Dashboard y Settings
+- [x] Integrar navegación y rutas para Dashboard and Settings
 
 **Verification**:
 - [x] Dashboard muestra datos reales de los módulos activos.
@@ -454,7 +454,7 @@
 - [x] Rediseñar lista de adopción de módulos.
 
 **Verification**:
-- TBD
+- [x] Los KPIs muestran datos reales de uso por módulo.
 
 ---
 
@@ -467,6 +467,21 @@
 - [x] Plan 27.1: Auditoría de Cimientos y Multi-tenancy
 - [x] Plan 27.2: Auditoría de Módulos de Cliente y Inputs
 - [x] Plan 27.3: Auditoría del Portal SuperAdmin y Secretos
+
+**Verification**:
+- [x] VERIFICATION.md (PASS)
+
+---
+
+### Phase 28: Módulo de Compras (Gestión de Proveedores)
+**Status**: ✅ Complete
+**Objective**: Implementar la gestión de proveedores y órdenes de compra integradas con el inventario.
+**Depends on**: Phase 3
+
+**Tasks**:
+- [x] Plan 28.1: Maestros de Proveedores (Hook y CRUD)
+- [x] Plan 28.2: Órdenes de Compra e Integración con Inventario
+- [x] Plan 28.3: Registro del Módulo y UI Integration
 
 **Verification**:
 - [x] VERIFICATION.md (PASS)
@@ -492,13 +507,18 @@
 
 ---
 
-### Phase 28: Módulo de Compras (Gestión de Proveedores)
+### Phase 30: Rediseño Móvil y UX
 **Status**: ✅ Complete
+**Objective**: Optimizar la experiencia en dispositivos móviles mediante la reubicación del menú, la eliminación de tarjetas de resumen redundantes y el rediseño de listas para scroll bidireccional.
+**Depends on**: Phase 29
 
 **Tasks**:
-- [x] Plan 28.1: Maestros de Proveedores (Hook y CRUD)
-- [x] Plan 28.2: Órdenes de Compra e Integración con Inventario
-- [x] Plan 28.3: Registro del Módulo y UI Integration
+- [x] Plan 30.1: Ajustar Menú Hamburguesa en Móvil y eliminar subtítulo "Empresa Verificada".
+- [x] Plan 30.2: Rediseño del Módulo de Inventario (Mobile) — Quitar tarjetas y habilitar scroll.
+- [x] Plan 30.3: Rediseño Móvil en Contabilidad y Ventas — Quitar tarjetas y habilitar scroll.
 
 **Verification**:
-- [x] VERIFICATION.md (PASS)
+- [x] El menú hamburguesa no tapa los títulos de los módulos.
+- [x] Los módulos de Inventario, Contabilidad y Ventas no muestran tarjetas de resumen en móvil.
+- [x] Las listas en móvil ocupan todo el ancho y permiten scroll horizontal/vertical cómodo.
+- [x] El subtítulo "Empresa Verificada" ha sido eliminado del menú.
