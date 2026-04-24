@@ -522,3 +522,19 @@
 - [x] Los módulos de Inventario, Contabilidad y Ventas no muestran tarjetas de resumen en móvil.
 - [x] Las listas en móvil ocupan todo el ancho y permiten scroll horizontal/vertical cómodo.
 - [x] El subtítulo "Empresa Verificada" ha sido eliminado del menú.
+
+---
+
+### Phase 31: Conversión a PWA y Experiencia Nativa
+**Status**: ⬜ Not Started
+**Objective**: Transformar la aplicación en una PWA funcional con estética de aplicación nativa, eliminando comportamientos web como el "pull-to-refresh" y la selección accidental de texto.
+**Depends on**: Phase 30
+
+**Tasks**:
+- [ ] TBD (run /plan 31 to create)
+
+**Verification**:
+- [ ] La aplicación es instalable como PWA (Manifest & Service Worker básico).
+- [ ] No ocurre refresco de página al arrastrar hacia abajo en el móvil.
+- [ ] El texto no se selecciona ni aparece el menú contextual de búsqueda al mantener presionado.
+- [ ] Se incluye un logo provisional para el icono de la aplicación.
