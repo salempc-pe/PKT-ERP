@@ -122,7 +122,6 @@ export default function ClientLayout() {
 
           <div>
             <h1 style={{ color: 'var(--color-on-surface)' }} className="text-xl font-bold tracking-tighter truncate max-w-full" title={tenantName}>{tenantName}</h1>
-            <p style={{ color: 'var(--color-on-surface-variant)' }} className="text-[10px] font-bold mt-0.5 uppercase tracking-widest opacity-70">Empresa Verificada</p>
           </div>
         </div>
            <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
@@ -296,7 +295,7 @@ export default function ClientLayout() {
       </aside>
 
       {/* Main Content Canvas */}
-      <main className="flex-1 p-6 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
+      <main className="flex-1 p-6 pt-20 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
         {/* Dynamic Route Content (NO HEADER) */}
         <div className="max-w-7xl mx-auto">
           <Outlet />
