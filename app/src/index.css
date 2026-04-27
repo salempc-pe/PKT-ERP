@@ -53,9 +53,9 @@
   --color-secondary-fixed-dim: #b4c1ff;
   --color-surface-container-highest: #192540;
   
-  --font-headline: "Manrope", sans-serif;
-  --font-body: "Manrope", sans-serif;
-  --font-label: "Manrope", sans-serif;
+  --font-headline: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-label: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 @utility architectural-glass {
@@ -245,4 +245,16 @@
 :root.light ::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
 :root.light ::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 3px; }
 :root.light ::-webkit-scrollbar-thumb:hover { background: var(--color-outline); }
+
+/* ─── Animaciones de Marca ────────────────────────────────── */
+@keyframes logo-pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.animate-logo-pulse {
+  animation: logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 
