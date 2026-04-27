@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-const PLAN_PRICES = {
-  startup: 89, // Actualizado post-rebranding de precios
-  business: 199
-};
 
 export const calculateHealthScore = (org) => {
   const activeModules = org?.subscription?.activeModules?.length || 0;
@@ -18,11 +14,8 @@ export function useAdminAnalytics() {
 
   const calculateMRR = useMemo(() => {
     return allOrganizations.reduce((total, org) => {
-      const planId = org.subscription?.planId;
-      if (planId && PLAN_PRICES[planId]) {
-        return total + PLAN_PRICES[planId];
-      }
-      return total;
+      const fee = org.subscription?.monthlyFee || 0;
+      return total + Number(fee);
     }, 0);
   }, [allOrganizations]);
 

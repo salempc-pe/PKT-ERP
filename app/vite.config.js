@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['pwa-192x192.png', 'pwa-512x512.png', 'favicon.ico'],
       manifest: {
-        name: 'PKT ERP',
-        short_name: 'PKT',
-        description: 'Professional ERP Solution',
+        name: 'Veló ERP',
+        short_name: 'Veló',
+        description: 'Professional ERP Solution by Veló',
         theme_color: '#091328',
         background_color: '#060e20',
         display: 'standalone',

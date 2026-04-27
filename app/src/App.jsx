@@ -16,11 +16,15 @@ import CalendarModule from './modules/client/calendar/CalendarModule';
 import ProjectModule from './modules/client/projects/ProjectModule';
 import AdminRoute from './components/AdminRoute';
 import TeamModule from './modules/client/team/TeamModule';
+import PurchasesModule from './modules/client/purchases/PurchasesModule';
+import RealEstateModule from './modules/client/realestate/RealEstateModule';
+
 
 import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
 import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
+import FeedbackButton from './components/FeedbackButton';
 
 function App() {
   return (
@@ -56,6 +60,12 @@ function App() {
             <Route element={<ModuleRoute module="projects" />}>
               <Route path="projects" element={<ProjectModule />} />
             </Route>
+            <Route element={<ModuleRoute module="purchases" />}>
+              <Route path="purchases" element={<PurchasesModule />} />
+            </Route>
+            <Route element={<ModuleRoute module="realestate" />}>
+              <Route path="realestate" element={<RealEstateModule />} />
+            </Route>
 
             <Route path="settings" element={<SettingsModule />} />
             <Route element={<AdminRoute />}>
@@ -75,6 +85,7 @@ function App() {
           {/* Fallback for undefined routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <FeedbackButton />
       </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

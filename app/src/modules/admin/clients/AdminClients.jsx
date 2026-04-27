@@ -9,7 +9,9 @@ const AVAILABLE_MODULES = [
   { id: 'sales', name: 'Ventas y Facturación' },
   { id: 'finance', name: 'Contabilidad' },
   { id: 'calendar', name: 'Agenda y Citas' },
-  { id: 'projects', name: 'Gestión de Proyectos' }
+  { id: 'projects', name: 'Gestión de Proyectos' },
+  { id: 'purchases', name: 'Compras y Proveedores' },
+  { id: 'realestate', name: 'Inmobiliaria / Terrenos' }
 ];
 
 export default function AdminClients() {
@@ -32,6 +34,7 @@ export default function AdminClients() {
   const [isSaving, setIsSaving] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
+
   // Forms State
   const [newOrgData, setNewOrgData] = useState({ 
     name: '', 
@@ -41,7 +44,9 @@ export default function AdminClients() {
     planId: 'startup',
     activeModules: [],
     adminName: '',
-    adminEmail: ''
+    adminEmail: '',
+    logoUrl: '',
+    monthlyFee: 0
   });
   
   // Unified Edit State
@@ -51,7 +56,9 @@ export default function AdminClients() {
     address: '',
     maxUsers: 5,
     planId: 'startup',
-    activeModules: []
+    activeModules: [],
+    logoUrl: '',
+    monthlyFee: 0
   });
 
   const [newUserInOrg, setNewUserInOrg] = useState({ name: '', email: '', role: 'admin' });
@@ -99,7 +106,8 @@ export default function AdminClients() {
       setNewOrgData({ 
         name: '', ruc: '', address: '', maxUsers: 5, 
         planId: 'startup', activeModules: [], 
-        adminName: '', adminEmail: '' 
+        adminName: '', adminEmail: '',
+        logoUrl: '', monthlyFee: 0 
       });
       setIsNewOrgModalOpen(false);
     } catch (error) {
@@ -117,7 +125,9 @@ export default function AdminClients() {
       address: org.address || '',
       maxUsers: org.subscription?.maxUsers || 5,
       planId: org.subscription?.planId || 'startup',
-      activeModules: org.subscription?.activeModules || []
+      activeModules: org.subscription?.activeModules || [],
+      logoUrl: org.logoUrl || '',
+      monthlyFee: org.subscription?.monthlyFee || 0
     });
     setIsEditOrgModalOpen(true);
   };
@@ -173,6 +183,34 @@ export default function AdminClients() {
     alert('Enlace de invitación copiado al portapapeles');
   };
 
+  const handleLogoUpload = async (file, setState) => {
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = Math.min(img.width, img.height);
+        canvas.width = 500; // Standard size for logos
+        canvas.height = 500;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw centered and cropped to square
+        const offsetX = (img.width - size) / 2;
+        const offsetY = (img.height - size) / 2;
+        ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, 500, 500);
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        setState(prev => ({ ...prev, logoUrl: dataUrl }));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+
+
   return (
     <div className="space-y-8 animate-fade-in relative pb-20">
       {/* Page Header */}
@@ -205,8 +243,12 @@ export default function AdminClients() {
           <div key={org.id} className="bg-[#091328]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all hover:border-[#85adff]/20 flex flex-col h-full group">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff] group-hover:bg-[#85adff]/20 transition-colors">
-                  <Building2 size={24} />
+                <div className="w-12 h-12 bg-[#85adff]/10 rounded-2xl flex items-center justify-center text-[#85adff] group-hover:bg-[#85adff]/20 transition-colors overflow-hidden">
+                  {org.logoUrl ? (
+                    <img src={org.logoUrl} alt={org.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <Building2 size={24} />
+                  )}
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#dee5ff] flex items-center gap-3">
@@ -228,7 +270,7 @@ export default function AdminClients() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-[#060e20]/40 p-3 rounded-2xl border border-[#40485d]/20">
                 <p className="text-[10px] uppercase font-bold text-[#a3aac4] mb-1">Usuarios</p>
                 <p className="text-lg font-black text-[#dee5ff]">{org.users.length} <span className="text-xs text-[#a3aac4]/50 font-normal">/ {org.subscription?.maxUsers || 5}</span></p>
@@ -239,6 +281,10 @@ export default function AdminClients() {
                   <HeartPulse size={16} className="text-[#4ADE80]" />
                   <p className="text-sm font-bold text-[#dee5ff]">{calculateHealthScore(org)}</p>
                 </div>
+              </div>
+              <div className="bg-[#060e20]/40 p-3 rounded-2xl border border-[#40485d]/20">
+                <p className="text-[10px] uppercase font-bold text-[#a3aac4] mb-1">Cuota</p>
+                <p className="text-sm font-black text-[#fbabff]">S/. {org.subscription?.monthlyFee || 0}</p>
               </div>
             </div>
 
@@ -263,8 +309,10 @@ export default function AdminClients() {
                 className="flex items-center justify-center gap-2 py-3 bg-[#141f38] hover:bg-[#1c2a4d] text-[#a3aac4] hover:text-[#dee5ff] rounded-xl text-xs font-black transition-all border border-[#40485d]/30 hover:border-[#85adff]/30"
               >
                 <Settings size={14} />
-                Configuración
+                Config
               </button>
+
+
               
               <button 
                 onClick={() => {
@@ -278,7 +326,7 @@ export default function AdminClients() {
                 className="flex items-center justify-center gap-2 py-3 bg-[#85adff]/5 hover:bg-[#85adff]/10 text-[#85adff] rounded-xl text-xs font-black transition-all border border-[#85adff]/10 hover:border-[#85adff]/30"
               >
                 <ShieldAlert size={14} />
-                Entrar Admin
+                Admin
               </button>
             </div>
           </div>
@@ -356,6 +404,40 @@ export default function AdminClients() {
                     </div>
                   </section>
 
+                  {/* Logo de la Empresa */}
+                  <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
+                    <h3 className="text-sm font-black text-[#85adff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Settings size={16} /> Logo de la Empresa
+                    </h3>
+                    <div className="flex items-center gap-6">
+                      <div className="w-24 h-24 bg-[#060e20] border border-[#40485d]/30 rounded-2xl overflow-hidden flex items-center justify-center relative group">
+                        {newOrgData.logoUrl ? (
+                          <img src={newOrgData.logoUrl} alt="Logo preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <Building2 size={32} className="text-[#a3aac4]/20" />
+                        )}
+                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                          <Plus size={24} className="text-white" />
+                          <input 
+                            type="file" accept="image/*" className="hidden" 
+                            onChange={(e) => handleLogoUpload(e.target.files[0], setNewOrgData)} 
+                          />
+                        </label>
+                      </div>
+                      <div className="flex-grow space-y-1">
+                        <p className="text-xs font-bold text-[#dee5ff]">Subir Logo Corporativo</p>
+                        <p className="text-[10px] text-[#a3aac4]">El logo se ajustará automáticamente a formato cuadrado (500x500px).</p>
+                        <button 
+                          type="button"
+                          onClick={() => document.querySelector('input[type="file"]').click()}
+                          className="mt-2 text-[10px] font-black text-[#85adff] uppercase hover:underline"
+                        >
+                          Seleccionar Imagen
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
                   {/* Planes y Límite */}
                   <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
                     <h3 className="text-sm font-black text-[#fbabff] uppercase tracking-[0.2em] flex items-center gap-2">
@@ -387,6 +469,22 @@ export default function AdminClients() {
                         onChange={e => setNewOrgData({...newOrgData, maxUsers: Number(e.target.value)})}
                         className="w-full h-1.5 bg-[#091328] rounded-lg appearance-none cursor-pointer accent-[#fbabff]"
                       />
+                    </div>
+
+                    {/* Cuota Mensual */}
+                    <div className="space-y-4 pt-4 border-t border-[#40485d]/10">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase">Cuota Mensual (S/.)</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4] font-bold text-xs">S/.</span>
+                          <input 
+                            type="number" 
+                            value={newOrgData.monthlyFee} 
+                            onChange={e => setNewOrgData({...newOrgData, monthlyFee: e.target.value})}
+                            className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-4 py-2 text-sm focus:border-[#fbabff]/50 outline-none w-32 font-black"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </section>
 
@@ -544,6 +642,40 @@ export default function AdminClients() {
                     </div>
                   </section>
 
+                  {/* Logo de la Empresa (Edit) */}
+                  <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
+                    <h3 className="text-sm font-black text-[#85adff] uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Settings size={16} /> Logo de la Empresa
+                    </h3>
+                    <div className="flex items-center gap-6">
+                      <div className="w-24 h-24 bg-[#060e20] border border-[#40485d]/30 rounded-2xl overflow-hidden flex items-center justify-center relative group">
+                        {editOrgState.logoUrl ? (
+                          <img src={editOrgState.logoUrl} alt="Logo preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <Building2 size={32} className="text-[#a3aac4]/20" />
+                        )}
+                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                          <Plus size={24} className="text-white" />
+                          <input 
+                            type="file" accept="image/*" className="hidden" id="logo-upload-edit"
+                            onChange={(e) => handleLogoUpload(e.target.files[0], setEditOrgState)} 
+                          />
+                        </label>
+                      </div>
+                      <div className="flex-grow space-y-1">
+                        <p className="text-xs font-bold text-[#dee5ff]">Cambiar Logo Corporativo</p>
+                        <p className="text-[10px] text-[#a3aac4]">El logo se ajustará automáticamente a formato cuadrado (500x500px).</p>
+                        <button 
+                          type="button"
+                          onClick={() => document.getElementById('logo-upload-edit').click()}
+                          className="mt-2 text-[10px] font-black text-[#85adff] uppercase hover:underline"
+                        >
+                          Seleccionar Nueva Imagen
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
                   {/* Planes y Límite */}
                   <section className="space-y-6 bg-[#060e20]/30 p-6 rounded-[2rem] border border-[#40485d]/20">
                     <h3 className="text-sm font-black text-[#fbabff] uppercase tracking-[0.2em] flex items-center gap-2">
@@ -575,6 +707,22 @@ export default function AdminClients() {
                         onChange={e => setEditOrgState({...editOrgState, maxUsers: Number(e.target.value)})}
                         className="w-full h-1.5 bg-[#091328] rounded-lg appearance-none cursor-pointer accent-[#fbabff]"
                       />
+                    </div>
+
+                    {/* Cuota Mensual (Edit) */}
+                    <div className="space-y-4 pt-4 border-t border-[#40485d]/10">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-bold text-[#a3aac4] uppercase">Cuota Mensual (S/.)</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4] font-bold text-xs">S/.</span>
+                          <input 
+                            type="number" 
+                            value={editOrgState.monthlyFee} 
+                            onChange={e => setEditOrgState({...editOrgState, monthlyFee: e.target.value})}
+                            className="bg-[#060e20] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-4 py-2 text-sm focus:border-[#fbabff]/50 outline-none w-32 font-black"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </section>
 
@@ -684,24 +832,24 @@ export default function AdminClients() {
             </div>
 
             {/* PIE DE PÁGINA FIJO */}
-            <div className="bg-[#060e20] p-8 border-t border-[#40485d]/30 space-y-4 rounded-b-[2.5rem]">
+            <div className="bg-[#060e20] p-6 border-t border-[#40485d]/30 flex flex-col md:flex-row items-center justify-between gap-4 rounded-b-[2.5rem]">
+              <p className="text-[10px] text-[#a3aac4] font-bold uppercase tracking-widest opacity-60">Sincronización segura con base de datos real</p>
               <button 
                 onClick={handleSaveFullOrg}
                 disabled={isSaving}
-                className="w-full py-6 bg-[#4ADE80] text-[#060e20] font-black rounded-2xl shadow-xl shadow-[#4ADE80]/10 hover:bg-[#63e695] hover:shadow-[#4ADE80]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-lg"
+                className="bg-[#4ADE80] text-[#060e20] font-black rounded-xl shadow-xl shadow-[#4ADE80]/10 hover:bg-[#63e695] hover:shadow-[#4ADE80]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 px-8 py-3 text-sm"
               >
                 {isSaving ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-[#060e20] border-t-transparent animate-spin rounded-full"></div>
-                    Guardando Cambios...
+                    <div className="w-4 h-4 border-2 border-[#060e20] border-t-transparent animate-spin rounded-full"></div>
+                    Guardando...
                   </>
                 ) : (
                   <>
-                    <Save size={20} /> Guardar Todos los Cambios
+                    <Save size={16} /> Guardar Cambios
                   </>
                 )}
               </button>
-              <p className="text-[10px] text-[#a3aac4] text-center font-bold uppercase tracking-widest opacity-60">Sincronización segura con base de datos real</p>
             </div>
           </div>
         </div>

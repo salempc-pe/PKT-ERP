@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import VeloLogo from '../../components/VeloLogo';
 
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -52,7 +53,7 @@ export default function ClientLayout() {
         </div>
       )}
       <div style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-on-surface)' }} className={`min-h-screen font-body flex relative overflow-hidden transition-colors duration-300 ${isImpersonating ? 'pt-10' : ''}`}>
-        {/* Botón flotante para menú móvil (aparece cuando sidebar está cerrado y es movil) */}
+        {/* Botón flotante para menú móvil */}
         <button 
           className="lg:hidden fixed top-6 left-6 z-40 p-3 rounded-xl shadow-lg transition-all duration-300"
           style={{ 
@@ -74,33 +75,15 @@ export default function ClientLayout() {
       )}
 
       {/* SideNavBar Shell */}
-      <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 space-y-6 z-50 transition-all duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="px-6 mb-4">
-          <div className="flex justify-between items-start mb-4">
-            {/* Logo Container */}
-            <div className="group relative">
-               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-110 shadow-lg"
-                style={{ 
-                  backgroundColor: 'var(--color-primary-container)', 
-                  color: 'var(--color-primary)',
-                  border: '1px solid var(--color-outline-variant)'
-                }}
-              >
-                {tenantLogo ? (
-                  <img src={tenantLogo} alt="Logo" className="w-full h-full object-cover" />
-                ) : (
-                  <Building size={24} />
-                )}
-              </div>
-            </div>
-
-            {/* Botón Toggle Tema */}
+      <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className={`fixed lg:sticky top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 z-50 transition-all duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="px-6 mb-8 space-y-6">
+          {/* Top Branding Row */}
+          <div className="flex justify-between items-center gap-2">
+            <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="150" className="shrink min-w-0" />
             <button
-              id="theme-toggle-btn"
               onClick={toggleTheme}
               title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-              className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
+              className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none shrink-0"
               style={{
                 backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
               }}
@@ -113,24 +96,38 @@ export default function ClientLayout() {
                   color: 'var(--color-on-primary)',
                 }}
               >
-                {isDark
-                  ? <Moon size={10} strokeWidth={2.5} />
-                  : <Sun size={10} strokeWidth={2.5} />}
+                {isDark ? <Moon size={10} strokeWidth={2.5} /> : <Sun size={10} strokeWidth={2.5} />}
               </span>
             </button>
           </div>
 
-          <div>
-            <h1 style={{ color: 'var(--color-on-surface)' }} className="text-xl font-bold tracking-tighter truncate max-w-full" title={tenantName}>{tenantName}</h1>
+          {/* Tenant Info Row */}
+          <div className="flex items-center gap-3">
+            <div 
+              className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm"
+              style={{ 
+                backgroundColor: 'var(--color-primary-container)', 
+                color: 'var(--color-primary)',
+                border: '1px solid var(--color-outline-variant)'
+              }}
+            >
+              {tenantLogo ? (
+                <img src={tenantLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Building size={20} />
+              )}
+            </div>
+            <div className="min-w-0">
+              <h1 style={{ color: 'var(--color-on-surface)' }} className="text-sm font-bold tracking-tight truncate" title={tenantName}>{tenantName}</h1>
+            </div>
           </div>
         </div>
-           <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
           <Link 
             to="/client/dashboard" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
             style={isActive('/client/dashboard') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-            onMouseEnter={e => { if (!isActive('/client/dashboard')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-            onMouseLeave={e => { if (!isActive('/client/dashboard')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
             onClick={() => setIsSidebarOpen(false)}
           >
             <LayoutDashboard size={20} />
@@ -142,112 +139,63 @@ export default function ClientLayout() {
           )}
           
           {user?.subscription?.activeModules?.includes('crm') && (
-            <Link 
-              to="/client/crm" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/crm') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/crm')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/crm')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/crm" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/crm') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Users size={20} />
               <span>CRM y Ventas</span>
             </Link>
           )}
           
+          {user?.subscription?.activeModules?.includes('realestate') && (
+            <Link to="/client/realestate" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/realestate') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
+              <Building size={20} />
+              <span>Terrenos Inmobiliarios</span>
+            </Link>
+          )}
+          
           {user?.subscription?.activeModules?.includes('projects') && (
-            <Link 
-              to="/client/projects" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/projects') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/projects')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/projects')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/projects" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/projects') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Briefcase size={20} />
               <span>Proyectos</span>
             </Link>
           )}
           
           {user?.subscription?.activeModules?.includes('inventory') && (
-            <Link 
-              to="/client/inventory" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/inventory') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/inventory')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/inventory')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/inventory" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/inventory') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Box size={20} />
               <span>Inventario</span>
             </Link>
           )}
           
           {user?.subscription?.activeModules?.includes('finance') && (
-            <Link 
-              to="/client/finance" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/finance') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/finance')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/finance')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/finance" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/finance') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Calculator size={20} />
               <span>Contabilidad</span>
             </Link>
           )}
           
           {user?.subscription?.activeModules?.includes('sales') && (
-            <Link 
-              to="/client/sales" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/sales') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-tertiary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/sales')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/sales')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/sales" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/sales') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-tertiary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <FileText size={20} />
               <span>Ventas y Facturas</span>
             </Link>
           )}
 
           {user?.subscription?.activeModules?.includes('purchases') && (
-            <Link 
-              to="/client/purchases" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/purchases') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/purchases')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/purchases')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/purchases" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/purchases') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <ShoppingCart size={20} />
               <span>Compras y Proveedores</span>
             </Link>
           )}
   
           {user?.subscription?.activeModules?.includes('calendar') && (
-            <Link 
-              to="/client/calendar" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/calendar') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/calendar')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/calendar')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/calendar" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/calendar') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Calendar size={20} />
               <span>Agenda</span>
             </Link>
           )}
 
           {(user?.role === 'admin') && (
-            <Link 
-              to="/client/team" 
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-              style={isActive('/client/team') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
-              onMouseEnter={e => { if (!isActive('/client/team')) { e.currentTarget.style.color = 'var(--color-on-surface)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; } }}
-              onMouseLeave={e => { if (!isActive('/client/team')) { e.currentTarget.style.color = 'var(--color-on-surface-variant)'; e.currentTarget.style.backgroundColor = ''; } }}
-              onClick={() => setIsSidebarOpen(false)}
-            >
+            <Link to="/client/team" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/team') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Shield size={20} />
               <span>Mi Equipo</span>
             </Link>
@@ -279,7 +227,7 @@ export default function ClientLayout() {
             <div className="flex-1 min-w-0 pr-1">
               <p className="text-xs font-black truncate" style={{ color: 'var(--color-on-surface)' }}>{user?.name || 'Usuario'}</p>
               <p className="text-[10px] font-bold opacity-50 truncate" style={{ color: 'var(--color-on-surface-variant)' }}>
-                {user?.role || 'no-role'} | {user?.isAdmin ? 'S' : 'N'} | {user?.organizationId ? 'OrgOK' : 'NoOrg'}
+                {user?.role || 'no-role'}
               </p>
             </div>
             <button 
@@ -296,7 +244,6 @@ export default function ClientLayout() {
 
       {/* Main Content Canvas */}
       <main className="flex-1 p-6 pt-20 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
-        {/* Dynamic Route Content (NO HEADER) */}
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>
@@ -305,4 +252,3 @@ export default function ClientLayout() {
     </>
   );
 }
-

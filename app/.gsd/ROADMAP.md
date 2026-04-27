@@ -539,3 +539,20 @@
 - [x] No ocurre refresco de página al arrastrar hacia abajo en el móvil.
 - [x] El texto no se selecciona ni aparece el menú contextual de búsqueda al mantener presionado.
 - [x] Se incluye un logo provisional para el icono de la aplicación.
+
+---
+
+### Phase 32: Real Estate — Módulo de Terrenos y Pipeline Comercial
+**Status**: ⬜ Not Started
+**Objective**: Implementar un módulo especializado para la gestión de base de datos de terrenos y un pipeline comercial tipo Kanban para prospectos/compradores.
+**Depends on**: Phase 2, Phase 8, Phase 18
+
+**Tasks**:
+- [ ] TBD (run /plan 32 to create)
+
+**Verification**:
+- [ ] CRUD de terrenos funcional con persistencia en Firestore.
+- [ ] Calculadora de precios reactiva operativa.
+- [ ] Tablero Kanban de negociación funcional con asignación de compradores.
+- [ ] Tarjeta de resumen visible en el Dashboard principal.
+- [x] Corrección técnica y activación del módulo de Compras (Purchases).
