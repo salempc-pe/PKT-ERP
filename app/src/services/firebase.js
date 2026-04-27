@@ -21,9 +21,19 @@ if (import.meta.env.DEV && !import.meta.env.VITE_FIREBASE_API_KEY) {
 }
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+let app, db, auth;
+try {
+  if (!firebaseConfig.apiKey) {
+    throw new Error("Falta VITE_FIREBASE_API_KEY. Verifica tus variables de entorno.");
+  }
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+  console.log("✅ Firebase inicializado correctamente");
+} catch (error) {
+  console.error("❌ Error al inicializar Firebase:", error.message);
+  // No lanzamos el error para permitir que la UI cargue aunque sea un mensaje de error
+}
 
 export { db, auth };
 export default app;

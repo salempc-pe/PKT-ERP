@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight, Activity } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import VeloLogo from '../components/VeloLogo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -47,13 +48,10 @@ export default function Login() {
 
       <div className="max-w-md w-full z-10 relative">
         <header className="text-center mb-10 animate-fade-in">
-          <div className="w-16 h-16 bg-[#85adff]/10 rounded-2xl flex items-center justify-center mb-6 mx-auto border border-[#85adff]/20">
-            <Activity className="text-[#85adff]" size={32} />
+          <div className="flex justify-center mb-8">
+            <VeloLogo variant="horizontal" mode="dark" size="240" />
           </div>
-          <h1 className="text-4xl lg:text-5xl font-black text-[#dee5ff] tracking-tighter mb-4">
-            PKT <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#85adff] to-[#fbabff]">ERP</span>
-          </h1>
-          <p className="text-[#a3aac4] text-sm font-medium mx-auto">
+          <p className="text-[#a3aac4] text-xs font-bold uppercase tracking-[0.2em] opacity-60">
             Ingreso Seguro &bull; Control Centralizado
           </p>
         </header>

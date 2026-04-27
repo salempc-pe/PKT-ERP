@@ -125,7 +125,7 @@ export default function CRMModule() {
               <div className="flex flex-col gap-3 p-3 bg-[#0f1930]/40 border border-[#40485d]/10 rounded-2xl h-full min-h-[300px]">
                 {leads.filter(l => l.status === stage.id).map(lead => (
                   <div key={lead.id} className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all cursor-pointer group relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full opacity-20" className={stage.color}></div>
+                    <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
                     <div className="flex justify-between items-start mb-1">
                       <p className="font-extrabold text-[#dee5ff] text-sm group-hover:text-[#85adff] transition-colors line-clamp-1">{lead.name}</p>

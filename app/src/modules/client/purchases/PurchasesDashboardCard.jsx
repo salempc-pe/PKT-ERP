@@ -19,8 +19,8 @@ export default function PurchasesDashboardCard({ orgId }) {
         const querySnapshot = await getDocs(q);
         
         const docs = querySnapshot.docs.map(d => d.data());
-        const pending = docs.filter(d => d.status === 'pending').length;
-        const received = docs.filter(d => d.status === 'received').length;
+        const pending = docs.filter(d => d.status === 'Solicitada' || d.status === 'Borrador').length;
+        const received = docs.filter(d => d.status === 'Recibida').length;
         
         setStats({
           pending,

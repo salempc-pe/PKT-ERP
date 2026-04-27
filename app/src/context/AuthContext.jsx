@@ -36,7 +36,7 @@ const SUBSCRIPTION_PLANS = {
   },
   enterprise: {
     name: 'Enterprise',
-    modules: ['crm', 'inventory', 'sales', 'projects', 'purchases', 'finance', 'calendar'],
+    modules: ['crm', 'inventory', 'sales', 'projects', 'purchases', 'finance', 'calendar', 'realestate'],
     limits: { users: 10 }
   }
 };
@@ -137,10 +137,10 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = auth ? onAuthStateChanged(auth, async (firebaseUser) => {
+      // ... mismo código interior ...
       if (firebaseUser) {
         try {
-          // Obtener el perfil del usuario de Firestore por UID
           const userDocRef = doc(db, 'users', firebaseUser.uid);
           const userSnap = await getDoc(userDocRef);
           
@@ -148,7 +148,6 @@ export function AuthProvider({ children }) {
           if (userSnap.exists()) {
             userData = { id: userSnap.id, ...userSnap.data() };
           } else {
-            // Fallback: buscar por email si no existe por UID (posible activación incompleta)
             try {
               const usersRef = collection(db, 'users');
               const q = query(usersRef, where('email', '==', firebaseUser.email));
@@ -157,8 +156,6 @@ export function AuthProvider({ children }) {
               if (!querySnapshot.empty) {
                 const oldDoc = querySnapshot.docs[0];
                 const oldData = oldDoc.data();
-                
-                // Reparación automática: migrar a UID y activar
                 userData = { 
                   ...oldData, 
                   id: firebaseUser.uid,
@@ -167,7 +164,6 @@ export function AuthProvider({ children }) {
                   inviteToken: null,
                   updatedAt: serverTimestamp()
                 };
-
                 await setDoc(doc(db, 'users', firebaseUser.uid), userData);
                 if (oldDoc.id !== firebaseUser.uid) {
                   await deleteDoc(doc(db, 'users', oldDoc.id));
@@ -221,9 +217,12 @@ export function AuthProvider({ children }) {
         sessionStorage.removeItem('pkt_user');
       }
       setLoading(false);
-    });
+    }) : () => {
+      console.error("Auth no disponible - cancelando carga");
+      setLoading(false);
+    };
 
-    return () => unsubscribe();
+    return () => { if (auth) unsubscribe(); };
   }, []);
 
   // Impersonation feature state
@@ -420,8 +419,10 @@ export function AuthProvider({ children }) {
           ? orgData.activeModules 
           : SUBSCRIPTION_PLANS[planId].modules,
         limits: SUBSCRIPTION_PLANS[planId].limits,
-        maxUsers: Number(orgData.maxUsers) || SUBSCRIPTION_PLANS[planId].limits.users
-      }
+        maxUsers: Number(orgData.maxUsers) || SUBSCRIPTION_PLANS[planId].limits.users,
+        monthlyFee: Number(orgData.monthlyFee) || 0
+      },
+      logoUrl: orgData.logoUrl || ''
     };
 
     try {
@@ -462,7 +463,9 @@ export function AuthProvider({ children }) {
         "subscription.planId": data.planId,
         "subscription.activeModules": data.activeModules,
         "subscription.maxUsers": Number(data.maxUsers),
-        "subscription.limits.users": Number(data.maxUsers) // Sincronizar ambos campos por seguridad
+        "subscription.limits.users": Number(data.maxUsers), // Sincronizar ambos campos por seguridad
+        "subscription.monthlyFee": Number(data.monthlyFee) || 0,
+        logoUrl: data.logoUrl || ''
       };
 
       await updateDoc(orgRef, updatePayload);
@@ -482,8 +485,10 @@ export function AuthProvider({ children }) {
             limits: {
               ...o.subscription?.limits,
               users: Number(data.maxUsers)
-            }
-          }
+            },
+            monthlyFee: Number(data.monthlyFee) || 0
+          },
+          logoUrl: data.logoUrl || ''
         } : o
       ));
 
@@ -717,7 +722,7 @@ export function AuthProvider({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060e20] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-background)' }}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
           <p className="text-[#85adff] font-black tracking-widest text-xs uppercase animate-pulse">Iniciando PKT ERP...</p>

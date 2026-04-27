@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import VeloLogo from '../../components/VeloLogo';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -14,20 +15,18 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="bg-[#060e20] text-[#dee5ff] min-h-screen font-body flex">
+    <div style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-on-surface)' }} className="min-h-screen font-body flex transition-colors duration-300">
       {/* SideNavBar Shell */}
-      <aside className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl bg-[#091328] flex flex-col py-8 space-y-6 z-40">
-        <div className="px-6 mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold text-[#dee5ff] tracking-tighter">
-              PKT <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#85adff] to-[#fbabff]">ERP</span>
-            </h1>
+      <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 space-y-6 z-40 transition-all duration-300">
+        <div className="px-6 mb-8 flex justify-between items-center gap-2">
+          <div className="flex-1 min-w-0">
+            <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="150" className="w-full" />
           </div>
           {/* Botón Toggle Tema */}
           <button
             onClick={toggleTheme}
             title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none"
+            className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none shrink-0"
             style={{
               backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
             }}
@@ -51,34 +50,49 @@ export default function AdminLayout() {
           {/* Active Tab: Dashboard */}
           <Link 
             to="/admin/dashboard" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/dashboard') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/admin/dashboard') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
           >
             <LayoutDashboard size={20} />
-            <span className="font-semibold text-sm">Dashboard</span>
+            <span>Dashboard</span>
           </Link>
           
-          <Link to="/admin/clients" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/clients') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
+          <Link 
+            to="/admin/clients" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/admin/clients') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+          >
             <Users size={20} />
-            <span className="font-semibold text-sm">Clientes</span>
+            <span>Clientes</span>
           </Link>
           
-          <Link to="/admin/sales" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/sales') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
+          <Link 
+            to="/admin/sales" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/admin/sales') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+          >
             <FileText size={20} />
-            <span className="font-semibold text-sm">Ventas y Facturas</span>
+            <span>Ventas y Facturas</span>
           </Link>
           
-          <Link to="/admin/logs" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:translate-x-1 ${isActive('/admin/logs') ? 'bg-[#192540] text-[#85adff] shadow-inner' : 'text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#0f1930]'}`}>
+          <Link 
+            to="/admin/logs" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/admin/logs') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+          >
             <Activity size={20} />
-            <span className="font-semibold text-sm">Auditoría / Logs</span>
+            <span>Auditoría / Logs</span>
           </Link>
-          
-
         </nav>
         
-        <div className="px-4 pt-4 mt-auto border-t border-[#40485d]/10 space-y-2">
-          <button onClick={logout} className="w-full flex items-center gap-3 text-[#a3aac4] px-4 py-3 hover:text-[#dee5ff] hover:bg-[#0f1930] rounded-lg transition-all">
+        <div className="px-4 pt-4 mt-auto border-t space-y-2" style={{ borderColor: 'var(--color-outline-variant)' }}>
+          <button 
+            onClick={logout} 
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-semibold hover:bg-[var(--color-surface-container)]"
+            style={{ color: 'var(--color-on-surface-variant)' }}
+          >
             <LogOut size={20} />
-            <span className="font-semibold text-sm">Logout</span>
+            <span>Logout</span>
           </button>
         </div>
       </aside>

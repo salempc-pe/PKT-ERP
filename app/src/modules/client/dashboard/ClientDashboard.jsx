@@ -11,6 +11,8 @@ import ProjectsDashboardCard from '../projects/ProjectsDashboardCard';
 import CalendarDashboardCard from '../calendar/CalendarDashboardCard';
 import FinanceDashboardCard from '../finance/FinanceDashboardCard';
 import PurchasesDashboardCard from '../purchases/PurchasesDashboardCard';
+import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
+
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -36,7 +38,8 @@ export default function ClientDashboard() {
     projects: ProjectsDashboardCard,
     calendar: CalendarDashboardCard,
     finance: FinanceDashboardCard,
-    purchases: PurchasesDashboardCard
+    purchases: PurchasesDashboardCard,
+    realestate: RealEstateDashboardCard
   };
 
   return (
