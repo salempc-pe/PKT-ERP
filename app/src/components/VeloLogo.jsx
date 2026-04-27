@@ -29,9 +29,9 @@ export default function VeloLogo({ variant = 'horizontal', mode = 'light', size 
   // Horizontal variant
   return (
     <svg 
-      viewBox="0 0 320 60" 
-      width={size === 'auto' ? '320' : size} 
-      height={size === 'auto' ? '60' : (parseInt(size) * 0.1875)} 
+      viewBox="0 0 180 60" 
+      width={size === 'auto' ? '180' : size} 
+      height={size === 'auto' ? '60' : (parseInt(size) * 0.33)} 
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
