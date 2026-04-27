@@ -556,3 +556,16 @@
 - [ ] Tablero Kanban de negociación funcional con asignación de compradores.
 - [ ] Tarjeta de resumen visible en el Dashboard principal.
 - [x] Corrección técnica y activación del módulo de Compras (Purchases).
+
+---
+
+### Phase 33: Integración de Estilos Visuales (Guía de Marca)
+**Status**: ⬜ Not Started
+**Objective**: Modificar la aplicación al estilo visual definido en la guía de marca (velo-brand-guide.html).
+**Depends on**: Phase 32
+
+**Tasks**:
+- [ ] TBD (run /plan 33 to create)
+
+**Verification**:
+- [ ] Los colores y estilos de la aplicación coinciden con las especificaciones de la guía de marca Veló.
