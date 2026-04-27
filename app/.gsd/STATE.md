@@ -1,11 +1,11 @@
 ## Current Position
-- **Phase**: 33 (completed)
-- **Task**: All visual styles integrated
-- **Status**: Verified
+- **Sprint**: true-dark-mode
+- **Status**: Sprint in progress
+- **Milestone**: 33 (paused)
 
 ## Last Session Summary
-Phase 33 ejecutada exitosamente. Se integraron los estilos de la guía de marca Veló, actualizando tipografía (System UI) y la paleta de colores corporativa (#6B4FD8, #2E8B57) en todo el proyecto.
+Fase 33 completada. Se inició un Sprint para implementar el modo oscuro con fondo negro neutro según la guía de marca y solicitud del usuario.
 
 ## Next Steps
-1. Proceder con la Fase 32: Real Estate — Módulo de Terrenos.
-
+1. Actualizar index.css con variables de fondo negro.
+2. Reemplazo global de hexágonos navy (#060e20) por negro (#0a0a0a).
