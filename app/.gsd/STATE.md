@@ -1,11 +1,12 @@
 ## Current Position
-- **Sprint**: true-dark-mode
+- **Sprint**: fix-light-mode-contrast
 - **Status**: Sprint in progress
-- **Milestone**: 33 (paused)
+- **Milestone**: (paused)
 
 ## Last Session Summary
-Fase 33 completada. Se inició un Sprint para implementar el modo oscuro con fondo negro neutro según la guía de marca y solicitud del usuario.
+Fase 33 completada, pero se detectó una regresión en el modo claro (fondos negros). Se inicia sprint para corregir contraste y ajustar modo oscuro al negro neutro de la guía.
 
 ## Next Steps
-1. Actualizar index.css con variables de fondo negro.
-2. Reemplazo global de hexágonos navy (#060e20) por negro (#0a0a0a).
+1. Corregir `index.css` y overrides de modo claro.
+2. Ajustar fondo oscuro.
+3. Added Phase 34 (Optimización Compacta de Tarjetas en Móvil).
