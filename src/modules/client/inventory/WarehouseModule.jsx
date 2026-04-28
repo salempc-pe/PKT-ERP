@@ -153,8 +153,7 @@ export default function WarehouseModule() {
       </div>
 
       {/* Table Content */}
-      <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
           {activeTab === 'stock' ? (
             <table className="w-full text-left border-collapse">
               <thead>

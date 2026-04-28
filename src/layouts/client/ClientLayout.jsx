@@ -274,12 +274,12 @@ export default function ClientLayout() {
       </aside>
 
       {/* Main Content Canvas */}
-      <main className="flex-1 p-6 pt-28 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
+      <main className="flex-1 p-4 pt-24 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
         <div className="max-w-7xl mx-auto">
           {/* Mobile Dynamic Title (Part of Scroll) */}
           {location.pathname !== '/client/dashboard' && (
             <div className="lg:hidden mb-10 px-2 animate-in fade-in slide-in-from-top-4 duration-700">
-               <h1 className="text-4xl font-black text-[var(--color-on-surface)] uppercase tracking-tighter leading-none">
+               <h1 className="text-2xl font-bold text-[var(--color-on-surface)] tracking-tight leading-none">
                  {currentTitle}
                </h1>
             </div>
