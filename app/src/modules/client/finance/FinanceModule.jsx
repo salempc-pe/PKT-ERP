@@ -12,6 +12,7 @@ export default function FinanceModule() {
   const orgId = user?.organizationId || "default_org";
   
   const { transactions, loading, addTransaction, deleteTransaction } = useFinance(orgId);
+  const { formatPrice, currencySymbol } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,6 +22,10 @@ export default function FinanceModule() {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Ventas');
   const [description, setDescription] = useState('');
+  
+  // -- Search & Filter State (Sync with Inventory Pattern) --
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('');
 
   // -- KPIs --
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
@@ -57,6 +62,20 @@ export default function FinanceModule() {
     setCategory(newType === 'income' ? 'Ventas' : 'Operativos');
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleApplyFilter = () => {
+    setActiveFilter(searchQuery);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleApplyFilter();
+    }
+  };
+
   if (loading) {
     return <LoadingScreen fullScreen={false} message="Cargando Contabilidad..." />;
   }
@@ -81,7 +100,7 @@ export default function FinanceModule() {
            <div>
              <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Balance Actual</p>
              <h3 className={`text-2xl font-black ${balance >= 0 ? "text-[#85ffab]" : "text-[#ff716c]"}`}>
-               ${balance.toFixed(2)}
+               {formatPrice(balance)}
              </h3>
            </div>
         </div>
@@ -91,7 +110,7 @@ export default function FinanceModule() {
            </div>
            <div>
              <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Total Ingresos</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${totalIncome.toFixed(2)}</h3>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(totalIncome)}</h3>
            </div>
         </div>
         <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
@@ -100,23 +119,32 @@ export default function FinanceModule() {
            </div>
            <div>
              <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Total Egresos</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${totalExpense.toFixed(2)}</h3>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(totalExpense)}</h3>
            </div>
         </div>
       </div>
 
       {/* Main Finance List */}
       <div className="w-full">
-         <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="relative w-full sm:w-64">
-             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
-             <input 
-               type="text" 
-               placeholder="Filtrar por descripción..." 
-               className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-transparent focus:border-[#6B4FD8] transition-all"
-             />
+          <div className="flex items-center gap-4 w-full sm:w-auto mb-6">
+            <div className="relative w-full sm:w-64">
+               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+               <input 
+                 type="text" 
+                 placeholder="Filtrar por descripción o monto..." 
+                 value={searchQuery}
+                 onChange={handleSearchChange}
+                 onKeyPress={handleKeyPress}
+                 className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-transparent focus:border-[#6B4FD8] transition-all"
+               />
+            </div>
+            <button 
+              onClick={handleApplyFilter}
+              className="bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)] p-2 rounded-lg hover:text-[var(--color-primary)] transition-colors"
+            >
+              <Search size={20} />
+            </button>
           </div>
-        </div>
 
         <div className="overflow-auto border border-[var(--color-outline-variant)] rounded-xl bg-[var(--color-surface-container-low)]">
           <table className="w-full text-left border-collapse">
@@ -130,10 +158,29 @@ export default function FinanceModule() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
-              {transactions.length === 0 ? (
-                 <tr><td colSpan="5" className="p-10 text-center text-[var(--color-on-surface-variant)]">No hay transacciones registradas.</td></tr>
-              ) : (
-                transactions.map((tx) => (
+              {(() => {
+                const filteredTransactions = transactions.filter(tx => {
+                  if (!activeFilter) return true;
+                  const searchLower = activeFilter.toLowerCase();
+                  return (
+                    tx.description?.toLowerCase().includes(searchLower) ||
+                    tx.category?.toLowerCase().includes(searchLower) ||
+                    tx.amount?.toString().includes(searchLower) ||
+                    tx.type?.toLowerCase().includes(searchLower)
+                  );
+                });
+
+                if (filteredTransactions.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan="5" className="p-10 text-center text-[var(--color-on-surface-variant)]">
+                        {activeFilter ? 'No se encontraron resultados para tu búsqueda.' : 'No hay transacciones registradas.'}
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return filteredTransactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors">
                     <td className="px-6 py-4">
                       {tx.type === 'income' 
@@ -148,8 +195,10 @@ export default function FinanceModule() {
                     <td className="px-6 py-4 text-[var(--color-on-surface-variant)]">
                       {new Date(tx.date).toLocaleDateString()}
                     </td>
-                    <td className={`px-6 py-4 font-black text-right ${tx.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
-                      {tx.type === 'income' ? '+' : '-'}${tx.amount?.toFixed(2)}
+                    <td className="px-6 py-4 text-right">
+                      <span className={`font-bold ${tx.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
+                        {tx.type === 'income' ? '+' : '-'}{formatPrice(tx.amount)}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-center">
                        <button onClick={() => deleteTransaction(tx.id)} className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors">
@@ -157,8 +206,8 @@ export default function FinanceModule() {
                        </button>
                     </td>
                   </tr>
-                ))
-              )}
+                ));
+              })()}
             </tbody>
           </table>
         </div>
@@ -189,12 +238,12 @@ export default function FinanceModule() {
               <div>
                 <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase block mb-1">Monto ($)</label>
                 <div className="relative">
-                  <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-primary)] font-bold text-lg">{currencySymbol}</span>
                   <input 
                     type="number" step="0.01" min="0.01"
                     value={amount} onChange={e => setAmount(e.target.value)}
                     required
-                    className="w-full bg-[var(--color-surface-container)] text-2xl font-black text-[var(--color-on-surface)] rounded-xl pl-10 pr-4 py-3 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-[var(--color-outline-variant)] focus:border-[#6B4FD8] transition-all"
+                    className="w-full bg-[var(--color-surface-container)] text-2xl font-black text-[var(--color-on-surface)] rounded-xl pl-12 pr-4 py-3 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-[var(--color-outline-variant)] focus:border-[#6B4FD8] transition-all"
                   />
                 </div>
               </div>

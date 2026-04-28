@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     <div className="space-y-6 md:space-y-10 pb-20 animate-in fade-in duration-700">
       
       {/* 1. SECCIÓN DE INGRESOS (Global SaaS Overview) */}
-      <div className="relative overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 p-6 md:p-12 shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 p-6 md:p-12 backdrop-blur-md">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
           <div>
             <div className="flex items-center gap-3 mb-6">
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[var(--color-surface-container)] rounded-xl p-6 flex items-center justify-between group hover:bg-[var(--color-surface-container-high)] transition-colors">
+            <div className="bg-[var(--color-surface-container-low)]/40 border border-[#40485d]/20 rounded-xl p-6 flex items-center justify-between transition-all">
               <div>
                 <p className="text-[var(--color-on-surface-variant)] text-sm font-semibold mb-1">Total Organizaciones</p>
                 <h4 className="text-4xl font-black text-[var(--color-on-surface)]">{analytics?.activeOrganizations?.length || 0}</h4>
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             
-            <div className="bg-[var(--color-surface-container)] rounded-xl p-6 flex items-center justify-between group hover:bg-[var(--color-surface-container-high)] transition-colors">
+            <div className="bg-[var(--color-surface-container-low)]/40 border border-[#40485d]/20 rounded-xl p-6 flex items-center justify-between transition-all">
               <div>
                 <p className="text-[var(--color-on-surface-variant)] text-sm font-semibold mb-1">ARPU Promedio</p>
                 <h4 className="text-4xl font-black text-[var(--color-on-surface)]">S/ {analytics?.arpu || 0}</h4>
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           <Activity size={20} className="text-[#2E8B57]" />
           Salud y Stickiness por Módulo
         </h2>
-        <div className="h-px flex-grow mx-6 bg-gradient-to-r from-white/5 to-transparent"></div>
+        <div className="h-px flex-grow mx-6 bg-gradient-to-r from-[#40485d]/30 to-transparent"></div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* 3. SECCIÓN DE ADOPCIÓN (Ranking dinámico basado en popularidad real) */}
-      <div className="bg-[var(--color-surface-container-low)] border border-white/5 rounded-[2.5rem] p-10 relative overflow-hidden">
+      <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-[2.5rem] p-10 relative overflow-hidden backdrop-blur-md">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h2 className="text-2xl font-black text-[var(--color-on-surface)] mb-2">Adopción por Módulo</h2>

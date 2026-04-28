@@ -178,14 +178,16 @@ export function AuthProvider({ children }) {
 
           if (userData) {
             let orgSubscription = null;
+            let currencySymbol = '$';
             if (userData.organizationId) {
               try {
                 const orgSnap = await getDoc(doc(db, 'organizations', userData.organizationId));
                 if (orgSnap.exists()) {
                   orgSubscription = orgSnap.data().subscription;
+                  currencySymbol = orgSnap.data().currencySymbol || '$';
                 }
               } catch (orgError) {
-                console.warn('Error al cargar suscripción:', orgError.message);
+                console.warn('Error al cargar datos de organización:', orgError.message);
               }
             }
 
@@ -202,6 +204,7 @@ export function AuthProvider({ children }) {
               uid: firebaseUser.uid,
               role: role,
               subscription: orgSubscription || null,
+              currencySymbol: currencySymbol,
               isAdmin: isAdmin
             };
             
@@ -261,15 +264,17 @@ export function AuthProvider({ children }) {
       
       if (foundUser) {
         let orgSubscription = null;
+        let currencySymbol = '$';
         if (foundUser.organizationId) {
           try {
             const orgDocRef = doc(db, 'organizations', foundUser.organizationId);
             const orgSnap = await getDoc(orgDocRef);
             if (orgSnap.exists()) {
               orgSubscription = orgSnap.data().subscription;
+              currencySymbol = orgSnap.data().currencySymbol || '$';
             }
           } catch (orgError) {
-            console.warn('Error al cargar suscripción durante login:', orgError.message);
+            console.warn('Error al cargar datos de organización durante login:', orgError.message);
           }
         }
 
@@ -287,6 +292,7 @@ export function AuthProvider({ children }) {
           uid: firebaseUser.uid,
           role: role,
           subscription: orgSubscription || null,
+          currencySymbol: currencySymbol,
           isAdmin: isAdmin
         };
 
@@ -457,7 +463,6 @@ export function AuthProvider({ children }) {
     try {
       const orgRef = doc(db, 'organizations', orgId);
       
-      // Construimos el payload de actualización
       const updatePayload = {
         name: data.name,
         ruc: data.ruc || '',
@@ -722,6 +727,12 @@ export function AuthProvider({ children }) {
     return allUsers.filter(u => u.role === 'client');
   };
 
+  const formatPrice = (amount) => {
+    const symbol = user?.currencySymbol || '$';
+    const value = parseFloat(amount) || 0;
+    return `${symbol} ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
   if (loading) {
     return <LoadingScreen />;
   }
@@ -736,6 +747,8 @@ export function AuthProvider({ children }) {
       setupUserPassword,
       allActivityLogs, systemAlerts, addLog,
       seedDatabase,
+      currencySymbol: user?.currencySymbol || '$',
+      formatPrice,
       isAdmin: user?.role === 'superadmin' || user?.role === 'admin'
     }}>
       {children}

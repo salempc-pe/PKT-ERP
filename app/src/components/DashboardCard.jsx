@@ -13,7 +13,7 @@ export default function DashboardCard({
   return (
     <Link 
       to={path} 
-      className="group relative bg-[var(--color-surface-container)] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 shadow-sm hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden"
+      className="group relative bg-[var(--color-surface-container)] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 shadow-sm hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden"
       style={{ borderColor: `${color}15` }}
     >
       {/* Background Glow */}
@@ -22,21 +22,20 @@ export default function DashboardCard({
         style={{ backgroundColor: color }}
       ></div>
 
-      <div className="flex justify-between items-start mb-4 md:mb-8 relative z-10">
+      <div className="flex items-start gap-4 mb-4 md:mb-6 relative z-10">
         <div 
-          className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+          className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110"
           style={{ backgroundColor: `${color}20`, color: color }}
         >
-          {Icon && <Icon className="w-5 h-5 md:w-7 md:h-7" strokeWidth={2.5} />}
+          {Icon && <Icon className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />}
         </div>
-        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-          <ExternalLink size={14} className="text-[var(--color-on-surface)]/40" />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg md:text-xl font-black text-[var(--color-on-surface)] leading-tight">{title}</h3>
+          <p className="text-[10px] md:text-xs text-[var(--color-on-surface-variant)] font-medium leading-tight mt-0.5 line-clamp-1">{description}</p>
         </div>
-      </div>
-
-      <div className="mb-4 md:mb-8 relative z-10">
-        <h3 className="text-lg md:text-2xl font-black text-[var(--color-on-surface)] mb-1 md:mb-2">{title}</h3>
-        <p className="text-xs md:text-sm text-[var(--color-on-surface-variant)] font-medium leading-relaxed">{description}</p>
+        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shrink-0">
+          <ExternalLink size={12} className="text-[var(--color-on-surface)]/40" />
+        </div>
       </div>
 
       {/* Metrics Section */}
@@ -47,7 +46,7 @@ export default function DashboardCard({
             {loading ? (
               <div className="h-6 w-16 bg-white/5 animate-pulse rounded"></div>
             ) : (
-              <p className="text-base md:text-lg font-black text-[var(--color-on-surface)]">{m.value}</p>
+              <p className={`text-base md:text-lg font-black ${m.color || 'text-[var(--color-on-surface)]'}`}>{m.value}</p>
             )}
           </div>
         ))}

@@ -105,11 +105,27 @@ export const useInventory = (orgId = "default_org") => {
     }
   };
 
+  const updateProductStock = async (productId, newStock) => {
+    const productRef = doc(db, `organizations/${orgId}/products`, productId);
+    // Calcular el nuevo estado basado en el stock
+    // Obtenemos el umbral del producto actual si es posible, o usamos 5 por defecto
+    const currentProd = products.find(p => p.id === productId);
+    const threshold = currentProd?.lowStockThreshold || 5;
+    const status = newStock === 0 ? "Agotado" : newStock <= threshold ? "Bajo Stock" : "Normal";
+
+    return await updateDoc(productRef, {
+      stock: newStock,
+      status: status,
+      updatedAt: serverTimestamp()
+    });
+  };
+
   return {
     products,
     loading,
     error,
     addProduct,
-    updateProduct
+    updateProduct,
+    updateProductStock
   };
 };

@@ -43,6 +43,22 @@ export default function ClientLayout() {
     return () => unsub();
   }, [user]);
 
+  const moduleTitles = {
+    '/client/dashboard': 'Dashboard',
+    '/client/crm': 'CRM y Ventas',
+    '/client/realestate': 'Inmobiliaria',
+    '/client/projects': 'Proyectos',
+    '/client/inventory': 'Inventario',
+    '/client/finance': 'Contabilidad',
+    '/client/sales': 'Ventas y Facturas',
+    '/client/purchases': 'Compras',
+    '/client/calendar': 'Agenda',
+    '/client/team': 'Mi Equipo',
+    '/client/settings': 'Configuración'
+  };
+
+  const currentTitle = moduleTitles[location.pathname] || 'Veló ERP';
+
   return (
     <>
       {isImpersonating && (
@@ -60,9 +76,10 @@ export default function ClientLayout() {
         </div>
       )}
       <div style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-on-surface)' }} className={`min-h-screen font-body flex relative overflow-hidden transition-colors duration-300 ${isImpersonating ? 'pt-10' : ''}`}>
-        {/* Botón flotante para menú móvil */}
+        
+        {/* Mobile Fixed Menu Button */}
         <button 
-          className="lg:hidden fixed top-6 left-6 z-40 p-3 rounded-xl shadow-lg transition-all duration-300"
+          className="lg:hidden fixed top-6 left-6 z-40 p-3 rounded-xl shadow-lg transition-all active:scale-95 duration-300"
           style={{ 
             backgroundColor: 'var(--color-surface-container-high)', 
             color: 'var(--color-on-surface)',
@@ -181,7 +198,7 @@ export default function ClientLayout() {
           )}
           
           {user?.subscription?.activeModules?.includes('sales') && (
-            <Link to="/client/sales" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/sales') ? activeStyle('var(--color-tertiary)') : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
+            <Link to="/client/sales" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/sales') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <FileText size={20} />
               <span>Ventas y Facturas</span>
             </Link>
@@ -250,8 +267,17 @@ export default function ClientLayout() {
       </aside>
 
       {/* Main Content Canvas */}
-      <main className="flex-1 p-6 pt-20 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
+      <main className="flex-1 p-6 pt-28 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
         <div className="max-w-7xl mx-auto">
+          {/* Mobile Dynamic Title (Part of Scroll) */}
+          {location.pathname !== '/client/dashboard' && (
+            <div className="lg:hidden mb-10 px-2 animate-in fade-in slide-in-from-top-4 duration-700">
+               <h1 className="text-4xl font-black text-[var(--color-on-surface)] uppercase tracking-tighter leading-none">
+                 {currentTitle}
+               </h1>
+            </div>
+          )}
+          
           <Outlet />
         </div>
       </main>

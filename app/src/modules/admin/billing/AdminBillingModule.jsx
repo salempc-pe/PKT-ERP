@@ -44,7 +44,7 @@ export default function AdminBillingModule() {
             <select
               value={selectedOrgId}
               onChange={(e) => setSelectedOrgId(e.target.value)}
-              className="bg-[var(--color-surface-container-low)] border border-[#40485d]/30 text-[var(--color-on-surface)] rounded-xl pl-10 pr-8 py-2 text-sm focus:outline-none focus:border-[#6B4FD8]/50 transition-all appearance-none"
+              className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 text-[var(--color-on-surface)] rounded-xl pl-10 pr-8 py-2 text-sm focus:outline-none focus:border-[#6B4FD8]/50 transition-all appearance-none"
             >
               <option value="all">Todas las organizaciones</option>
               {allOrganizations.map(org => (
@@ -58,7 +58,7 @@ export default function AdminBillingModule() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6">
+        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all backdrop-blur-md">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400">
               <DollarSign size={20} />
@@ -73,7 +73,7 @@ export default function AdminBillingModule() {
           </div>
         </div>
 
-        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6">
+        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all backdrop-blur-md">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-xl bg-[#6B4FD8]/10 flex items-center justify-center text-[#6B4FD8]">
               <Building2 size={20} />
@@ -85,7 +85,7 @@ export default function AdminBillingModule() {
           </div>
         </div>
 
-        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6">
+        <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all backdrop-blur-md">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-xl bg-[#2E8B57]/10 flex items-center justify-center text-[#2E8B57]">
               <CreditCard size={20} />
@@ -100,7 +100,7 @@ export default function AdminBillingModule() {
 
       {/* Tabla de Suscripciones */}
       <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
-        <div className="p-5 border-b border-[#40485d]/30 flex justify-between items-center bg-[#0a0a0a]">
+        <div className="p-5 border-b border-[#40485d]/30 flex justify-between items-center bg-[#0a0a0a]/40">
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -112,7 +112,7 @@ export default function AdminBillingModule() {
                 <th className="px-6 py-4">Estado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#40485d]/10">
+            <tbody className="divide-y border-white/5">
               {filteredOrgs.map((org) => {
                 const planId = org.subscription?.planId || 'startup';
                 const planPrice = SUBSCRIPTION_PLANS[planId]?.price;

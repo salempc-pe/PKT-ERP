@@ -99,6 +99,24 @@ export const useCrm = (orgId = "default_org") => {
     }
   };
 
+  const updateContact = async (contactId, contactData) => {
+    try {
+      const validatedData = ContactSchema.partial().parse({
+        ...contactData,
+        creditDays: contactData.creditDays !== undefined ? parseInt(contactData.creditDays) : undefined
+      });
+
+      const contactRef = doc(db, `organizations/${orgId}/contacts`, contactId);
+      return await updateDoc(contactRef, {
+        ...validatedData,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Validation Error:", err);
+      throw err;
+    }
+  };
+
   const addLead = async (leadData) => {
     try {
       const validatedData = LeadSchema.parse(leadData);
@@ -144,6 +162,7 @@ export const useCrm = (orgId = "default_org") => {
     loading,
     error,
     addContact,
+    updateContact,
     addLead,
     updateLeadStatus,
     updateLead

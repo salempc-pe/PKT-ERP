@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import { Users, Phone, Mail, MapPin, MoreVertical, Plus, Loader2, X, AlertCircle, Tag } from 'lucide-react';
 import { useSuppliers } from './useSuppliers';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
 
-export default function SuppliersModule() {
+const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { suppliers, loading, addSupplier, updateSupplier } = useSuppliers(orgId);
@@ -13,6 +13,10 @@ export default function SuppliersModule() {
   const [formData, setFormData] = useState({ name: '', taxId: '', email: '', phone: '', address: '', category: '', status: 'active' });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+
+  useImperativeHandle(ref, () => ({
+    handleOpenNew
+  }));
 
   const handleOpenEdit = (supplier) => {
     setEditingSupplier(supplier);
@@ -60,21 +64,23 @@ export default function SuppliersModule() {
   }
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-8 pb-10">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Proveedores</h2>
-          <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona tus fuentes de abastecimiento y materia prima.</p>
+    <div className={`animate-in fade-in duration-500 space-y-8 ${embedded ? '' : 'pb-10'}`}>
+      {!embedded && (
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Proveedores</h2>
+            <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona tus fuentes de abastecimiento y materia prima.</p>
+          </div>
+          <button 
+            onClick={handleOpenNew}
+            className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          >
+            <Plus size={18} /> Nuevo Proveedor
+          </button>
         </div>
-        <button 
-          onClick={handleOpenNew}
-          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
-        >
-          <Plus size={18} /> Nuevo Proveedor
-        </button>
-      </div>
+      )}
 
-      <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl">
+      <div className="bg-[var(--color-surface-container-low)] rounded-xl border border-[var(--color-outline-variant)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -255,4 +261,6 @@ export default function SuppliersModule() {
       )}
     </div>
   );
-}
+});
+
+export default SuppliersModule;

@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, AlertCircle } from 'lucide-react';
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
-
 import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function CRMModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { contacts, leads, loading, addContact, addLead, updateLeadStatus, updateLead } = useCrm(orgId);
-  const [activeTab, setActiveTab] = useState('pipeline'); // pipeline | contacts
+  const { contacts, leads, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead } = useCrm(orgId);
+  const [activeTab, setActiveTab] = useState('pipeline');
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('lead'); // lead | contact
+  const [modalType, setModalType] = useState('lead');
   const [editingLead, setEditingLead] = useState(null);
+  const [editingContact, setEditingContact] = useState(null);
   const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -39,6 +39,41 @@ export default function CRMModule() {
     setSaveError(null);
     setShowModal(true);
   };
+  
+  const handleOpenEditContact = (contact) => {
+    setModalType('contact');
+    setEditingContact(contact);
+    setFormData({
+      name: contact.name,
+      company: contact.company || '',
+      email: contact.email || '',
+      phone: contact.phone || '',
+      source: contact.source || 'Manual',
+      description: contact.description || '',
+      creditDays: contact.creditDays || 0
+    });
+    setSaveError(null);
+    setShowModal(true);
+  };
+
+  const handleSelectExistingContact = (e) => {
+    const contactId = e.target.value;
+    if (!contactId) {
+      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
+      return;
+    }
+    const contact = contacts.find(c => c.id === contactId);
+    if (contact) {
+      setFormData({
+        ...formData,
+        name: contact.name,
+        company: contact.company || '',
+        email: contact.email || '',
+        phone: contact.phone || '',
+        source: contact.source || 'Manual'
+      });
+    }
+  };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
@@ -52,10 +87,15 @@ export default function CRMModule() {
           await addLead(formData);
         }
       } else {
-        await addContact(formData);
+        if (editingContact) {
+          await updateContact(editingContact.id, formData);
+        } else {
+          await addContact(formData);
+        }
       }
       setShowModal(false);
       setEditingLead(null);
+      setEditingContact(null);
       setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
     } catch (err) {
       console.error("Error al guardar en el CRM:", err);
@@ -71,7 +111,6 @@ export default function CRMModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
-      {/* Tabs Selector */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
           <button 
@@ -97,7 +136,7 @@ export default function CRMModule() {
           </button>
         ) : (
           <button 
-            onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}
+            onClick={() => { setModalType('contact'); setEditingContact(null); setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 }); setShowModal(true); setSaveError(null); }}
             className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Nuevo Cliente
@@ -105,7 +144,6 @@ export default function CRMModule() {
         )}
       </div>
 
-      {/* Conditional Rendering based on Tab */}
       {activeTab === 'pipeline' ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[500px]">
           {pipelineStages.map(stage => (
@@ -180,12 +218,6 @@ export default function CRMModule() {
                     </div>
                   </div>
                 ))}
-
-                {leads.filter(l => l.status === stage.id).length === 0 && (
-                  <div className="flex-1 flex items-center justify-center text-[var(--color-on-surface-variant)] opacity-20 text-[10px] italic py-10">
-                    Sin prospectos
-                  </div>
-                )}
               </div>
             </div>
           ))}
@@ -238,7 +270,12 @@ export default function CRMModule() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors"><MoreVertical size={16} /></button>
+                      <button 
+                        onClick={() => handleOpenEditContact(contact)}
+                        className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
                     </td>
                   </tr>
                 )) : (
@@ -252,7 +289,6 @@ export default function CRMModule() {
         </div>
       )}
 
-      {/* Generic Modal for CRM Forms */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
@@ -262,7 +298,7 @@ export default function CRMModule() {
           >
             <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">
-                Añadir {modalType === 'lead' ? 'Nuevo Lead' : 'Nuevo Contacto'}
+                {editingLead || editingContact ? 'Editar' : 'Añadir'} {modalType === 'lead' ? 'Lead' : 'Contacto'}
               </h3>
               <button 
                   type="button"
@@ -282,6 +318,23 @@ export default function CRMModule() {
                 </div>
               )}
 
+              {modalType === 'lead' && !editingLead && contacts.length > 0 && (
+                <div className="space-y-1.5 p-3 bg-[var(--color-primary-container)]/20 border border-[var(--color-primary-container)]/30 rounded-xl">
+                  <label className="text-[9px] font-black text-[var(--color-primary)] uppercase flex items-center gap-2">
+                    <Users size={12} /> Vincular Contacto Existente
+                  </label>
+                  <select 
+                    onChange={handleSelectExistingContact}
+                    className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8]"
+                  >
+                    <option value="">-- Crear como nuevo --</option>
+                    {contacts.map(c => (
+                      <option key={c.id} value={c.id}>{c.name} {c.company ? `(${c.company})` : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Nombre Completo</label>
                 <input 
@@ -292,34 +345,20 @@ export default function CRMModule() {
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
-                  placeholder="Ej: David Salazar"
                 />
               </div>
+
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Empresa / Proyecto</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Empresa</label>
                 <input 
                   type="text" 
                   disabled={isSaving}
                   value={formData.company}
                   onChange={(e) => setFormData({...formData, company: e.target.value})}
                   className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-sm font-bold"
-                  placeholder="Ej: Inversiones Globales"
                 />
               </div>
 
-              {modalType === 'lead' && (
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Descripción / Observaciones</label>
-                  <textarea 
-                    rows="3"
-                    disabled={isSaving}
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 resize-none text-sm"
-                    placeholder="Detalles sobre el interés del cliente, presupuesto, etc."
-                  />
-                </div>
-              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Correo</label>
@@ -329,7 +368,6 @@ export default function CRMModule() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
-                    placeholder="admin@empresa.com"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -340,28 +378,9 @@ export default function CRMModule() {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
-                    placeholder="+51..."
                   />
                 </div>
               </div>
-              
-              {modalType === 'contact' && (
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Plazo de Crédito (Días)</label>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="number" 
-                      min="0"
-                      disabled={isSaving}
-                      value={formData.creditDays}
-                      onChange={(e) => setFormData({...formData, creditDays: parseInt(e.target.value) || 0})}
-                      className="flex-1 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
-                      placeholder="0"
-                    />
-                    <span className="text-xs text-[var(--color-on-surface-variant)] font-bold">días</span>
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="p-6 bg-[var(--color-surface-container)] flex gap-3">
@@ -373,17 +392,12 @@ export default function CRMModule() {
               >
                 Cancelar
               </button>
-                <button 
+              <button 
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Procesando...
-                  </>
-                ) : (editingLead ? 'Actualizar' : 'Registrar')}
+                {isSaving ? <Loader2 size={18} className="animate-spin" /> : (editingLead || editingContact ? 'Actualizar' : 'Registrar')}
               </button>
             </div>
           </form>

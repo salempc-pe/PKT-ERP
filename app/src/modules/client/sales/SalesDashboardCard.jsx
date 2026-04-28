@@ -1,9 +1,11 @@
 import { DollarSign } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useSales } from './useSales';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function SalesDashboardCard({ orgId }) {
   const { sales, loading } = useSales(orgId);
+  const { formatPrice } = useAuth();
 
   const revenue = sales.filter(s => ['Pagada', 'Pagado'].includes(s.status))
                        .reduce((acc, s) => acc + (parseFloat(s.totalAmount) || 0), 0);
@@ -20,7 +22,7 @@ export default function SalesDashboardCard({ orgId }) {
       metrics={[
         { 
           label: "Ingresos", 
-          value: `$${revenue.toLocaleString('en-US', { minimumFractionDigits: 0 })}` 
+          value: formatPrice(revenue)
         },
         { 
           label: "Pendientes", 

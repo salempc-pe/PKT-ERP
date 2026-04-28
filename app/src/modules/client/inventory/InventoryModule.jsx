@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function InventoryModule() {
-  const { user } = useAuth();
+  const { user, formatPrice, currencySymbol } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { products, loading, addProduct, updateProduct } = useInventory(orgId);
   
@@ -22,6 +22,10 @@ export default function InventoryModule() {
     lowStockThreshold: 5
   });
 
+  // -- Search & Filter State --
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('');
+
   // -- Handlers --
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,12 +34,14 @@ export default function InventoryModule() {
       if (editingId) {
         await updateProduct(editingId, {
           ...formData,
+          price: Number(formData.price),
           stock: Number(formData.stock),
           lowStockThreshold: Number(formData.lowStockThreshold)
         });
       } else {
         await addProduct({
           ...formData,
+          price: Number(formData.price),
           stock: Number(formData.stock),
           lowStockThreshold: Number(formData.lowStockThreshold)
         });
@@ -70,6 +76,20 @@ export default function InventoryModule() {
     setIsModalOpen(false);
     setEditingId(null);
     setFormData({ sku: '', name: '', category: '', price: '', stock: 0, lowStockThreshold: 5 });
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleApplyFilter = () => {
+    setActiveFilter(searchQuery);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleApplyFilter();
+    }
   };
 
   // Calcular dinámicamente los "Stats Indicators"
@@ -127,10 +147,16 @@ export default function InventoryModule() {
               <input 
                 type="text" 
                 placeholder="Buscar por SKU o nombre..." 
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyPress={handleKeyPress}
                 className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-transparent focus:border-[#6B4FD8] transition-all"
               />
             </div>
-            <button className="bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)] p-2 rounded-lg hover:text-[var(--color-primary)] transition-colors">
+            <button 
+              onClick={handleApplyFilter}
+              className="bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)] p-2 rounded-lg hover:text-[var(--color-primary)] transition-colors"
+            >
               <Filter size={20} />
             </button>
           </div>
@@ -148,14 +174,30 @@ export default function InventoryModule() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
-              {products.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)]">
-                    No hay productos registrados en el inventario.
-                  </td>
-                </tr>
-              ) : (
-                products.map((prod) => {
+              {(() => {
+                const filteredProducts = products.filter(prod => {
+                  if (!activeFilter) return true;
+                  const searchLower = activeFilter.toLowerCase();
+                  return (
+                    prod.sku?.toLowerCase().includes(searchLower) ||
+                    prod.name?.toLowerCase().includes(searchLower) ||
+                    prod.category?.toLowerCase().includes(searchLower) ||
+                    prod.price?.toString().toLowerCase().includes(searchLower) ||
+                    prod.stock?.toString().toLowerCase().includes(searchLower)
+                  );
+                });
+
+                if (filteredProducts.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)]">
+                        {activeFilter ? 'No se encontraron productos que coincidan con la búsqueda.' : 'No hay productos registrados en el inventario.'}
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return filteredProducts.map((prod) => {
                   const isLowStock = prod.stock > 0 && prod.stock <= (prod.lowStockThreshold || 5);
                   const isOutOfStock = prod.stock === 0;
 
@@ -168,7 +210,7 @@ export default function InventoryModule() {
                       <td className="px-6 py-4 text-[var(--color-on-surface-variant)]">
                         <span className="px-2.5 py-1 bg-[var(--color-surface-container-high)] rounded text-xs">{prod.category}</span>
                       </td>
-                      <td className="px-6 py-4 font-semibold text-[#2E8B57] text-right">{prod.price}</td>
+                      <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">{formatPrice(prod.price)}</td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center">
                           <span className={`font-bold ${isOutOfStock ? 'text-red-500' : isLowStock ? 'text-amber-500' : 'text-[var(--color-on-surface)]'}`}>
@@ -195,8 +237,8 @@ export default function InventoryModule() {
                       </td>
                     </tr>
                   );
-                })
-              )}
+                });
+              })()}
             </tbody>
           </table>
         </div>
@@ -235,7 +277,7 @@ export default function InventoryModule() {
                   <input 
                     required type="text" name="price" 
                     value={formData.price} onChange={handleInputChange}
-                    placeholder="$10.00"
+                    placeholder={`${currencySymbol}0.00`}
                     className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] rounded-lg px-4 py-2.5 border border-[var(--color-outline-variant)] focus:border-[#6B4FD8] focus:ring-1 focus:ring-[#6B4FD8] outline-none transition-all"
                   />
                 </div>

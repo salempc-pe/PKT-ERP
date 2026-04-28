@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react';
-import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2, AlertCircle } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2, AlertCircle, Download, ShieldAlert, Database } from 'lucide-react';
 import { z } from 'zod';
 import { useAuth } from '../../../context/AuthContext';
+import { db } from '../../../services/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 export default function TeamModule() {
   const { user, allUsers, adminCreateUser, adminRemoveUser, allOrganizations } = useAuth();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const [loading, setLoading] = useState(false);
+  const [loadingExport, setLoadingExport] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
   const InviteSchema = z.object({
@@ -69,15 +72,88 @@ export default function TeamModule() {
     alert('Enlace de invitación copiado al portapapeles');
   };
 
+  const handleExportData = async () => {
+    if (!window.confirm("¿Deseas exportar todos los datos del sistema? Se descargará un archivo JSON con toda la información de tu organización para tu resguardo.")) return;
+    
+    setLoadingExport(true);
+    try {
+      const data = {
+        exportDate: new Date().toISOString(),
+        organization: currentOrg,
+        users: teamMembers,
+        data: {}
+      };
+
+      const collectionsToExport = [
+        'invoices',
+        'realEstateTerrains',
+        'suppliers',
+        'purchases',
+        'products',
+        'projects',
+        'tasks',
+        'transactions',
+        'contacts',
+        'leads',
+        'appointments'
+      ];
+
+      for (const collName of collectionsToExport) {
+        try {
+          const collRef = collection(db, `organizations/${orgId}/${collName}`);
+          const snap = await getDocs(collRef);
+          data.data[collName] = snap.docs.map(d => ({ 
+            id: d.id, 
+            ...d.data(),
+            // Convert timestamps to string if they exist
+            createdAt: d.data().createdAt?.toDate?.()?.toISOString() || d.data().createdAt,
+            updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() || d.data().updatedAt,
+            date: d.data().date?.toDate?.()?.toISOString() || d.data().date,
+          }));
+        } catch (e) {
+          console.warn(`Could not export collection ${collName}:`, e);
+          data.data[collName] = [];
+        }
+      }
+
+      // Audit logs (root collection)
+      try {
+        const logsRef = collection(db, 'audit_logs');
+        const qLogs = query(logsRef, where('orgId', '==', orgId));
+        const logsSnap = await getDocs(qLogs);
+        data.audit_logs = logsSnap.docs.map(d => ({ 
+          id: d.id, 
+          ...d.data(),
+          timestamp: d.data().timestamp?.toDate?.()?.toISOString() || d.data().timestamp 
+        }));
+      } catch (e) {
+        console.warn("Could not export audit logs:", e);
+        data.audit_logs = [];
+      }
+
+      // Download process
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `PKT_ERP_Respaldo_${user.organizationName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Error al exportar datos:", error);
+      alert("Hubo un error al generar el respaldo de datos.");
+    } finally {
+      setLoadingExport(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in pb-20">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-[var(--color-on-surface)] tracking-tight mb-2">Gestión de Equipo</h1>
-          <p className="text-[var(--color-on-surface-variant)] text-sm">Administra los colaboradores de {user?.organizationName}.</p>
-        </div>
-
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4">
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
@@ -113,6 +189,49 @@ export default function TeamModule() {
             </p>
           )}
         </div>
+
+        {/* Zona de Seguridad (Solo Admin) */}
+        {user?.role === 'admin' && (
+          <div className="md:col-span-2 bg-[var(--color-surface-container-low)]/60 border border-amber-500/20 rounded-3xl p-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <ShieldAlert size={120} />
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
+                    <Database size={20} />
+                  </div>
+                  <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">Zona de Resguardo de Datos</h3>
+                </div>
+                <p className="text-[var(--color-on-surface)] font-bold">Respaldo Total del Sistema</p>
+                <p className="text-xs text-[var(--color-on-surface-variant)] max-w-md">
+                  Descarga una copia local de toda la información de tu empresa (clientes, ventas, inventario y más). 
+                  Útil para auditorías o como medida de seguridad ante cualquier eventualidad.
+                </p>
+              </div>
+
+              <button
+                onClick={handleExportData}
+                disabled={loadingExport}
+                className="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingExport ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    <span>PROCESANDO...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download size={20} />
+                    <span>RESCATAR TODOS LOS DATOS</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Team List */}

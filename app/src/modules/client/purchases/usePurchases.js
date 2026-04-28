@@ -119,10 +119,23 @@ export const usePurchases = (orgId = "default_org") => {
       }
 
       // 2. Marcar OC como recibida
-      return await updateDoc(purchaseRef, {
+      await updateDoc(purchaseRef, {
         status: "Recibida",
         receivedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
+      });
+
+      // 3. Crear registro en Finanzas (Egreso automático)
+      const txRef = collection(db, `organizations/${orgId}/transactions`);
+      return await addDoc(txRef, {
+        type: "expense",
+        description: `Compra de mercadería - ${purchaseData.orderNumber} (${purchaseData.supplierName})`,
+        amount: purchaseData.totalAmount,
+        category: "Mercadería",
+        date: new Date().toISOString(),
+        referenceId: purchaseId,
+        source: "purchases",
+        createdAt: serverTimestamp()
       });
     } catch (err) {
       console.error("[usePurchases] Error en recepción:", err);

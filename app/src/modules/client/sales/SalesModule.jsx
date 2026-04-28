@@ -11,7 +11,7 @@ import {
 import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function SalesModule() {
-  const { user } = useAuth();
+  const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   
   // -- Data Hooks --
@@ -139,27 +139,35 @@ export default function SalesModule() {
       
       await addSale(newSaleData);
 
-      // [INTEGRACIÓN → INVENTARIO] Descontar stock de cada producto vendido
-      for (const item of cart) {
-        const prod = products.find(p => p.id === item.productId);
-        if (prod) {
-          const nuevoStock = Math.max(0, (prod.stock || 0) - item.quantity);
-          await updateProductStock(item.productId, nuevoStock);
+      // [INTEGRACIONES] - Las envolvemos en un try/catch interno para que no bloqueen el cierre del modal 
+      // si la venta principal ya se guardó correctamente.
+      try {
+        // 1. [INTEGRACIÓN → INVENTARIO] Descontar stock
+        for (const item of cart) {
+          const prod = products.find(p => p.id === item.productId);
+          if (prod) {
+            const nuevoStock = Math.max(0, (prod.stock || 0) - item.quantity);
+            await updateProductStock(item.productId, nuevoStock);
+          }
         }
-      }
 
-      // [INTEGRACIÓN → FINANZAS] Registrar ingreso automático si la venta se marca Pagada
-      if (newSaleData.status === 'Pagada') {
-        await addTransaction({
-          type: 'income',
-          amount: cartTotal,
-          category: 'Ventas',
-          description: `Venta ${selectedDocType} a ${clientRecord.name}${clientRecord.company ? ` (${clientRecord.company})` : ''}`,
-          date: new Date().toISOString(),
-          source: 'sales_module',
-        });
+        // 2. [INTEGRACIÓN → FINANZAS] Registrar ingreso automático si la venta se marca Pagada
+        if (newSaleData.status === 'Pagada') {
+          await addTransaction({
+            type: 'income',
+            amount: cartTotal,
+            category: 'Ventas',
+            description: `Venta ${selectedDocType} a ${clientRecord.name}${clientRecord.company ? ` (${clientRecord.company})` : ''}`,
+            date: new Date().toISOString(),
+            source: 'sales_module',
+          });
+        }
+      } catch (integrationError) {
+        console.error("Error en integraciones post-venta:", integrationError);
+        // No relanzamos el error para permitir que el flujo de UI continúe
       }
       
+      // Limpieza y cierre de modal
       setCart([]);
       setSelectedClient('');
       setIsModalOpen(false);
@@ -207,7 +215,7 @@ export default function SalesModule() {
            </div>
            <div>
              <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Pagos Cobrados</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${totalSalesThisMonth.toFixed(2)}</h3>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(totalSalesThisMonth)}</h3>
            </div>
         </div>
         <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
@@ -216,7 +224,7 @@ export default function SalesModule() {
            </div>
            <div>
              <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Por Cobrar</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${pendingCollection.toFixed(2)}</h3>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(pendingCollection)}</h3>
            </div>
         </div>
         <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
@@ -291,7 +299,7 @@ export default function SalesModule() {
                       </td>
                       <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">
                         <div className="flex flex-col items-end">
-                          <span>${sale.totalAmount?.toFixed(2)}</span>
+                          <span>{formatPrice(sale.totalAmount || 0)}</span>
                           <div className="flex gap-2 mt-2 transition-opacity">
                             {sale.status === 'Pendiente' && (
                               <button 
@@ -448,10 +456,10 @@ export default function SalesModule() {
                       <div key={idx} className="bg-[var(--color-surface-container)] p-3 rounded-lg flex justify-between items-center text-sm border border-[var(--color-outline-variant)]">
                         <div>
                           <p className="font-bold text-[var(--color-on-surface)]">{item.name}</p>
-                          <p className="text-[10px] text-[var(--color-on-surface-variant)]">{item.quantity} und. x ${item.price.toFixed(2)}</p>
+                          <p className="text-[10px] text-[var(--color-on-surface-variant)]">{item.quantity} und. x {formatPrice(item.price)}</p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="font-black text-[var(--color-on-surface)]">${item.subtotal.toFixed(2)}</span>
+                          <span className="font-black text-[var(--color-on-surface)]">{formatPrice(item.subtotal)}</span>
                           <button onClick={() => handleRemoveFromCart(idx)} className="text-red-400 hover:text-red-300"><X size={14} /></button>
                         </div>
                       </div>
@@ -463,13 +471,13 @@ export default function SalesModule() {
               {/* Totales */}
               <div className="border-t border-[var(--color-outline-variant)] pt-4 space-y-2 mb-6">
                  <div className="flex justify-between text-xs text-[var(--color-on-surface-variant)] font-bold">
-                   <span>Subtotal</span><span>${cartSubtotal.toFixed(2)}</span>
+                   <span>Subtotal</span><span>{formatPrice(cartSubtotal)}</span>
                  </div>
                  <div className="flex justify-between text-xs text-[var(--color-on-surface-variant)] font-bold">
-                   <span>Impuestos (18%)</span><span>${igv.toFixed(2)}</span>
+                   <span>Impuestos (18%)</span><span>{formatPrice(igv)}</span>
                  </div>
                  <div className="flex justify-between text-lg text-[var(--color-on-surface)] font-black pt-2">
-                   <span>TOTAL</span><span className="text-[#85ffab]">${cartTotal.toFixed(2)}</span>
+                   <span>TOTAL</span><span className="text-[#85ffab]">{formatPrice(cartTotal)}</span>
                  </div>
               </div>
 
@@ -514,7 +522,7 @@ export default function SalesModule() {
               <p className="font-bold text-[var(--color-on-surface)] text-base truncate">{invoiceToPrint.clientName}</p>
               <div className="mt-3 pt-3 border-t border-[#40485d]/20 flex justify-between items-end">
                 <span className="text-[10px] font-black text-[#65739e] uppercase">Total Pagado</span>
-                <span className="text-xl font-black text-[#85ffab]">${invoiceToPrint.totalAmount?.toFixed(2)}</span>
+                <span className="text-xl font-black text-[#85ffab]">{formatPrice(invoiceToPrint.totalAmount || 0)}</span>
               </div>
             </div>
 

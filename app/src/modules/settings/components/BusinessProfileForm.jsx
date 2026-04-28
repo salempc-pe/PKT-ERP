@@ -7,7 +7,7 @@ import LoadingScreen from '../../../components/LoadingScreen';
 
 
 export default function BusinessProfileForm() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const fileInputRef = useRef(null);
   
@@ -16,7 +16,9 @@ export default function BusinessProfileForm() {
     email: '',
     sector: '',
     address: '',
-    logoUrl: ''
+    logoUrl: '',
+    currencySymbol: '$',
+    ruc: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -93,6 +95,13 @@ export default function BusinessProfileForm() {
         updatedAt: new Date()
       }, { merge: true });
       
+      // Actualizar el estado global de usuario para que los cambios se vean inmediatamente (moneda, etc.)
+      updateUser({ 
+        currencySymbol: formData.currencySymbol,
+        organizationName: formData.name,
+        ruc: formData.ruc
+      });
+
       setSuccess(true);
     } catch (err) {
       console.error("Error saving profile", err);
@@ -145,18 +154,35 @@ export default function BusinessProfileForm() {
         </div>
 
         <div className="space-y-5">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-[#a3aac4] mb-2">Nombre Comercial</label>
-            <div className="relative">
-              <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-[#40485d]" size={18} />
-              <input 
-                type="text" 
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
-                required
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-[#a3aac4] mb-2">Nombre Comercial</label>
+              <div className="relative">
+                <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-[#40485d]" size={18} />
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-[#a3aac4] mb-2">RUC / Registro Fiscal</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#40485d] font-bold text-xs">ID</span>
+                <input 
+                  type="text" 
+                  name="ruc"
+                  value={formData.ruc}
+                  onChange={handleChange}
+                  className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
+                  placeholder="Ej. 20123456789"
+                />
+              </div>
             </div>
           </div>
           
@@ -201,6 +227,24 @@ export default function BusinessProfileForm() {
                 className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-[#a3aac4] mb-2">Símbolo de Moneda (Prefijo)</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B4FD8] font-bold text-lg w-5 text-center">{formData.currencySymbol}</span>
+              <input 
+                type="text" 
+                name="currencySymbol"
+                value={formData.currencySymbol}
+                onChange={handleChange}
+                placeholder="Ej. S/, $, €"
+                maxLength={5}
+                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
+                required
+              />
+            </div>
+            <p className="text-[10px] text-[#a3aac4] mt-1 italic">Este símbolo se aplicará en todos los módulos (Ventas, Compras, Finanzas, etc.)</p>
           </div>
         </div>
         

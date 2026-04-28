@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function TerrainModal({ isOpen, onClose, terrain, onSave, contacts, terrains }) {
+  const { currencySymbol } = useAuth();
   const [formData, setFormData] = useState({
     city: '',
     district: '',
@@ -265,7 +267,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Precio x m² (US$)</label>
+                <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Precio x m² ({currencySymbol})</label>
                 <input 
                   type="number"
                   required
@@ -275,7 +277,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-[var(--color-primary)] uppercase ml-1">Precio Total (US$)</label>
+                <label className="text-[9px] font-black text-[var(--color-primary)] uppercase ml-1">Precio Total ({currencySymbol})</label>
                 <input 
                   type="number"
                   required

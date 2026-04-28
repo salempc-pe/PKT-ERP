@@ -4,7 +4,7 @@ export default function SalesAdminCard({ analytics }) {
   const gmv = analytics.stickiness?.globalGMV?.toLocaleString() || '0';
 
   return (
-    <div className="bg-[var(--color-surface-container)] border border-white/5 rounded-2xl p-6 hover:translate-y-[-4px] transition-all duration-300 group">
+    <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl p-6 transition-all backdrop-blur-md">
       <div className="flex justify-between items-start mb-4">
         <div className="w-10 h-10 rounded-xl bg-emerald-400/10 flex items-center justify-center group-hover:bg-emerald-400/20 transition-colors">
           <TrendingUp size={20} className="text-emerald-400" />

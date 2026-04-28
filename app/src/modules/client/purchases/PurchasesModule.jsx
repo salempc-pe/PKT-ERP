@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ShoppingCart, Package, Users, MoreVertical, Plus, Loader2, X, AlertCircle, FileText, CheckCircle2, Factory } from 'lucide-react';
 import { usePurchases } from './usePurchases';
 import { useSuppliers } from './useSuppliers';
 import { useInventory } from '../inventory/useInventory';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
+import SuppliersModule from './SuppliersModule';
 
 export default function PurchasesModule() {
-  const { user } = useAuth();
+  const suppliersRef = useRef();
+  const { user, formatPrice, currencySymbol } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { purchases, loading, addPurchase, receivePurchase, updatePurchaseStatus } = usePurchases(orgId);
   const { suppliers } = useSuppliers(orgId);
   const { products } = useInventory(orgId);
+
+  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'suppliers'
 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ supplierId: '', supplierName: '', items: [], totalAmount: 0, status: 'Borrador' });
@@ -94,20 +98,41 @@ export default function PurchasesModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Órdenes de Compra</h2>
-          <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona el abastecimiento y recepción de mercadería.</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${activeTab === 'orders' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+          >
+            <ShoppingCart size={16} /> Órdenes
+          </button>
+          <button 
+            onClick={() => setActiveTab('suppliers')}
+            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${activeTab === 'suppliers' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+          >
+            <Users size={16} /> Proveedores
+          </button>
         </div>
-        <button 
-          onClick={() => setShowModal(true)}
-          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
-        >
-          <ShoppingCart size={18} /> Nueva Compra
-        </button>
+
+        {activeTab === 'orders' ? (
+          <button 
+            onClick={() => setShowModal(true)}
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
+          >
+            <Plus size={18} /> Nueva Compra
+          </button>
+        ) : (
+          <button 
+            onClick={() => suppliersRef.current?.handleOpenNew()}
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
+          >
+            <Plus size={18} /> Nuevo Proveedor
+          </button>
+        )}
       </div>
 
-      <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl">
+      {activeTab === 'orders' ? (
+        <div className="bg-[var(--color-surface-container-low)] rounded-xl border border-[var(--color-outline-variant)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -142,8 +167,8 @@ export default function PurchasesModule() {
                       {purchase.items.length} sku(s)
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className="font-black text-[var(--color-on-surface)] text-base">S/ {purchase.totalAmount?.toFixed(2)}</p>
+                  <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">
+                    {formatPrice(purchase.totalAmount)}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -168,6 +193,9 @@ export default function PurchasesModule() {
           </table>
         </div>
       </div>
+      ) : (
+        <SuppliersModule embedded={true} ref={suppliersRef} />
+      )}
 
       {/* Modal Nueva OC */}
       {showModal && (
@@ -219,7 +247,7 @@ export default function PurchasesModule() {
                     <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)}
                       placeholder="Cant." className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)]" />
                     <input type="number" min="0" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)}
-                      placeholder="Costo S/" className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)]" />
+                      placeholder={`Costo ${currencySymbol}`} className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)]" />
                     <button type="button" onClick={handleAddItem} className="md:col-span-4 bg-[var(--color-primary-container)] hover:bg-[#6B4FD8] text-[var(--color-on-surface)] hover:text-[#002150] font-bold py-2 rounded-lg transition-all text-xs flex items-center justify-center gap-2">
                        <Plus size={14} /> Añadir a la lista
                     </button>
@@ -243,8 +271,12 @@ export default function PurchasesModule() {
                               <tr key={idx} className="text-[var(--color-on-surface)]">
                                  <td className="px-3 py-2 font-bold">{item.name} <span className="text-[9px] text-[var(--color-on-surface-variant)] block">{item.sku}</span></td>
                                  <td className="px-3 py-2 text-center">{item.quantity}</td>
-                                 <td className="px-3 py-2 text-right">S/ {item.cost.toFixed(2)}</td>
-                                 <td className="px-3 py-2 text-right font-black">S/ {(item.quantity * item.cost).toFixed(2)}</td>
+                                 <td className="px-3 py-2 text-right">
+                                    <div className="text-right">
+                                      <p className="text-[10px] text-[var(--color-on-surface-variant)]">{item.quantity} und. x {formatPrice(item.cost)}</p>
+                                      <span className="font-black text-[var(--color-on-surface)]">{formatPrice(item.quantity * item.cost)}</span>
+                                    </div>
+                                 </td>
                               </tr>
                             ))}
                             {formData.items.length === 0 && (
@@ -253,8 +285,11 @@ export default function PurchasesModule() {
                          </tbody>
                          <tfoot className="bg-[var(--color-surface-container)]/50 border-t border-[var(--color-outline-variant)]">
                             <tr>
-                               <td colSpan="3" className="px-3 py-3 text-right text-[var(--color-on-surface-variant)] font-black uppercase">Total estimado</td>
-                               <td className="px-3 py-3 text-right text-[var(--color-primary)] font-black text-lg">S/ {formData.totalAmount.toFixed(2)}</td>
+                               <td colSpan="4" className="px-3 py-3 text-right">
+                                 <div className="flex justify-between items-center text-lg text-[var(--color-on-surface)] font-black">
+                                   <span>TOTAL ESTIMADO</span><span className="text-[#6B4FD8]">{formatPrice(formData.totalAmount)}</span>
+                                 </div>
+                               </td>
                             </tr>
                          </tfoot>
                       </table>

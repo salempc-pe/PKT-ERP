@@ -1,11 +1,13 @@
 import { Box } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useInventory } from './useInventory';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function InventoryDashboardCard({ orgId }) {
   const { products, loading } = useInventory(orgId);
+  const { formatPrice } = useAuth();
 
-  const totalValue = products.reduce((acc, p) => acc + ((parseFloat(String(p.price).replace(/[^0-9.]/g, '')) || 0) * (p.stock || 0)), 0);
+  const totalValue = products.reduce((acc, p) => acc + ((Number(p.price) || 0) * (p.stock || 0)), 0);
   const lowStockCount = products.filter(p => ["Bajo Stock", "Agotado"].includes(p.status)).length;
 
   return (
@@ -19,7 +21,7 @@ export default function InventoryDashboardCard({ orgId }) {
       metrics={[
         { 
           label: "Valor Total", 
-          value: `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 0 })}` 
+          value: formatPrice(totalValue)
         },
         { 
           label: "Bajo Stock", 

@@ -84,7 +84,7 @@ export default function CalendarModule() {
         
         {/* Main Content (Weekly / Events list) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl p-6">
+          <div className="bg-[var(--color-surface-container-low)] rounded-xl border border-[var(--color-outline-variant)] overflow-hidden p-6">
             <h3 className="font-bold text-[var(--color-on-surface)] mb-4 flex items-center gap-2">
                <CalendarDays size={18} className="text-[var(--color-primary)]"/> Próximas Citas (Agenda)
             </h3>
@@ -97,8 +97,10 @@ export default function CalendarModule() {
               ) : (
                 upcomingAppointments.map((appt) => {
                    const client = contacts.find(c => c.id === appt.clientId);
+                   const isOverdue = new Date(`${appt.date}T${appt.time}`) < new Date();
+                   
                    return (
-                     <div key={appt.id} className="bg-[var(--color-surface-container)] border border-[#40485d]/20 p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4 hover:border-[#6B4FD8]/40 transition-colors">
+                     <div key={appt.id} className={`bg-[var(--color-surface-container)] border p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4 transition-colors ${isOverdue ? 'border-red-500/40 bg-red-500/5 animate-pulse' : 'border-[#40485d]/20 hover:border-[#6B4FD8]/40'}`}>
                        <div className="flex gap-4">
                          <div className="bg-[var(--color-primary-container)] w-14 h-14 min-w-14 rounded-xl flex flex-col items-center justify-center text-[var(--color-primary)]">
                            <span className="text-[10px] font-black uppercase">{new Date(appt.date).toLocaleDateString('es-ES', { month: 'short', timeZone: 'UTC' })}</span>

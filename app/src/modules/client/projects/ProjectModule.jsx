@@ -8,12 +8,13 @@ import LoadingScreen from '../../../components/LoadingScreen';
 export default function ProjectModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { projects, tasks, loading, addProject, updateProjectStatus, deleteProject, setActiveProjectId, addTask, updateTaskStatus, updateTask } = useProjects(orgId);
+  const { projects, tasks, loading, addProject, updateProject, updateProjectStatus, deleteProject, setActiveProjectId, addTask, updateTaskStatus, updateTask } = useProjects(orgId);
   
   const [showModal, setShowModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null); 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
-  const [formData, setFormData] = useState({ name: '', description: '', color: '#6B4FD8' });
+  const [formData, setFormData] = useState({ name: '', description: '', color: '#6B4FD8', dueDate: '' });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
@@ -27,17 +28,34 @@ export default function ProjectModule() {
     setActiveProjectId(null);
   };
 
+  const handleOpenEditProject = (e, project) => {
+    e.stopPropagation();
+    setEditingProject(project);
+    setFormData({
+      name: project.name,
+      description: project.description || '',
+      color: project.color || '#6B4FD8',
+      dueDate: project.dueDate || ''
+    });
+    setShowModal(true);
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
     setSaveError(null);
     try {
-      await addProject(formData);
+      if (editingProject) {
+        await updateProject(editingProject.id, formData);
+      } else {
+        await addProject(formData);
+      }
       setShowModal(false);
-      setFormData({ name: '', description: '', color: '#6B4FD8' });
+      setEditingProject(null);
+      setFormData({ name: '', description: '', color: '#6B4FD8', dueDate: '' });
     } catch (err) {
-      console.error("Error al crear proyecto:", err);
-      setSaveError("No se pudo crear el proyecto. Intenta nuevamente.");
+      console.error("Error al guardar proyecto:", err);
+      setSaveError("No se pudo guardar el proyecto. Intenta nuevamente.");
     } finally {
       setIsSaving(false);
     }
@@ -88,18 +106,27 @@ export default function ProjectModule() {
               <div className="p-3 bg-[var(--color-surface-container)] rounded-2xl text-[var(--color-primary)]">
                 <Folder size={24} />
               </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm('¿Estás seguro de que deseas eliminar este proyecto y TODAS sus tareas?')) {
-                    deleteProject(project.id);
-                  }
-                }}
-                className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors p-1"
-                title="Eliminar Proyecto"
-              >
-                <X size={18}/>
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={(e) => handleOpenEditProject(e, project)}
+                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors p-1"
+                  title="Editar Proyecto"
+                >
+                  <MoreVertical size={18}/>
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm('¿Estás seguro de que deseas eliminar este proyecto y TODAS sus tareas?')) {
+                      deleteProject(project.id);
+                    }
+                  }}
+                  className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors p-1"
+                  title="Eliminar Proyecto"
+                >
+                  <X size={18}/>
+                </button>
+              </div>
             </div>
 
             <h3 className="text-xl font-bold text-[var(--color-on-surface)] mb-2 group-hover:text-[var(--color-primary)] transition-colors">{project.name}</h3>
@@ -120,8 +147,8 @@ export default function ProjectModule() {
                       {user?.name?.substring(0, 2) || 'US'}
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-[var(--color-on-surface-variant)] text-xs font-bold">
-                    <Clock size={14} /> Gestión Activa
+                <div className={`flex items-center gap-1.5 text-xs font-bold ${project.dueDate && new Date(project.dueDate + 'T23:59:59') < new Date() ? 'text-red-400 animate-pulse' : 'text-[var(--color-on-surface-variant)]'}`}>
+                    <Clock size={14} /> {project.dueDate ? `Entrega: ${new Date(project.dueDate).toLocaleDateString()}` : 'Sin fecha'}
                 </div>
               </div>
             </div>
@@ -144,7 +171,9 @@ export default function ProjectModule() {
             className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
             <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
-              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">Crear Nuevo Proyecto</h3>
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">
+                {editingProject ? 'Editar Proyecto' : 'Crear Nuevo Proyecto'}
+              </h3>
               <button 
                   type="button"
                   onClick={() => setShowModal(false)}
@@ -188,6 +217,16 @@ export default function ProjectModule() {
                 />
               </div>
               <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Fecha de Entrega (Opcional)</label>
+                <input 
+                  type="date" 
+                  disabled={isSaving}
+                  value={formData.dueDate}
+                  onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
+                />
+              </div>
+              <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Color de Identificación</label>
                 <div className="flex gap-3">
                     {['#6B4FD8', '#2E8B57', '#ffab85', '#affbab', '#dee5ff'].map(c => (
@@ -217,7 +256,7 @@ export default function ProjectModule() {
                 disabled={isSaving}
                 className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
               >
-                {isSaving ? <Loader2 size={18} className="animate-spin" /> : 'Crear'}
+                {isSaving ? <Loader2 size={18} className="animate-spin" /> : (editingProject ? 'Guardar Cambios' : 'Crear')}
               </button>
             </div>
           </form>

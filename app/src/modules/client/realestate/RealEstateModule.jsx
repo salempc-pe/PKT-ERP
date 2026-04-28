@@ -23,7 +23,7 @@ import TerrainModal from './TerrainModal';
 import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function RealEstateModule() {
-  const { user } = useAuth();
+  const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { terrains, loading, addTerrain, updateTerrain, deleteTerrain } = useRealEstate(orgId);
   const { contacts } = useCrm(orgId);
@@ -168,8 +168,8 @@ export default function RealEstateModule() {
                       <div className="flex flex-col">
                         <p className="text-[var(--color-on-surface)] font-bold text-xs">{t.area.toLocaleString()} m²</p>
                         <p className="text-[10px] text-[var(--color-primary)] font-black">
-                          US$ {t.totalPrice.toLocaleString()} 
-                          <span className="text-[var(--color-on-surface-variant)] font-normal ml-1">(${(t.pricePerM2).toLocaleString()}/m²)</span>
+                          {formatPrice(t.totalPrice)} 
+                          <span className="text-[var(--color-on-surface-variant)] font-normal ml-1">({formatPrice(t.pricePerM2)}/m²)</span>
                         </p>
                       </div>
                     </td>
@@ -237,7 +237,7 @@ export default function RealEstateModule() {
                     </div>
                     
                     <div className="flex justify-between items-center mb-3">
-                      <p className="text-[11px] font-black text-[var(--color-on-surface)]">US$ {terrain.totalPrice.toLocaleString()}</p>
+                      <p className="text-[11px] font-black text-[var(--color-on-surface)]">{formatPrice(terrain.totalPrice)}</p>
                       <p className="text-[10px] text-[var(--color-on-surface-variant)]">{terrain.area} m²</p>
                     </div>
 

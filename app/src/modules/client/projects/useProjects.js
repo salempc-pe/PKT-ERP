@@ -15,7 +15,7 @@ import { db } from "../../../services/firebase";
 
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
-export const useProjects = (orgId = "default_org") => {
+export function useProjects(orgId = "default_org") {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,25 +67,17 @@ export const useProjects = (orgId = "default_org") => {
     }
 
     const tasksRef = collection(db, `organizations/${orgId}/tasks`);
-    // Simplificamos la query quitando el orderBy para descartar problemas de índices compuestos
     const q = query(tasksRef, where("projectId", "==", activeProjectId));
 
-    console.log(`[useProjects] Suscribiendo a tareas del proyecto: ${activeProjectId}`);
-    
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log(`[useProjects] Tareas recibidas: ${data.length}`);
-      
-      // Ordenamos localmente si es necesario para no depender del índice de Firestore por ahora
       const sortedData = data.sort((a, b) => {
         const dateA = a.createdAt?.seconds || 0;
         const dateB = b.createdAt?.seconds || 0;
         return dateB - dateA;
       });
-      
       setTasks(sortedData);
     }, (err) => {
-      console.error("[useProjects] Error en suscripción de tareas:", err);
       setError(err.message);
     });
 
@@ -94,7 +86,7 @@ export const useProjects = (orgId = "default_org") => {
 
   // -- Métodos MUTADORES --
 
-  const addProject = async (projectData) => {
+  async function addProject(projectData) {
     if (!isFirebaseConfigured) {
       const newProject = { id: "p_" + Date.now(), ...projectData, status: "active", createdAt: new Date() };
       setProjects(prev => [newProject, ...prev]);
@@ -102,27 +94,27 @@ export const useProjects = (orgId = "default_org") => {
     }
     const projectsRef = collection(db, `organizations/${orgId}/projects`);
     return await addDoc(projectsRef, { ...projectData, status: "active", createdAt: new Date() });
-  };
+  }
 
-  const updateProjectStatus = async (projectId, newStatus) => {
+  async function updateProjectStatus(projectId, newStatus) {
     if (!isFirebaseConfigured) {
       setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: newStatus } : p));
       return;
     }
     const projectRef = doc(db, `organizations/${orgId}/projects`, projectId);
     return await updateDoc(projectRef, { status: newStatus, updatedAt: new Date() });
-  };
+  }
 
-  const deleteProject = async (projectId) => {
+  async function deleteProject(projectId) {
     if (!isFirebaseConfigured) {
       setProjects(prev => prev.filter(p => p.id !== projectId));
       return;
     }
     const projectRef = doc(db, `organizations/${orgId}/projects`, projectId);
     return await deleteDoc(projectRef);
-  };
+  }
 
-  const addTask = async (taskData) => {
+  async function addTask(taskData) {
     if (!isFirebaseConfigured) {
       const newTask = { id: "t_" + Date.now(), ...taskData, status: taskData.status || "todo", createdAt: new Date() };
       setTasks(prev => [newTask, ...prev]);
@@ -135,9 +127,9 @@ export const useProjects = (orgId = "default_org") => {
       status: taskData.status || "todo", 
       createdAt: serverTimestamp() 
     });
-  };
+  }
 
-  const updateTaskStatus = async (taskId, newStatus) => {
+  async function updateTaskStatus(taskId, newStatus) {
     if (!isFirebaseConfigured) {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
       return;
@@ -147,16 +139,25 @@ export const useProjects = (orgId = "default_org") => {
       status: newStatus, 
       updatedAt: serverTimestamp() 
     });
-  };
+  }
 
-  const updateTask = async (taskId, taskData) => {
+  async function updateProject(projectId, projectData) {
+    if (!isFirebaseConfigured) {
+      setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...projectData } : p));
+      return;
+    }
+    const projectRef = doc(db, `organizations/${orgId}/projects`, projectId);
+    return await updateDoc(projectRef, { ...projectData, updatedAt: serverTimestamp() });
+  }
+
+  async function updateTask(taskId, taskData) {
     if (!isFirebaseConfigured) {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...taskData } : t));
       return;
     }
     const taskRef = doc(db, `organizations/${orgId}/tasks`, taskId);
-    return await updateDoc(taskRef, { ...taskData, updatedAt: new Date() });
-  };
+    return await updateDoc(taskRef, { ...taskData, updatedAt: serverTimestamp() });
+  }
 
   return {
     projects,
@@ -165,10 +166,11 @@ export const useProjects = (orgId = "default_org") => {
     error,
     setActiveProjectId,
     addProject,
+    updateProject,
     updateProjectStatus,
     deleteProject,
     addTask,
     updateTaskStatus,
     updateTask
   };
-};
+}

@@ -45,22 +45,21 @@ export default function ClientDashboard() {
   return (
     <div className="animate-in fade-in duration-500 space-y-6 md:space-y-10">
       {/* Welcome Header */}
-      <section className="relative rounded-3xl overflow-hidden p-6 md:p-10 bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/10">
+      <section className="relative rounded-3xl overflow-hidden p-5 md:p-8 bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/10">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-          <div className="max-w-2xl">
-
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tighter text-[var(--color-on-surface)] mb-2 md:mb-4 leading-tight">
+          <div className="max-w-xl">
+            <h2 className="text-2xl lg:text-3xl font-black tracking-tighter text-[var(--color-on-surface)] mb-1 md:mb-2 leading-tight">
               Hola, <span className="text-[var(--color-primary)]">{user?.name?.split(' ')[0] || 'Usuario'}</span>.
             </h2>
-            <p className="text-[var(--color-on-surface-variant)] text-xs md:text-base leading-relaxed max-w-md">
+            <p className="text-[var(--color-on-surface-variant)] text-[10px] md:text-sm leading-relaxed max-w-sm">
               Este es el resumen centralizado de tus módulos activos.
             </p>
           </div>
 
           {logoUrl && (
             <div className="hidden md:block shrink-0">
-              <div className="w-32 h-32 rounded-2xl border border-[#6B4FD8]/10 bg-[var(--color-surface-container)] overflow-hidden">
-                <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain" />
+              <div className="w-24 h-24 rounded-2xl border border-[#6B4FD8]/10 bg-[var(--color-surface-container)] overflow-hidden">
+                <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain p-2" />
               </div>
             </div>
           )}

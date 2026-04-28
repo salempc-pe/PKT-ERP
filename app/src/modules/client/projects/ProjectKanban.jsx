@@ -60,12 +60,23 @@ export default function ProjectKanban({ project, tasks, addTask, updateTaskStatu
     <div className="space-y-8 h-full animate-in fade-in duration-500">
       {/* Header Unificada */}
       <div className="flex justify-between items-center bg-[var(--color-surface-variant)]/30 p-4 rounded-2xl border border-[var(--color-outline-variant)]">
-        <button 
-          onClick={onBack}
-          className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] flex items-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all bg-[var(--color-surface-container)] px-4 py-2.5 rounded-xl border border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50 shadow-lg"
-        >
-          <ChevronLeft size={16} /> Volver a Proyectos
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onBack}
+            className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] flex items-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all bg-[var(--color-surface-container)] px-4 py-2.5 rounded-xl border border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50 shadow-lg"
+          >
+            <ChevronLeft size={16} /> Volver
+          </button>
+          
+          <div className="flex flex-col">
+            <h2 className="text-lg font-black text-[var(--color-on-surface)] leading-tight">{project.name}</h2>
+            {project.dueDate && (
+              <span className={`text-[10px] font-bold flex items-center gap-1 uppercase tracking-tighter ${new Date(project.dueDate + 'T23:59:59') < new Date() ? 'text-red-400 animate-pulse' : 'text-[var(--color-primary)]'}`}>
+                <Clock size={12} /> {new Date(project.dueDate + 'T23:59:59') < new Date() ? 'PROYECTO VENCIDO' : 'Entrega'}: {new Date(project.dueDate).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </div>
 
         <button 
           onClick={handleOpenNewTask}

@@ -31,6 +31,10 @@
   --color-surface-container-highest: #e8e8e5;
 }
 
+html, body, main {
+  overscroll-behavior-y: none;
+}
+
 @utility logo-pulse {
   animation: logo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
