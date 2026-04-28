@@ -588,7 +588,7 @@
 **Depends on**: Phase 33
 
 **Tasks**:
-- [ ] TBD (run /plan 34 to create)
+- [x] Plan 34.1: Compact Mobile Dashboard Cards
 
 **Verification**:
 - TBD
