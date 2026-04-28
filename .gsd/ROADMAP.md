@@ -596,7 +596,7 @@
 ---
 
 ### Phase 35: Inventario de Bodega
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar la gestión de materia prima diferenciada por precio de compra, con registro de ingresos, egresos a destinos específicos (Producción, Venta, Merma) e historial de movimientos.
 **Depends on**: Phase 3, Phase 34
 
@@ -611,3 +611,22 @@
 - [x] Registro de ingresos con distintos precios genera ítems separados.
 - [x] Egresos descuentan correctamente del lote seleccionado.
 - [x] Historial muestra fecha, cantidad y destino correctamente.
+
+---
+
+### Phase 36: Refinamiento de Diseño Móvil (Títulos y Listas)
+**Status**: ⬜ Not Started
+**Objective**: Mejorar la visualización en dispositivos móviles reduciendo el tamaño de los títulos de los módulos y expandiendo las tablas/listas al ancho completo de la pantalla.
+**Depends on**: Phase 35
+
+**Tasks**:
+- [ ] Refactorizar títulos de módulos en `ClientLayout.jsx` para una tipografía más delicada en móvil.
+- [ ] Ajustar el padding del contenedor principal (`main`) en móvil para maximizar el espacio de las listas.
+- [ ] Eliminar contenedores de tarjetas (border, rounded, bg) en vistas de listas para dispositivos móviles en todos los módulos (Inventario, Ventas, Finanzas, etc.).
+- [ ] Estandarizar el diseño de tablas "full-width" para que se vean premium sin el encajonamiento de tarjetas.
+
+**Verification**:
+- [ ] Los títulos en móvil son más pequeños y elegantes (ej. text-2xl en lugar de text-4xl).
+- [ ] Las tablas de información ocupan el 100% del ancho del viewport en móvil (sin márgenes laterales excesivos).
+- [ ] El diseño se mantiene premium y limpio en ambas orientaciones.
+
