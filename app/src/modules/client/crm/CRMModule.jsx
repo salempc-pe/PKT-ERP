@@ -3,6 +3,8 @@ import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, Alert
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
 
+import LoadingScreen from '../../../components/LoadingScreen';
+
 export default function CRMModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
@@ -17,7 +19,7 @@ export default function CRMModule() {
 
   const pipelineStages = [
     { id: 'prospect', title: 'Prospecto', color: 'bg-[#a3aac4]', next: 'negotiating', prev: null },
-    { id: 'negotiating', title: 'Negociación', color: 'bg-[#85adff]', next: 'won', prev: 'prospect' },
+    { id: 'negotiating', title: 'Negociación', color: 'bg-[#6B4FD8]', next: 'won', prev: 'prospect' },
     { id: 'won', title: 'Ganado', color: 'bg-[#5391ff]', next: null, prev: 'negotiating' },
     { id: 'lost', title: 'Perdido', color: 'bg-[#ff6b6b]', next: null, prev: 'negotiating' }
   ];
@@ -64,27 +66,23 @@ export default function CRMModule() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-[#85adff]">
-        <Loader2 className="animate-spin mr-2" /> Cargando Datos de {user?.organizationName || 'Organización'}...
-      </div>
-    );
+    return <LoadingScreen fullScreen={false} message={`Cargando Datos de ${user?.organizationName || 'Organización'}...`} />;
   }
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       {/* Tabs Selector */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex p-1 bg-[#141f38]/50 rounded-xl w-fit border border-[#40485d]/10">
+        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
           <button 
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
             <Kanban size={16} /> Pipeline
           </button>
           <button 
             onClick={() => setActiveTab('contacts')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#85adff] text-[#002150]' : 'text-[#a3aac4] hover:text-[#dee5ff]'}`}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
             <List size={16} /> Base de Contactos
           </button>
@@ -93,14 +91,14 @@ export default function CRMModule() {
         {activeTab === 'pipeline' ? (
           <button 
             onClick={() => { setModalType('lead'); setEditingLead(null); setShowModal(true); setSaveError(null); }}
-            className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Kanban size={18} /> Iniciar Lead
           </button>
         ) : (
           <button 
             onClick={() => { setModalType('contact'); setShowModal(true); setSaveError(null); }}
-            className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Nuevo Cliente
           </button>
@@ -113,42 +111,42 @@ export default function CRMModule() {
           {pipelineStages.map(stage => (
             <div key={stage.id} className="flex flex-col gap-4">
               <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[#a3aac4]">
+                <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[var(--color-on-surface-variant)]">
                   <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>
                   {stage.title}
                 </div>
-                <span className="text-[#40485d] font-bold text-xs">
+                <span className="text-[var(--color-on-surface-variant)] font-bold text-xs">
                   {leads.filter(l => l.status === stage.id).length}
                 </span>
               </div>
               
-              <div className="flex flex-col gap-3 p-3 bg-[#0f1930]/40 border border-[#40485d]/10 rounded-2xl h-full min-h-[300px]">
+              <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-variant)]/40 border border-[var(--color-outline-variant)] rounded-2xl h-full min-h-[300px]">
                 {leads.filter(l => l.status === stage.id).map(lead => (
-                  <div key={lead.id} className="bg-[#141f38] border border-[#40485d]/30 p-4 rounded-xl shadow-sm hover:border-[#85adff]/50 transition-all cursor-pointer group relative overflow-hidden">
+                  <div key={lead.id} className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden">
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
                     <div className="flex justify-between items-start mb-1">
-                      <p className="font-extrabold text-[#dee5ff] text-sm group-hover:text-[#85adff] transition-colors line-clamp-1">{lead.name}</p>
+                      <p className="font-extrabold text-[var(--color-on-surface)] text-sm group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">{lead.name}</p>
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
-                        className="text-[#40485d] hover:text-[#85adff] transition-colors"
+                        className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
                       >
                         <MoreVertical size={14}/>
                       </button>
                     </div>
                     
-                    <p className="text-[10px] text-[#85adff] font-black uppercase tracking-tight mb-2">{lead.company}</p>
+                    <p className="text-[10px] text-[var(--color-primary)] font-black uppercase tracking-tight mb-2">{lead.company}</p>
                     
                     {lead.description && (
-                      <p className="text-[11px] text-[#a3aac4] line-clamp-2 leading-tight mb-4 opacity-70 italic">{lead.description}</p>
+                      <p className="text-[11px] text-[var(--color-on-surface-variant)] line-clamp-2 leading-tight mb-4 opacity-70 italic">{lead.description}</p>
                     )}
 
-                    <div className="flex justify-between items-center mt-2 pt-3 border-t border-[#40485d]/10">
+                    <div className="flex justify-between items-center mt-2 pt-3 border-t border-[var(--color-outline-variant)]">
                       <div className="flex gap-1.5 w-full">
                         {stage.prev && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.prev); }}
-                            className="p-1.5 text-[#a3aac4] hover:text-[#dee5ff] bg-[#1d2b4a]/50 hover:bg-[#1d2b4a] rounded-lg border border-[#40485d]/30 transition-all flex-1 flex justify-center"
+                            className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] bg-[var(--color-primary-container)]/50 hover:bg-[var(--color-primary-container)] rounded-lg border border-[var(--color-outline-variant)] transition-all flex-1 flex justify-center"
                             title="Retroceder etapa"
                           >
                             <Kanban size={12} className="rotate-180" />
@@ -184,7 +182,7 @@ export default function CRMModule() {
                 ))}
 
                 {leads.filter(l => l.status === stage.id).length === 0 && (
-                  <div className="flex-1 flex items-center justify-center text-[#40485d] opacity-20 text-[10px] italic py-10">
+                  <div className="flex-1 flex items-center justify-center text-[var(--color-on-surface-variant)] opacity-20 text-[10px] italic py-10">
                     Sin prospectos
                   </div>
                 )}
@@ -193,11 +191,11 @@ export default function CRMModule() {
           ))}
         </div>
       ) : (
-        <div className="bg-[#091328] rounded-2xl border border-[#40485d]/10 overflow-hidden shadow-2xl">
+        <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
+                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                   <th className="px-6 py-5">Identidad</th>
                   <th className="px-6 py-5">Contacto Directo</th>
                   <th className="px-6 py-5 text-center">Crédito</th>
@@ -207,45 +205,45 @@ export default function CRMModule() {
               </thead>
               <tbody className="divide-y divide-[#40485d]/10 text-sm">
                 {contacts.length > 0 ? contacts.map((contact) => (
-                  <tr key={contact.id} className="hover:bg-[#141f38]/40 transition-colors group">
+                  <tr key={contact.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1d2b4a] to-[#091328] border border-[#85adff]/10 flex items-center justify-center text-[#85adff] font-black text-xs">
+                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs">
                           {contact.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-bold text-[#dee5ff]">{contact.name}</p>
-                          <p className="text-[11px] text-[#a3aac4]">{contact.company}</p>
+                          <p className="font-bold text-[var(--color-on-surface)]">{contact.name}</p>
+                          <p className="text-[11px] text-[var(--color-on-surface-variant)]">{contact.company}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-0.5">
-                        <p className="text-[#dee5ff] font-medium text-xs flex items-center gap-1.5">
-                          <Mail size={12} className="text-[#a3aac4]"/> {contact.email}
+                        <p className="text-[var(--color-on-surface)] font-medium text-xs flex items-center gap-1.5">
+                          <Mail size={12} className="text-[var(--color-on-surface-variant)]"/> {contact.email}
                         </p>
-                        <p className="text-[#a3aac4] text-xs flex items-center gap-1.5">
+                        <p className="text-[var(--color-on-surface-variant)] text-xs flex items-center gap-1.5">
                           <Phone size={12}/> {contact.phone}
                         </p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[#a3aac4]'}`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)]'}`}>
                         {contact.creditDays || 0} días
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-[10px] font-black bg-[#141f38] text-[#85adff] px-2 py-1 rounded border border-[#85adff]/10 uppercase">
+                      <span className="text-[10px] font-black bg-[var(--color-surface-container)] text-[var(--color-primary)] px-2 py-1 rounded border border-[#6B4FD8]/10 uppercase">
                         {contact.source}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-[#40485d] hover:text-[#dee5ff] transition-colors"><MoreVertical size={16} /></button>
+                      <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors"><MoreVertical size={16} /></button>
                     </td>
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-[#a3aac4] italic">No hay clientes registrados en la base de datos.</td>
+                    <td colSpan="5" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay clientes registrados en la base de datos.</td>
                   </tr>
                 )}
               </tbody>
@@ -260,17 +258,17 @@ export default function CRMModule() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleAddSubmit}
-            className="bg-[#0f1930] w-full max-w-md border border-[#40485d]/30 rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
+            className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
             <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
-              <h3 className="font-black text-[#dee5ff] uppercase tracking-wider text-sm">
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">
                 Añadir {modalType === 'lead' ? 'Nuevo Lead' : 'Nuevo Contacto'}
               </h3>
               <button 
                   type="button"
                   onClick={() => setShowModal(false)}
                   disabled={isSaving}
-                  className="text-[#a3aac4] hover:text-white transition-colors disabled:opacity-50"
+                  className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors disabled:opacity-50"
                 >
                 <X size={20}/>
               </button>
@@ -285,7 +283,7 @@ export default function CRMModule() {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Nombre Completo</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Nombre Completo</label>
                 <input 
                   required
                   type="text" 
@@ -293,55 +291,55 @@ export default function CRMModule() {
                   disabled={isSaving}
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                   placeholder="Ej: David Salazar"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Empresa / Proyecto</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Empresa / Proyecto</label>
                 <input 
                   type="text" 
                   disabled={isSaving}
                   value={formData.company}
                   onChange={(e) => setFormData({...formData, company: e.target.value})}
-                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 text-sm font-bold"
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-sm font-bold"
                   placeholder="Ej: Inversiones Globales"
                 />
               </div>
 
               {modalType === 'lead' && (
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Descripción / Observaciones</label>
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Descripción / Observaciones</label>
                   <textarea 
                     rows="3"
                     disabled={isSaving}
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 resize-none text-sm"
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 resize-none text-sm"
                     placeholder="Detalles sobre el interés del cliente, presupuesto, etc."
                   />
                 </div>
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Correo</label>
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Correo</label>
                   <input 
                     type="email" 
                     disabled={isSaving}
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                     placeholder="admin@empresa.com"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Teléfono</label>
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Teléfono</label>
                   <input 
                     type="tel" 
                     disabled={isSaving}
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                     placeholder="+51..."
                   />
                 </div>
@@ -349,7 +347,7 @@ export default function CRMModule() {
               
               {modalType === 'contact' && (
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Plazo de Crédito (Días)</label>
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Plazo de Crédito (Días)</label>
                   <div className="flex items-center gap-3">
                     <input 
                       type="number" 
@@ -357,28 +355,28 @@ export default function CRMModule() {
                       disabled={isSaving}
                       value={formData.creditDays}
                       onChange={(e) => setFormData({...formData, creditDays: parseInt(e.target.value) || 0})}
-                      className="flex-1 bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                      className="flex-1 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                       placeholder="0"
                     />
-                    <span className="text-xs text-[#a3aac4] font-bold">días</span>
+                    <span className="text-xs text-[var(--color-on-surface-variant)] font-bold">días</span>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-6 bg-[#141f38] flex gap-3">
+            <div className="p-6 bg-[var(--color-surface-container)] flex gap-3">
               <button 
                 type="button"
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
-                className="flex-1 px-4 py-3 rounded-xl font-bold text-[#a3aac4] hover:bg-[#0f1930] transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
                 <button 
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 bg-[#85adff] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
               >
                 {isSaving ? (
                   <>

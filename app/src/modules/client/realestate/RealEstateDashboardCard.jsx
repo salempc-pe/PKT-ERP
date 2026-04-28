@@ -14,7 +14,7 @@ export default function RealEstateDashboardCard({ orgId }) {
       description="Base de terrenos y pipeline comercial."
       icon={Building2}
       path="/client/realestate"
-      color="#85adff"
+      color="#6B4FD8"
       loading={loading}
       metrics={[
         { label: "Total Terrenos", value: terrains.length },

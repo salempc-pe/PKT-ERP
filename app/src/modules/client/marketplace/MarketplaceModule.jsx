@@ -64,7 +64,7 @@ export default function MarketplaceModule() {
       <div className="relative overflow-hidden rounded-[2.5rem] p-12 text-white">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 z-0"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-10"></div>
-        
+
         <div className="relative z-20 max-w-2xl">
           <h1 className="text-5xl font-black tracking-tighter mb-4">Planes y Membresías</h1>
           <p className="text-lg opacity-80 font-medium leading-relaxed">
@@ -80,16 +80,15 @@ export default function MarketplaceModule() {
           const isEnterprise = planId === 'enterprise';
 
           return (
-            <div 
+            <div
               key={planId}
-              className={`relative flex flex-col p-8 rounded-[2.5rem] transition-all duration-500 hover:scale-[1.03] border-2 ${
-                isCurrent 
-                ? 'bg-[#192540] border-[#85adff] shadow-[0_20px_50px_rgba(133,173,255,0.15)]' 
-                : 'bg-[#141f38] border-[#40485d]/30'
-              }`}
+              className={`relative flex flex-col p-8 rounded-[2.5rem] transition-all duration-500 hover:scale-[1.03] border-2 ${isCurrent
+                  ? 'bg-[var(--color-surface-container-high)] border-[#6B4FD8] shadow-[0_20px_50px_rgba(133,173,255,0.15)]'
+                  : 'bg-[var(--color-surface-container)] border-[var(--color-outline-variant)]'
+                }`}
             >
               {isCurrent && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#85adff] text-[#060e20] text-[10px] font-black uppercase tracking-widest shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#6B4FD8] text-[#0a0a0a] text-[10px] font-black uppercase tracking-widest shadow-lg">
                   Tu Plan Actual
                 </div>
               )}
@@ -97,25 +96,25 @@ export default function MarketplaceModule() {
               <div className="mb-8">
                 <h3 className="text-2xl font-black text-white mb-2">{plan.name}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-[#85adff]">
+                  <span className="text-4xl font-black text-[var(--color-primary)]">
                     {planId === 'startup' ? 'S/ 0' : planId === 'business' ? 'S/ 199' : 'Tarifa'}
                   </span>
-                  <span className="text-xs text-[#a3aac4] font-bold">
+                  <span className="text-xs text-[var(--color-on-surface-variant)] font-bold">
                     {planId === 'enterprise' ? 'Personalizada' : '/mes'}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-4 mb-10 flex-1">
-                <p className="text-[10px] font-bold text-[#a3aac4] uppercase tracking-widest border-b border-[#40485d]/30 pb-2">Incluye:</p>
+                <p className="text-[10px] font-bold text-[var(--color-on-surface-variant)] uppercase tracking-widest border-b border-[var(--color-outline-variant)] pb-2">Incluye:</p>
                 <div className="space-y-3">
                   {plan.modules.map(modId => (
-                    <div key={modId} className="flex items-center gap-2 text-sm text-[#dee5ff]">
+                    <div key={modId} className="flex items-center gap-2 text-sm text-[var(--color-on-surface)]">
                       <CheckCircle2 size={16} className="text-[#4ADE80]" />
                       <span className="capitalize">{modId} Full Access</span>
                     </div>
                   ))}
-                  <div className="flex items-center gap-2 text-sm text-[#85adff] font-bold">
+                  <div className="flex items-center gap-2 text-sm text-[var(--color-primary)] font-bold">
                     <Users size={16} />
                     <span>Límite de {plan.limits.users} usuarios</span>
                   </div>
@@ -124,13 +123,12 @@ export default function MarketplaceModule() {
 
               <button
                 disabled={isCurrent}
-                className={`w-full py-4 rounded-2xl font-black text-xs transition-all ${
-                  isCurrent 
-                  ? 'bg-transparent border border-[#85adff] text-[#85adff] cursor-default' 
-                  : isEnterprise
-                  ? 'bg-[#fbabff] text-[#060e20] hover:shadow-lg'
-                  : 'bg-[#85adff] text-[#060e20] hover:shadow-lg active:scale-95'
-                }`}
+                className={`w-full py-4 rounded-2xl font-black text-xs transition-all ${isCurrent
+                    ? 'bg-transparent border border-[#6B4FD8] text-[var(--color-primary)] cursor-default'
+                    : isEnterprise
+                      ? 'bg-[#2E8B57] text-[#0a0a0a] hover:shadow-lg'
+                      : 'bg-[#6B4FD8] text-[#0a0a0a] hover:shadow-lg active:scale-95'
+                  }`}
               >
                 {isCurrent ? 'Plan Activo' : isEnterprise ? 'Contactar' : 'Mejorar Plan'}
               </button>
@@ -140,17 +138,17 @@ export default function MarketplaceModule() {
       </div>
 
       {/* Footer Info */}
-      <div className="p-8 rounded-[2rem] bg-[#141f38] flex items-center justify-between gap-6 border border-[#40485d]/30">
+      <div className="p-8 rounded-[2rem] bg-[var(--color-surface-container)] flex items-center justify-between gap-6 border border-[var(--color-outline-variant)]">
         <div className="flex gap-4 items-center">
-          <div className="w-12 h-12 rounded-full bg-[#85adff]/10 flex items-center justify-center text-[#85adff] shrink-0">
+          <div className="w-12 h-12 rounded-full bg-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] shrink-0">
             <Plus size={24} />
           </div>
           <div>
             <p className="font-black text-white">¿Necesitas un plan a medida?</p>
-            <p className="text-xs text-[#a3aac4]">Podemos ajustar los límites y módulos según la escala de tu empresa.</p>
+            <p className="text-xs text-[var(--color-on-surface-variant)]">Podemos ajustar los límites y módulos según la escala de tu empresa.</p>
           </div>
         </div>
-        <button className="px-6 py-3 rounded-xl border border-[#85adff] text-[#85adff] font-black text-xs hover:bg-[#85adff] hover:text-[#060e20] transition-all">
+        <button className="px-6 py-3 rounded-xl border border-[#6B4FD8] text-[var(--color-primary)] font-black text-xs hover:bg-[#6B4FD8] hover:text-[#0a0a0a] transition-all">
           Hablar con Consultor
         </button>
       </div>

@@ -11,7 +11,7 @@ export default function FinanceDashboardCard() {
       description="Flujo de caja y finanzas."
       icon={Calculator}
       path="/client/finance"
-      color="#85adff"
+      color="#6B4FD8"
       loading={false}
       metrics={[
         { label: "Ver Balance", value: "Activo" }

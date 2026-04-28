@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
 import { Save, CheckCircle2, User, Building, Mail, MapPin, Upload, Image as ImageIcon } from 'lucide-react';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 
 export default function BusinessProfileForm() {
@@ -101,24 +102,20 @@ export default function BusinessProfileForm() {
   };
 
   if (loading) {
-    return <div className="animate-pulse space-y-4 max-w-2xl">
-      <div className="h-10 bg-[#141f38] rounded-xl w-full"></div>
-      <div className="h-10 bg-[#141f38] rounded-xl w-full"></div>
-      <div className="h-10 bg-[#141f38] rounded-xl w-full"></div>
-    </div>;
+    return <LoadingScreen fullScreen={false} message="Cargando perfil..." />;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <div className="bg-[#141f38] p-6 lg:p-8 rounded-3xl border border-[#40485d]/30">
+      <div className="bg-[#141414] p-6 lg:p-8 rounded-3xl border border-[#40485d]/30">
         <h3 className="text-xl font-bold text-[#dee5ff] mb-6 flex items-center gap-2">
-          <Building className="text-[#85adff]" size={20} /> Información de la Empresa
+          <Building className="text-[#6B4FD8]" size={20} /> Información de la Empresa
         </h3>
         
         {/* Logo Upload Section */}
-        <div className="mb-8 flex flex-col md:flex-row items-center gap-6 p-6 rounded-2xl bg-[#091328]/50 border border-[#85adff]/10">
+        <div className="mb-8 flex flex-col md:flex-row items-center gap-6 p-6 rounded-2xl bg-[#0f0f0f]/50 border border-[#6B4FD8]/10">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#141f38] border-2 border-dashed border-[#85adff]/30 flex items-center justify-center transition-all group-hover:border-[#85adff]/60">
+            <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#141414] border-2 border-dashed border-[#6B4FD8]/30 flex items-center justify-center transition-all group-hover:border-[#6B4FD8]/60">
               {formData.logoUrl ? (
                 <img src={formData.logoUrl} alt="Logo preview" className="w-full h-full object-cover" />
               ) : (
@@ -139,7 +136,7 @@ export default function BusinessProfileForm() {
             <button 
               type="button"
               onClick={() => fileInputRef.current.click()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#85adff]/10 text-[#85adff] text-xs font-black hover:bg-[#85adff]/20 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#6B4FD8]/10 text-[#6B4FD8] text-xs font-black hover:bg-[#6B4FD8]/20 transition-all"
             >
               <Upload size={14} />
               {formData.logoUrl ? 'Cambiar Logo' : 'Subir Logo'}
@@ -157,7 +154,7 @@ export default function BusinessProfileForm() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full bg-[#091328] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#85adff] transition-colors"
+                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
                 required
               />
             </div>
@@ -172,7 +169,7 @@ export default function BusinessProfileForm() {
                 name="sector"
                 value={formData.sector}
                 onChange={handleChange}
-                className="w-full bg-[#091328] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#85adff] transition-colors"
+                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
                 placeholder="Ej. Retail, Tecnología, Servicios"
               />
             </div>
@@ -187,7 +184,7 @@ export default function BusinessProfileForm() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full bg-[#091328] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#85adff] transition-colors"
+                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
               />
             </div>
           </div>
@@ -201,7 +198,7 @@ export default function BusinessProfileForm() {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full bg-[#091328] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#85adff] transition-colors"
+                className="w-full bg-[#0f0f0f] border border-[#40485d]/50 rounded-xl py-3 pl-12 pr-4 text-[#dee5ff] focus:outline-none focus:border-[#6B4FD8] transition-colors"
               />
             </div>
           </div>
@@ -211,7 +208,7 @@ export default function BusinessProfileForm() {
           <button 
             type="submit" 
             disabled={saving}
-            className="bg-[#85adff] hover:bg-[#6e9fff] text-[#002150] font-bold px-6 py-3 rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="bg-[#6B4FD8] hover:bg-[#C4B9F0] text-[#002150] font-bold px-6 py-3 rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
           >
             {saving ? (
               <div className="w-5 h-5 border-2 border-[#002150]/30 border-t-[#002150] rounded-full animate-spin"></div>

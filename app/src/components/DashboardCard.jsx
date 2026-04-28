@@ -13,7 +13,7 @@ export default function DashboardCard({
   return (
     <Link 
       to={path} 
-      className="group relative bg-[#141f38] border border-white/5 rounded-[2rem] p-8 hover:bg-[#1a264a] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden"
+      className="group relative bg-[var(--color-surface-container)] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 shadow-sm hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden"
       style={{ borderColor: `${color}15` }}
     >
       {/* Background Glow */}
@@ -22,32 +22,32 @@ export default function DashboardCard({
         style={{ backgroundColor: color }}
       ></div>
 
-      <div className="flex justify-between items-start mb-8 relative z-10">
+      <div className="flex justify-between items-start mb-4 md:mb-8 relative z-10">
         <div 
-          className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+          className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110"
           style={{ backgroundColor: `${color}20`, color: color }}
         >
-          {Icon && <Icon size={28} strokeWidth={2.5} />}
+          {Icon && <Icon className="w-5 h-5 md:w-7 md:h-7" strokeWidth={2.5} />}
         </div>
         <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-          <ExternalLink size={14} className="text-[#dee5ff]/40" />
+          <ExternalLink size={14} className="text-[var(--color-on-surface)]/40" />
         </div>
       </div>
 
-      <div className="mb-8 relative z-10">
-        <h3 className="text-2xl font-black text-[#dee5ff] mb-2">{title}</h3>
-        <p className="text-sm text-[#a3aac4] font-medium leading-relaxed">{description}</p>
+      <div className="mb-4 md:mb-8 relative z-10">
+        <h3 className="text-lg md:text-2xl font-black text-[var(--color-on-surface)] mb-1 md:mb-2">{title}</h3>
+        <p className="text-xs md:text-sm text-[var(--color-on-surface-variant)] font-medium leading-relaxed">{description}</p>
       </div>
 
       {/* Metrics Section */}
-      <div className="mt-auto grid grid-cols-2 gap-4 pt-6 border-t border-white/5 relative z-10">
+      <div className="mt-auto grid grid-cols-2 gap-4 pt-4 md:pt-6 border-t border-white/5 relative z-10">
         {metrics.map((m, idx) => (
           <div key={idx}>
-            <p className="text-[10px] uppercase font-bold text-[#a3aac4] tracking-widest mb-1.5">{m.label}</p>
+            <p className="text-[9px] md:text-[10px] uppercase font-bold text-[var(--color-on-surface-variant)] tracking-widest mb-1 md:mb-1.5">{m.label}</p>
             {loading ? (
               <div className="h-6 w-16 bg-white/5 animate-pulse rounded"></div>
             ) : (
-              <p className="text-lg font-black text-[#dee5ff]">{m.value}</p>
+              <p className="text-base md:text-lg font-black text-[var(--color-on-surface)]">{m.value}</p>
             )}
           </div>
         ))}

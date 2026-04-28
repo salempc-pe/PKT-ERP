@@ -14,13 +14,20 @@ export default function AdminLayout() {
     return <Navigate to="/" replace />;
   }
 
+  const activeStyle = { 
+    backgroundColor: 'var(--color-surface-variant)', 
+    color: 'var(--color-primary)', 
+    fontWeight: 800, 
+    boxShadow: '0 4px 12px rgba(107, 79, 216, 0.08)' 
+  };
+
   return (
     <div style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-on-surface)' }} className="min-h-screen font-body flex transition-colors duration-300">
       {/* SideNavBar Shell */}
       <aside style={{ backgroundColor: 'var(--color-surface-container-low)' }} className="fixed lg:sticky left-0 top-0 h-screen w-64 rounded-r-2xl flex flex-col py-8 space-y-6 z-40 transition-all duration-300">
         <div className="px-6 mb-8 flex justify-between items-center gap-2">
           <div className="flex-1 min-w-0">
-            <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="150" className="w-full" />
+            <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="auto" className="w-[120px] lg:w-[150px]" />
           </div>
           {/* Botón Toggle Tema */}
           <button
@@ -51,7 +58,7 @@ export default function AdminLayout() {
           <Link 
             to="/admin/dashboard" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-            style={isActive('/admin/dashboard') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+            style={isActive('/admin/dashboard') ? activeStyle : { color: 'var(--color-on-surface-variant)' }}
           >
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
@@ -60,7 +67,7 @@ export default function AdminLayout() {
           <Link 
             to="/admin/clients" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-            style={isActive('/admin/clients') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+            style={isActive('/admin/clients') ? activeStyle : { color: 'var(--color-on-surface-variant)' }}
           >
             <Users size={20} />
             <span>Clientes</span>
@@ -69,7 +76,7 @@ export default function AdminLayout() {
           <Link 
             to="/admin/sales" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-            style={isActive('/admin/sales') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+            style={isActive('/admin/sales') ? activeStyle : { color: 'var(--color-on-surface-variant)' }}
           >
             <FileText size={20} />
             <span>Ventas y Facturas</span>
@@ -78,7 +85,7 @@ export default function AdminLayout() {
           <Link 
             to="/admin/logs" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
-            style={isActive('/admin/logs') ? { backgroundColor: 'var(--color-surface-variant)', color: 'var(--color-primary)', fontWeight: 700 } : { color: 'var(--color-on-surface-variant)' }}
+            style={isActive('/admin/logs') ? activeStyle : { color: 'var(--color-on-surface-variant)' }}
           >
             <Activity size={20} />
             <span>Auditoría / Logs</span>

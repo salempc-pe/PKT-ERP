@@ -1,260 +1,142 @@
 @import "tailwindcss";
 
 @theme {
-  --color-error-container: #9f0519;
-  --color-primary: #85adff;
-  --color-on-tertiary-fixed-variant: #681c73;
-  --color-inverse-surface: #faf8ff;
-  --color-surface-container-low: #091328;
-  --color-on-secondary-container: #c5ceff;
-  --color-inverse-on-surface: #4d556b;
-  --color-on-primary: #002c66;
-  --color-surface-bright: #1f2b49;
-  --color-secondary-dim: #8097ff;
-  --color-on-tertiary-container: #5e106a;
-  --color-primary-fixed-dim: #5391ff;
-  --color-tertiary-container: #f199f7;
-  --color-tertiary: #fbabff;
-  --color-secondary-container: #213da1;
-  --color-surface-tint: #85adff;
-  --color-on-secondary-fixed: #00278f;
-  --color-secondary: #8097ff;
-  --color-surface-container-high: #141f38;
-  --color-surface-dim: #060e20;
-  --color-on-tertiary-fixed: #3e0047;
-  --color-error: #ff716c;
-  --color-on-surface: #dee5ff;
-  --color-surface: #060e20;
-  --color-on-primary-fixed: #000000;
-  --color-tertiary-dim: #e28ce9;
-  --color-error-dim: #d7383b;
-  --color-on-background: #dee5ff;
-  --color-surface-variant: #192540;
-  --color-on-surface-variant: #a3aac4;
-  --color-on-secondary-fixed-variant: #2d48ac;
-  --color-on-tertiary: #691d74;
-  --color-on-error-container: #ffa8a3;
-  --color-on-error: #490006;
-  --color-tertiary-fixed-dim: #e28ce9;
-  --color-primary-dim: #699cff;
-  --color-primary-fixed: #6e9fff;
-  --color-primary-container: #6e9fff;
-  --color-surface-container: #0f1930;
-  --color-outline: #6d758c;
-  --color-surface-container-lowest: #000000;
-  --color-background: #060e20;
-  --color-tertiary-fixed: #f199f7;
-  --color-inverse-primary: #005bc4;
-  --color-on-primary-fixed-variant: #002a62;
-  --color-secondary-fixed: #c7cfff;
-  --color-on-secondary: #00175f;
-  --color-on-primary-container: #002150;
-  --color-outline-variant: #40485d;
-  --color-secondary-fixed-dim: #b4c1ff;
-  --color-surface-container-highest: #192540;
+  --font-display: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --color-primary: #6B4FD8;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #ede9fb;
+  --color-on-primary-container: #22005d;
   
-  --font-headline: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-label: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-secondary: #2E8B57;
+  --color-on-secondary: #FFFFFF;
+  
+  --color-tertiary: #e28ce9;
+  --color-on-tertiary: #FFFFFF;
+  
+  --color-background: #F7F7F5;
+  --color-on-background: #1A1A1A;
+  
+  --color-surface: #F7F7F5;
+  --color-on-surface: #1A1A1A;
+  --color-surface-variant: #e2dcff;
+  --color-on-surface-variant: #555555;
+  
+  --color-outline: #79747E;
+  --color-outline-variant: #C4C7C1;
+  
+  --color-surface-container-low: #fcfcf9;
+  --color-surface-container: #F7F7F5;
+  --color-surface-container-high: #efefec;
+  --color-surface-container-highest: #e8e8e5;
 }
 
-@utility architectural-glass {
-  background: linear-gradient(135deg, rgba(31, 43, 73, 0.8) 0%, rgba(25, 37, 64, 0.4) 100%);
-  backdrop-filter: blur(20px);
+@utility logo-pulse {
+  animation: logo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@utility text-on-surface {
-  color: var(--color-on-surface);
-}
-
-@utility bg-background {
-  background-color: var(--color-background);
-}
-
-@layer base {
-  html, body {
-    overscroll-behavior-y: none;
-  }
-  body {
-    font-family: var(--font-body);
-    background-color: var(--color-background);
-    color: var(--color-on-surface);
-    /* Ajustes Experiencia Nativa (PWA) */
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-  }
-
-  input, textarea, [contenteditable="true"] {
-    user-select: auto;
-    -webkit-user-select: auto;
-  }
-}
-
-/* ─── Modo Claro ─────────────────────────────────────────── */
-:root.light {
-  --color-background:                 #f0f4ff;
-  --color-surface:                    #f0f4ff;
-  --color-surface-dim:                #dce3f9;
-  --color-surface-bright:             #ffffff;
-  --color-surface-container-lowest:   #ffffff;
-  --color-surface-container-low:      #eaeffc;
-  --color-surface-container:          #e4e9f8;
-  --color-surface-container-high:     #dde4f5;
-  --color-surface-container-highest:  #d7deef;
-  --color-surface-variant:            #dde2f8;
-
-  --color-on-surface:                 #161c2d;
-  --color-on-surface-variant:         #4a5068;
-  --color-on-background:              #161c2d;
-
-  --color-primary:                    #1a5bc8;
-  --color-primary-dim:                #2562d4;
-  --color-primary-fixed:              #3a72e0;
-  --color-primary-fixed-dim:          #2a5fc8;
-  --color-primary-container:          #cddcff;
-  --color-on-primary:                 #ffffff;
-  --color-on-primary-container:       #001944;
-  --color-on-primary-fixed:           #001944;
-  --color-on-primary-fixed-variant:   #00286a;
-  --color-inverse-primary:            #85adff;
-
-  --color-secondary:                  #3048ac;
-  --color-secondary-dim:              #3a55c0;
-  --color-secondary-container:        #dde0ff;
-  --color-secondary-fixed:            #c5c9ff;
-  --color-secondary-fixed-dim:        #9faeff;
-  --color-on-secondary:               #ffffff;
-  --color-on-secondary-container:     #030e6b;
-  --color-on-secondary-fixed:         #00175f;
-  --color-on-secondary-fixed-variant: #2a43a4;
-
-  --color-tertiary:                   #7c2a8a;
-  --color-tertiary-dim:               #8c3499;
-  --color-tertiary-container:         #f6d3ff;
-  --color-tertiary-fixed:             #f0c3fc;
-  --color-tertiary-fixed-dim:         #dc9ee8;
-  --color-on-tertiary:                #ffffff;
-  --color-on-tertiary-container:      #2e004f;
-  --color-on-tertiary-fixed:          #340047;
-  --color-on-tertiary-fixed-variant:  #5c1068;
-
-  --color-error:                      #b3261e;
-  --color-error-dim:                  #c42b23;
-  --color-error-container:            #ffdad6;
-  --color-on-error:                   #ffffff;
-  --color-on-error-container:         #410002;
-
-  --color-outline:                    #6c748b;
-  --color-outline-variant:            #c0c7dd;
-
-  --color-inverse-surface:            #2e3450;
-  --color-inverse-on-surface:         #eef0ff;
-
-  --color-surface-tint:               #1a5bc8;
-}
-
-/* ─── Transición suave al cambiar de tema ─────────────────────── */
-.animate-spin, .animate-pulse, .animate-bounce {
-  transition: none !important;
-}
-
-/* ─── Overrides para Modo Claro: Fondos de Superficies ──────────
-   Tailwind v4 en modo JIT genera clases exactas. Como los
-   módulos usan colores hardcodeados en hex, usamos attribute
-   selectors [class*="..."] para capturarlos sin importar el
-   orden de compilación de Tailwind.
-──────────────────────────────────────────────────────────────── */
-
-/* Fondo surface-container-high (#141f38) */
-:root.light [class*="bg-\[#141f38\]"] {
-  background-color: var(--color-surface-container-high) !important;
-}
-/* Fondo surface-container-low (#091328) */
-:root.light [class*="bg-\[#091328\]"] {
-  background-color: var(--color-surface-container-low) !important;
-}
-/* Fondo surface-container (#0f1930) */
-:root.light [class*="bg-\[#0f1930\]"] {
-  background-color: var(--color-surface-container) !important;
-}
-/* Fondo surface-variant (#192540) */
-:root.light [class*="bg-\[#192540\]"] {
-  background-color: var(--color-surface-variant) !important;
-}
-/* Fondo background (#060e20) */
-:root.light [class*="bg-\[#060e20\]"] {
-  background-color: var(--color-background) !important;
-}
-/* Fondos de avatares/chips oscuros */
-:root.light [class*="bg-\[#1d2b4a\]"] {
-  background-color: var(--color-surface-container-highest) !important;
-}
-:root.light [class*="bg-\[#2a1d4a\]"] {
-  background-color: var(--color-surface-container-highest) !important;
-}
-:root.light [class*="bg-\[#1f2b49\]"] {
-  background-color: var(--color-surface-bright) !important;
-}
-
-/* ─── Texto ─────────────────────────────────────────────────── */
-:root.light [class*="text-\[#dee5ff\]"] {
-  color: var(--color-on-surface) !important;
-}
-:root.light [class*="text-\[#a3aac4\]"] {
-  color: var(--color-on-surface-variant) !important;
-}
-:root.light [class*="text-\[#40485d\]"] {
-  color: var(--color-outline) !important;
-}
-
-/* ─── Bordes ─────────────────────────────────────────────────── */
-:root.light [class*="border-\[#40485d\]"] {
-  border-color: color-mix(in srgb, var(--color-outline-variant) 40%, transparent) !important;
-}
-
-/* ─── Divisores de tabla ─────────────────────────────────────── */
-:root.light [class*="divide-\[#40485d\]"] > :not([hidden]) ~ :not([hidden]) {
-  border-color: color-mix(in srgb, var(--color-outline-variant) 25%, transparent) !important;
-}
-
-/* ─── Inputs y Textareas ─────────────────────────────────────── */
-:root.light input,
-:root.light textarea,
-:root.light select {
-  background-color: var(--color-surface-container-low) !important;
-  color: var(--color-on-surface) !important;
-  border-color: var(--color-outline-variant) !important;
-}
-:root.light input::placeholder,
-:root.light textarea::placeholder {
-  color: var(--color-on-surface-variant) !important;
-  opacity: 0.65;
-}
-
-/* ─── Títulos globales ───────────────────────────────────────── */
-:root.light h1, :root.light h2, :root.light h3, :root.light h4 {
-  color: var(--color-on-surface);
-}
-:root.light p {
-  color: inherit;
-}
-
-/* ─── Scroll en modo claro ───────────────────────────────────── */
-:root.light ::-webkit-scrollbar       { width: 6px; height: 6px; }
-:root.light ::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
-:root.light ::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 3px; }
-:root.light ::-webkit-scrollbar-thumb:hover { background: var(--color-outline); }
-
-/* ─── Animaciones de Marca ────────────────────────────────── */
 @keyframes logo-pulse {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.7; }
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 0px rgba(107, 79, 216, 0));
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 20px rgba(107, 79, 216, 0.4));
+  }
 }
 
-.animate-logo-pulse {
-  animation: logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+:root {
+  /* Dark Mode Defaults (Variables mapped to Brand Guide) */
+  --color-primary: #6B4FD8;
+  --color-background: #1A1A1A;
+  --color-surface: #1A1A1A;
+  --color-on-surface: #F7F7F5;
+  --color-on-surface-variant: #a3aac4;
+  --color-surface-container: #141414;
+  --color-surface-container-low: #0f0f0f;
+  --color-surface-container-high: #1a1a1a;
+  --color-surface-variant: #222531;
+  --color-outline-variant: rgba(64, 72, 93, 0.2);
 }
 
+:root.light {
+  --color-background: #F7F7F5;
+  --color-on-background: #1A1A1A;
+  --color-surface: #F7F7F5;
+  --color-on-surface: #1A1A1A;
+  --color-on-surface-variant: #555555;
+  --color-surface-container-low: #FFFFFF;
+  --color-surface-container: #FFFFFF;
+  --color-surface-container-high: #efefec;
+  --color-surface-container-highest: #e8e8e5;
+  --color-surface-variant: #e2dcff; /* Mejor contraste para selección sobre fondo hueso */
+  --color-outline-variant: #e0e0de;
+}
 
+/* 
+   ==========================================================================
+   OVERRIDES DE MODO CLARO PARA ELEMENTOS CON COLORES HARDCODEADOS (LEGADO PKT)
+   ==========================================================================
+*/
+
+:root.light {
+  /* Forzar fondos oscuros de PKT a variantes claras de Veló */
+  [class*="bg-[#141f38]"], 
+  [class*="bg-[#141414]"], 
+  [class*="bg-[#0f0f0f]"], 
+  [class*="bg-[#1a1a1a]"], 
+  [class*="bg-[#0f1930]"],
+  [class*="bg-[#0b1224]"] {
+    background-color: var(--color-surface-container-high) !important;
+  }
+
+  /* Forzar textos claros de PKT a oscuros de Veló */
+  [class*="text-[#dee5ff]"], 
+  [class*="text-[#a3aac4]"],
+  [class*="text-slate-400"],
+  [class*="text-gray-400"] {
+    color: var(--color-on-surface) !important;
+  }
+
+  /* Especial para gradientes oscuros en avatares o iconos */
+  [class*="from-[#1d2b4a]"] {
+    --tw-gradient-from: var(--color-primary-container) !important;
+    --tw-gradient-to: var(--color-surface-container) !important;
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
+    color: var(--color-primary) !important;
+  }
+
+  /* Tablas */
+  table thead tr {
+    background-color: var(--color-surface-variant) !important;
+  }
+  table thead tr th {
+    color: var(--color-primary) !important;
+  }
+  table tbody tr:hover {
+    background-color: var(--color-surface-container-high) !important;
+  }
+
+  /* Bordes */
+  [class*="border-[#40485d]"], [class*="border-[#6B4FD8]/10"] {
+    border-color: var(--color-outline-variant) !important;
+  }
+}
+
+/* Estilos de scrollbar premium */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}

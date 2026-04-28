@@ -1,32 +1,31 @@
-# Sprint: true-dark-mode
+# Sprint 1 — fix-light-mode-contrast
 
 > **Duration**: 2026-04-27 to 2026-04-27
 > **Status**: In Progress
 
 ## Goal
-Implementar el modo oscuro con fondo negro neutro siguiendo la guía de marca Veló y la solicitud del usuario ("fondo negro").
+Restaurar la legibilidad y fondos correctos en modo claro (Blanco Hueso) y ajustar modo oscuro al Negro Neutro (#1A1A1A) de la guía.
 
 ## Scope
 
 ### Included
-- Actualización de variables de fondo en `index.css` (modo oscuro).
-- Reemplazo global de `#060e20` por `#0a0a0a` o `#000000`.
-- Ajuste de contrastes secundarios para el nuevo fondo oscuro.
+- Corrección de variables CSS en `index.css`.
+- Ajuste de selectores de anulación para modo claro.
+- Sincronización de fondos de tarjetas en modo oscuro con #1A1A1A.
 
 ### Explicitly Excluded
-- Rediseño de componentes funcionales.
-- Cambios en el modo claro.
+- Cambios en la lógica de negocio.
+- Nuevos módulos.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Actualizar variables en index.css | Claude | ⏳ In Progress | 0.2 |
-| Reemplazo global de fondo navy por negro | Claude | ⬜ Todo | 0.3 |
-| Ajustar contrastes de bordes y superficies | Claude | ⬜ Todo | 0.3 |
-| Verificar logos en modo oscuro | Claude | ⬜ Todo | 0.2 |
+| Restaurar overrides de modo claro en index.css | Antigravity | ⏳ In Progress | 0.5 |
+| Ajustar fondo oscuro a #1A1A1A | Antigravity | ⬜ Todo | 0.2 |
+| Verificar contraste en componentes críticos | Antigravity | ⬜ Todo | 0.3 |
 
 ## Daily Log
 
 ### 2026-04-27
-- Sprint creado para transicionar de Dark Navy a Neutral Black.
+- Sprint creado para corregir regresión visual en modo claro.

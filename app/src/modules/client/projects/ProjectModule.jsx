@@ -3,6 +3,7 @@ import { Briefcase, Plus, Search, MoreVertical, Layout, List, Loader2, X, AlertC
 import { useProjects } from './useProjects';
 import { useAuth } from '../../../context/AuthContext';
 import ProjectKanban from './ProjectKanban';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function ProjectModule() {
   const { user } = useAuth();
@@ -12,7 +13,7 @@ export default function ProjectModule() {
   const [showModal, setShowModal] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null); 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
-  const [formData, setFormData] = useState({ name: '', description: '', color: '#85adff' });
+  const [formData, setFormData] = useState({ name: '', description: '', color: '#6B4FD8' });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
@@ -33,7 +34,7 @@ export default function ProjectModule() {
     try {
       await addProject(formData);
       setShowModal(false);
-      setFormData({ name: '', description: '', color: '#85adff' });
+      setFormData({ name: '', description: '', color: '#6B4FD8' });
     } catch (err) {
       console.error("Error al crear proyecto:", err);
       setSaveError("No se pudo crear el proyecto. Intenta nuevamente.");
@@ -43,11 +44,7 @@ export default function ProjectModule() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-[#85adff]">
-        <Loader2 className="animate-spin mr-2" /> Cargando Proyectos...
-      </div>
-    );
+    return <LoadingScreen fullScreen={false} message="Cargando Proyectos..." />;
   }
 
   // Si hay un proyecto seleccionado, mostramos el Kanban con navegación integrada
@@ -70,7 +67,7 @@ export default function ProjectModule() {
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#85adff] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <Plus size={18} /> Nuevo Proyecto
         </button>
@@ -82,13 +79,13 @@ export default function ProjectModule() {
           <div 
             key={project.id} 
             onClick={() => handleSelectProject(project)}
-            className="group relative bg-[#0f1930]/40 border border-[#40485d]/20 rounded-3xl p-6 hover:border-[#85adff]/50 transition-all cursor-pointer overflow-hidden"
+            className="group relative bg-[var(--color-surface-variant)]/40 border border-[#40485d]/20 rounded-3xl p-6 hover:border-[#6B4FD8]/50 transition-all cursor-pointer overflow-hidden"
           >
             {/* Accent Line */}
             <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: project.color || '#40485d' }}></div>
             
             <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-[#141f38] rounded-2xl text-[#85adff]">
+              <div className="p-3 bg-[var(--color-surface-container)] rounded-2xl text-[var(--color-primary)]">
                 <Folder size={24} />
               </div>
               <button 
@@ -98,39 +95,39 @@ export default function ProjectModule() {
                     deleteProject(project.id);
                   }
                 }}
-                className="text-[#40485d] hover:text-red-400 transition-colors p-1"
+                className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors p-1"
                 title="Eliminar Proyecto"
               >
                 <X size={18}/>
               </button>
             </div>
 
-            <h3 className="text-xl font-bold text-[#dee5ff] mb-2 group-hover:text-[#85adff] transition-colors">{project.name}</h3>
-            <p className="text-[#a3aac4] text-sm line-clamp-2 mb-6 h-10">{project.description}</p>
+            <h3 className="text-xl font-bold text-[var(--color-on-surface)] mb-2 group-hover:text-[var(--color-primary)] transition-colors">{project.name}</h3>
+            <p className="text-[var(--color-on-surface-variant)] text-sm line-clamp-2 mb-6 h-10">{project.description}</p>
             
             <div className="space-y-4">
               <div className="flex justify-between items-center text-xs font-bold uppercase tracking-tight">
-                <span className="text-[#a3aac4]">Actividad</span>
-                <span className="text-[#dee5ff]">Reciente</span>
+                <span className="text-[var(--color-on-surface-variant)]">Actividad</span>
+                <span className="text-[var(--color-on-surface)]">Reciente</span>
               </div>
-              <div className="w-full bg-[#141f38] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#85adff] h-full rounded-full" style={{ width: '100%' }}></div>
+              <div className="w-full bg-[var(--color-surface-container)] h-1.5 rounded-full overflow-hidden">
+                <div className="bg-[#6B4FD8] h-full rounded-full" style={{ width: '100%' }}></div>
               </div>
               
               <div className="flex justify-between items-center pt-2">
                 <div className="flex -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-[#1d2b4a] border-2 border-[#091328] flex items-center justify-center text-[10px] font-bold text-[#85adff] uppercase">
+                    <div className="w-7 h-7 rounded-full bg-[var(--color-primary-container)] border-2 border-[#0f0f0f] flex items-center justify-center text-[10px] font-bold text-[var(--color-primary)] uppercase">
                       {user?.name?.substring(0, 2) || 'US'}
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-[#a3aac4] text-xs font-bold">
+                <div className="flex items-center gap-1.5 text-[var(--color-on-surface-variant)] text-xs font-bold">
                     <Clock size={14} /> Gestión Activa
                 </div>
               </div>
             </div>
           </div>
         )) : (
-          <div className="col-span-full py-20 bg-[#0f1930]/20 rounded-3xl border border-dashed border-[#40485d]/20 flex flex-col items-center justify-center text-[#40485d]">
+          <div className="col-span-full py-20 bg-[var(--color-surface-variant)]/20 rounded-3xl border border-dashed border-[#40485d]/20 flex flex-col items-center justify-center text-[var(--color-on-surface-variant)]">
             <Briefcase size={48} className="mb-4 opacity-10" />
             <p className="font-bold">No hay proyectos activos.</p>
             <p className="text-sm">Comienza creando el primero para organizar tu trabajo.</p>
@@ -144,15 +141,15 @@ export default function ProjectModule() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleAddSubmit}
-            className="bg-[#0f1930] w-full max-w-md border border-[#40485d]/30 rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
+            className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
             <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
-              <h3 className="font-black text-[#dee5ff] uppercase tracking-wider text-sm">Crear Nuevo Proyecto</h3>
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">Crear Nuevo Proyecto</h3>
               <button 
                   type="button"
                   onClick={() => setShowModal(false)}
                   disabled={isSaving}
-                  className="text-[#a3aac4] hover:text-white transition-colors"
+                  className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors"
                 >
                 <X size={20}/>
               </button>
@@ -167,7 +164,7 @@ export default function ProjectModule() {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Nombre del Proyecto</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Nombre del Proyecto</label>
                 <input 
                   required
                   type="text" 
@@ -175,25 +172,25 @@ export default function ProjectModule() {
                   disabled={isSaving}
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50"
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                   placeholder="Ej: Rediseño Web 2026"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Descripción / Objetivo</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Descripción / Objetivo</label>
                 <textarea 
                   rows="3"
                   disabled={isSaving}
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-2.5 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 resize-none"
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 resize-none"
                   placeholder="Describe brevemente de qué trata este proyecto..."
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[#a3aac4] uppercase">Color de Identificación</label>
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Color de Identificación</label>
                 <div className="flex gap-3">
-                    {['#85adff', '#fbabff', '#ffab85', '#affbab', '#dee5ff'].map(c => (
+                    {['#6B4FD8', '#2E8B57', '#ffab85', '#affbab', '#dee5ff'].map(c => (
                         <button
                             key={c}
                             type="button"
@@ -206,19 +203,19 @@ export default function ProjectModule() {
               </div>
             </div>
 
-            <div className="p-6 bg-[#141f38] flex gap-3">
+            <div className="p-6 bg-[var(--color-surface-container)] flex gap-3">
               <button 
                 type="button"
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
-                className="flex-1 px-4 py-3 rounded-xl font-bold text-[#a3aac4] hover:bg-[#0f1930] transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 bg-[#85adff] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
               >
                 {isSaving ? <Loader2 size={18} className="animate-spin" /> : 'Crear'}
               </button>

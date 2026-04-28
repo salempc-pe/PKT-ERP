@@ -8,6 +8,7 @@ import {
   FileText, Plus, Search, Filter, 
   DollarSign, Loader2, X, AlertCircle, ShoppingCart, TrendingUp, PackageX, CheckCircle
 } from 'lucide-react';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function SalesModule() {
   const { user } = useAuth();
@@ -61,7 +62,7 @@ export default function SalesModule() {
     } else {
       return { 
         text: `${diffDays} restantes`, 
-        color: 'text-[#85adff] bg-[#85adff]/10' 
+        color: 'text-[var(--color-primary)] bg-[#6B4FD8]/10' 
       };
     }
   };
@@ -176,11 +177,7 @@ export default function SalesModule() {
   const loading = loadingSales || loadingCrm || loadingInv;
 
   if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-[#85adff]">
-        <Loader2 className="animate-spin mr-2" /> Cargando Módulos de Venta...
-      </div>
-    );
+    return <LoadingScreen fullScreen={false} message="Cargando Módulos de Venta..." />;
   }
 
   return (
@@ -189,13 +186,13 @@ export default function SalesModule() {
         <div className="flex gap-3">
           <button 
             onClick={() => { setSelectedDocType('Boleta'); setCart([]); setIsModalOpen(true); }}
-            className="bg-[#141f38] text-[#85adff] font-bold px-6 py-2.5 rounded-xl border border-[#85adff]/20 hover:bg-[#85adff]/10 transition-all text-sm"
+            className="bg-[var(--color-surface-container)] text-[var(--color-primary)] font-bold px-6 py-2.5 rounded-xl border border-[#6B4FD8]/20 hover:bg-[#6B4FD8]/10 transition-all text-sm"
           >
             Emitir Boleta
           </button>
           <button 
             onClick={() => { setSelectedDocType('Factura'); setCart([]); setIsModalOpen(true); }}
-            className="bg-[#85adff] text-[#091328] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
+            className="bg-[#6B4FD8] text-[#0f0f0f] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
           >
             <Plus size={18} /> Emitir Factura
           </button>
@@ -204,31 +201,31 @@ export default function SalesModule() {
 
       {/* KPI Stats - Ocultos en móvil */}
       <div className="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#141f38] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
-           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1d2b4a] to-[#091328] flex items-center justify-center text-[#85adff] shadow-inner">
+        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
+           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] flex items-center justify-center text-[var(--color-primary)] shadow-inner">
              <TrendingUp size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[#a3aac4] tracking-widest uppercase mb-1">Pagos Cobrados</p>
-             <h3 className="text-2xl font-black text-[#dee5ff]">${totalSalesThisMonth.toFixed(2)}</h3>
+             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Pagos Cobrados</p>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${totalSalesThisMonth.toFixed(2)}</h3>
            </div>
         </div>
-        <div className="bg-[#141f38] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
+        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#2a1b1a] to-[#1a0a0a] flex items-center justify-center text-[#ff716c] shadow-inner">
              <AlertCircle size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[#a3aac4] tracking-widest uppercase mb-1">Por Cobrar</p>
-             <h3 className="text-2xl font-black text-[#dee5ff]">${pendingCollection.toFixed(2)}</h3>
+             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Por Cobrar</p>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">${pendingCollection.toFixed(2)}</h3>
            </div>
         </div>
-        <div className="bg-[#141f38] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
-           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1d2b4a] to-[#091328] flex items-center justify-center text-[#85ffab] shadow-inner">
+        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
+           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] flex items-center justify-center text-[#85ffab] shadow-inner">
              <FileText size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[#a3aac4] tracking-widest uppercase mb-1">Volumen Docs</p>
-             <h3 className="text-2xl font-black text-[#dee5ff]">{sales.length}</h3>
+             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Volumen Docs</p>
+             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{sales.length}</h3>
            </div>
         </div>
       </div>
@@ -237,22 +234,22 @@ export default function SalesModule() {
       <div className="w-full">
          <div className="py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
             <input 
               type="text" 
               placeholder="Buscar factura o cliente..." 
-              className="w-full bg-[#141f38] text-[#dee5ff] text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-1 focus:ring-[#85adff] border border-transparent focus:border-[#85adff] transition-all"
+              className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm rounded-lg pl-10 pr-4 py-2 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-transparent focus:border-[#6B4FD8] transition-all"
             />
           </div>
-          <button className="bg-[#141f38] text-[#a3aac4] p-2 rounded-lg hover:text-[#85adff] transition-colors">
+          <button className="bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)] p-2 rounded-lg hover:text-[var(--color-primary)] transition-colors">
             <Filter size={20} />
           </button>
         </div>
 
-        <div className="overflow-auto border border-[#40485d]/10 rounded-xl bg-[#091328]">
+        <div className="overflow-auto border border-[var(--color-outline-variant)] rounded-xl bg-[var(--color-surface-container-low)]">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                 <th className="px-6 py-5">Documento</th>
                 <th className="px-6 py-5">Detalle</th>
                 <th className="px-6 py-5 text-center">Emisión</th>
@@ -263,36 +260,36 @@ export default function SalesModule() {
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {sales.length === 0 ? (
-                 <tr><td colSpan="6" className="p-10 text-center text-[#a3aac4]">No hay facturas registradas.</td></tr>
+                 <tr><td colSpan="6" className="p-10 text-center text-[var(--color-on-surface-variant)]">No hay facturas registradas.</td></tr>
               ) : (
                  sales.map((sale) => {
                    const dueInfo = getDueStatus(sale.dueDate, sale.status);
                    return (
-                    <tr key={sale.id} className="hover:bg-[#141f38]/40 transition-colors group">
+                    <tr key={sale.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
                       <td className="px-6 py-4">
-                        <span className="text-[10px] block font-black text-[#a3aac4] mb-1">{sale.documentType?.toUpperCase()}</span>
-                        <p className="font-mono font-bold text-[#85adff] text-xs">{sale.invoiceNumber}</p>
+                        <span className="text-[10px] block font-black text-[var(--color-on-surface-variant)] mb-1">{sale.documentType?.toUpperCase()}</span>
+                        <p className="font-mono font-bold text-[var(--color-primary)] text-xs">{sale.invoiceNumber}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-bold text-[#dee5ff]">{sale.clientName}</p>
-                        <p className="text-[10px] text-[#a3aac4]">{sale.items?.length || 0} productos</p>
+                        <p className="font-bold text-[var(--color-on-surface)]">{sale.clientName}</p>
+                        <p className="text-[10px] text-[var(--color-on-surface-variant)]">{sale.items?.length || 0} productos</p>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-[#dee5ff] text-xs">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-[var(--color-on-surface)] text-xs">
                         {formatDate(sale.issueDate || sale.createdAt)}
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-[#a3aac4] text-xs">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-[var(--color-on-surface-variant)] text-xs">
                         {formatDate(sale.dueDate || sale.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1.5">
                           {sale.status === 'Pagada' && <span className="inline-flex items-center px-1.5 py-0.5 bg-green-500/10 text-green-400 text-[9px] font-black tracking-widest uppercase rounded">Pagada</span>}
                           {sale.status === 'Pendiente' && <span className="inline-flex items-center px-1.5 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black tracking-widest uppercase rounded">Pendiente</span>}
-                          {sale.status === 'Borrador' && <span className="inline-flex items-center px-1.5 py-0.5 bg-[#40485d]/30 text-[#a3aac4] text-[9px] font-black tracking-widest uppercase rounded">Borrador</span>}
+                          {sale.status === 'Borrador' && <span className="inline-flex items-center px-1.5 py-0.5 bg-[#40485d]/30 text-[var(--color-on-surface-variant)] text-[9px] font-black tracking-widest uppercase rounded">Borrador</span>}
                           {sale.status === 'Anulada' && <span className="inline-flex items-center px-1.5 py-0.5 bg-red-500/10 text-red-400 text-[9px] font-black tracking-widest uppercase rounded">Anulada</span>}
                           <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${dueInfo.color}`}>{dueInfo.text}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-black text-[#dee5ff] text-right">
+                      <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">
                         <div className="flex flex-col items-end">
                           <span>${sale.totalAmount?.toFixed(2)}</span>
                           <div className="flex gap-2 mt-2 transition-opacity">
@@ -344,12 +341,12 @@ export default function SalesModule() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSubmitting && setIsModalOpen(false)}></div>
-          <div className="bg-[#0f1930] w-full max-w-4xl border border-[#40485d]/30 rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col md:flex-row h-[85vh] md:h-auto md:max-h-[85vh]">
+          <div className="bg-[var(--color-surface-variant)] w-full max-w-4xl border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col md:flex-row h-[85vh] md:h-auto md:max-h-[85vh]">
             
             {/* Izquierda: Formulario y Selección */}
-            <div className="p-6 md:w-1/2 flex flex-col h-full overflow-y-auto border-r border-[#40485d]/30">
+            <div className="p-6 md:w-1/2 flex flex-col h-full overflow-y-auto border-r border-[var(--color-outline-variant)]">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-black text-[#dee5ff] uppercase tracking-wider text-sm flex items-center gap-2">
+                <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
                   <DollarSign size={16} className="text-[#85ffab]" /> Emitir {selectedDocType}
                 </h3>
               </div>
@@ -357,7 +354,7 @@ export default function SalesModule() {
                <div className="space-y-6">
                  {/* Selector de Cliente */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-[#a3aac4] uppercase">Buscar Cliente (CRM)</label>
+                    <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Buscar Cliente (CRM)</label>
                     <select 
                       value={selectedClient} 
                       onChange={(e) => {
@@ -369,14 +366,14 @@ export default function SalesModule() {
                         computed.setDate(computed.getDate() + days);
                         setDueDate(computed.toISOString().split('T')[0]);
                       }}
-                      className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-3 text-[#dee5ff] focus:border-[#85ffab] outline-none text-sm"
+                      className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-3 text-[var(--color-on-surface)] focus:border-[#85ffab] outline-none text-sm"
                     >
                       <option value="" disabled>Seleccione un cliente registrado...</option>
                       {contacts.map(c => <option key={c.id} value={c.id}>{c.name} {c.company ? `- ${c.company}` : ''}</option>)}
                     </select>
                     {selectedClient && (
                       <div className="flex justify-between items-center px-1">
-                        <span className="text-[9px] font-bold text-[#85adff]">Emisión: {issueDate}</span>
+                        <span className="text-[9px] font-bold text-[var(--color-primary)]">Emisión: {issueDate}</span>
                         <span className="text-[9px] font-bold text-orange-400">Vence: {dueDate}</span>
                       </div>
                     )}
@@ -385,13 +382,13 @@ export default function SalesModule() {
                  <hr className="border-[#40485d]/20" />
 
                  {/* Selector de Producto */}
-                 <div className="bg-[#141f38] p-4 rounded-2xl border border-[#40485d]/20">
-                    <label className="text-[10px] font-black text-[#a3aac4] uppercase block mb-3">Agregar Línea de Venta</label>
+                 <div className="bg-[var(--color-surface-container)] p-4 rounded-2xl border border-[#40485d]/20">
+                    <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase block mb-3">Agregar Línea de Venta</label>
                     <div className="flex flex-col gap-3">
                       <select 
                         value={selectedProduct}
                         onChange={(e) => setSelectedProduct(e.target.value)}
-                        className="w-full bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-[#dee5ff] text-sm"
+                        className="w-full bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] text-sm"
                       >
                          <option value="" disabled>Seleccionar producto...</option>
                          {products.map(p => {
@@ -410,13 +407,13 @@ export default function SalesModule() {
                           type="number" min="1" 
                           value={quantity}
                           onChange={(e) => setQuantity(e.target.value)}
-                          className="w-20 bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-[#dee5ff] text-sm text-center"
+                          className="w-20 bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] text-sm text-center"
                         />
                         <button 
                           type="button"
                           onClick={handleAddToCart}
                           disabled={!selectedProduct}
-                          className="flex-1 bg-[#85adff]/10 text-[#85adff] border border-[#85adff]/20 rounded-lg font-bold hover:bg-[#85adff] hover:text-[#0f1930] transition-colors disabled:opacity-50"
+                          className="flex-1 bg-[#6B4FD8]/10 text-[var(--color-primary)] border border-[#6B4FD8]/20 rounded-lg font-bold hover:bg-[#6B4FD8] hover:text-[#0f1930] transition-colors disabled:opacity-50"
                         >
                           Añadir a Factura
                         </button>
@@ -427,34 +424,34 @@ export default function SalesModule() {
             </div>
 
             {/* Derecha: Resumen de Factura */}
-            <div className="p-6 md:w-1/2 flex flex-col bg-[#091328] relative">
+            <div className="p-6 md:w-1/2 flex flex-col bg-[var(--color-surface-container-low)] relative">
               <button 
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 text-[#a3aac4] hover:text-white bg-[#141f38] p-2 rounded-full"
+                className="absolute top-4 right-4 text-[var(--color-on-surface-variant)] hover:text-white bg-[var(--color-surface-container)] p-2 rounded-full"
               >
                 <X size={16}/>
               </button>
 
-              <h4 className="font-bold text-[#dee5ff] mb-4 flex items-center gap-2 text-sm mt-4 md:mt-0">
+              <h4 className="font-bold text-[var(--color-on-surface)] mb-4 flex items-center gap-2 text-sm mt-4 md:mt-0">
                 <ShoppingCart size={16} /> Resumen de Compra
               </h4>
 
               <div className="flex-1 overflow-y-auto mb-6">
                 {cart.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-[#a3aac4] text-xs font-medium">
+                  <div className="h-full flex items-center justify-center text-[var(--color-on-surface-variant)] text-xs font-medium">
                     No hay productos agregados.
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {cart.map((item, idx) => (
-                      <div key={idx} className="bg-[#141f38] p-3 rounded-lg flex justify-between items-center text-sm border border-[#40485d]/10">
+                      <div key={idx} className="bg-[var(--color-surface-container)] p-3 rounded-lg flex justify-between items-center text-sm border border-[var(--color-outline-variant)]">
                         <div>
-                          <p className="font-bold text-[#dee5ff]">{item.name}</p>
-                          <p className="text-[10px] text-[#a3aac4]">{item.quantity} und. x ${item.price.toFixed(2)}</p>
+                          <p className="font-bold text-[var(--color-on-surface)]">{item.name}</p>
+                          <p className="text-[10px] text-[var(--color-on-surface-variant)]">{item.quantity} und. x ${item.price.toFixed(2)}</p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="font-black text-[#dee5ff]">${item.subtotal.toFixed(2)}</span>
+                          <span className="font-black text-[var(--color-on-surface)]">${item.subtotal.toFixed(2)}</span>
                           <button onClick={() => handleRemoveFromCart(idx)} className="text-red-400 hover:text-red-300"><X size={14} /></button>
                         </div>
                       </div>
@@ -464,14 +461,14 @@ export default function SalesModule() {
               </div>
 
               {/* Totales */}
-              <div className="border-t border-[#40485d]/30 pt-4 space-y-2 mb-6">
-                 <div className="flex justify-between text-xs text-[#a3aac4] font-bold">
+              <div className="border-t border-[var(--color-outline-variant)] pt-4 space-y-2 mb-6">
+                 <div className="flex justify-between text-xs text-[var(--color-on-surface-variant)] font-bold">
                    <span>Subtotal</span><span>${cartSubtotal.toFixed(2)}</span>
                  </div>
-                 <div className="flex justify-between text-xs text-[#a3aac4] font-bold">
+                 <div className="flex justify-between text-xs text-[var(--color-on-surface-variant)] font-bold">
                    <span>Impuestos (18%)</span><span>${igv.toFixed(2)}</span>
                  </div>
-                 <div className="flex justify-between text-lg text-[#dee5ff] font-black pt-2">
+                 <div className="flex justify-between text-lg text-[var(--color-on-surface)] font-black pt-2">
                    <span>TOTAL</span><span className="text-[#85ffab]">${cartTotal.toFixed(2)}</span>
                  </div>
               </div>
@@ -479,7 +476,7 @@ export default function SalesModule() {
               <div className="flex gap-3">
                  <button 
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-3 rounded-xl font-bold text-[#a3aac4] border border-[#40485d]/30 hover:bg-[#141f38] transition-colors"
+                  className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] border border-[var(--color-outline-variant)] hover:bg-[var(--color-surface-container)] transition-colors"
                 >
                   Desechar
                 </button>
@@ -501,20 +498,20 @@ export default function SalesModule() {
       {invoiceToPrint && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setInvoiceToPrint(null)}></div>
-          <div className="bg-[#0f1930] w-full max-w-sm border border-[#40485d]/30 rounded-3xl shadow-[0_0_50px_rgba(133,255,171,0.15)] overflow-hidden relative animate-in zoom-in duration-300 flex flex-col p-8 text-center">
+          <div className="bg-[var(--color-surface-variant)] w-full max-w-sm border border-[var(--color-outline-variant)] rounded-3xl shadow-[0_0_50px_rgba(133,255,171,0.15)] overflow-hidden relative animate-in zoom-in duration-300 flex flex-col p-8 text-center">
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 mx-auto mb-6 shadow-glow-green">
               <CheckCircle size={40} />
             </div>
             
-            <h3 className="text-2xl font-black text-[#dee5ff] mb-2">¡Venta Confirmada!</h3>
-            <p className="text-[#a3aac4] text-sm mb-8">El pago ha sido registrado con éxito. ¿Deseas imprimir el comprobante ahora?</p>
+            <h3 className="text-2xl font-black text-[var(--color-on-surface)] mb-2">¡Venta Confirmada!</h3>
+            <p className="text-[var(--color-on-surface-variant)] text-sm mb-8">El pago ha sido registrado con éxito. ¿Deseas imprimir el comprobante ahora?</p>
             
-            <div className="bg-[#141f38] rounded-2xl p-4 border border-[#40485d]/20 mb-8 text-left">
+            <div className="bg-[var(--color-surface-container)] rounded-2xl p-4 border border-[#40485d]/20 mb-8 text-left">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-[10px] font-black text-[#65739e] uppercase">{invoiceToPrint.documentType}</span>
-                <span className="font-mono text-xs font-bold text-[#85adff]">{invoiceToPrint.invoiceNumber}</span>
+                <span className="font-mono text-xs font-bold text-[var(--color-primary)]">{invoiceToPrint.invoiceNumber}</span>
               </div>
-              <p className="font-bold text-[#dee5ff] text-base truncate">{invoiceToPrint.clientName}</p>
+              <p className="font-bold text-[var(--color-on-surface)] text-base truncate">{invoiceToPrint.clientName}</p>
               <div className="mt-3 pt-3 border-t border-[#40485d]/20 flex justify-between items-end">
                 <span className="text-[10px] font-black text-[#65739e] uppercase">Total Pagado</span>
                 <span className="text-xl font-black text-[#85ffab]">${invoiceToPrint.totalAmount?.toFixed(2)}</span>
@@ -530,7 +527,7 @@ export default function SalesModule() {
               </button>
               <button 
                 onClick={() => setInvoiceToPrint(null)}
-                className="w-full py-3 rounded-2xl font-bold text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+                className="w-full py-3 rounded-2xl font-bold text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors"
               >
                 Cerrar y continuar
               </button>

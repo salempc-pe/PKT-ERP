@@ -50,7 +50,7 @@ export default function Login() {
 
       <div className="max-w-md w-full z-10 relative">
         <header className="flex flex-col items-center justify-center mb-12 animate-fade-in">
-          <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="280" />
+          <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="auto" className="w-[180px] md:w-[280px]" />
         </header>
 
         <form 
@@ -89,7 +89,7 @@ export default function Login() {
                     color: 'var(--color-on-surface)'
                   }}
                   className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-[var(--color-primary)] transition-all text-sm placeholder:opacity-50"
-                  placeholder="admin@pkterp.com"
+                  placeholder="admin@veloerp.com"
                 />
               </div>
             </div>

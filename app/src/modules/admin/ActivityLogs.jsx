@@ -40,19 +40,19 @@ export default function ActivityLogs() {
 
         <div className="flex gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3aac4]" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={18} />
             <input 
               type="text" 
               placeholder="Filtrar logs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 w-64 transition-all"
+              className="bg-[var(--color-surface-container-low)] border border-[#40485d]/30 text-[var(--color-on-surface)] rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-[#6B4FD8]/50 w-64 transition-all"
             />
           </div>
           <select
             value={orgFilter}
             onChange={(e) => setOrgFilter(e.target.value)}
-            className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all"
+            className="bg-[var(--color-surface-container-low)] border border-[#40485d]/30 text-[var(--color-on-surface)] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#6B4FD8]/50 transition-all"
           >
             <option value="all">Todas las Org.</option>
             {allOrganizations.map(org => (
@@ -62,7 +62,7 @@ export default function ActivityLogs() {
           <select
             value={actorFilter}
             onChange={(e) => setActorFilter(e.target.value)}
-            className="bg-[#091328] border border-[#40485d]/30 text-[#dee5ff] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#85adff]/50 transition-all"
+            className="bg-[var(--color-surface-container-low)] border border-[#40485d]/30 text-[var(--color-on-surface)] rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#6B4FD8]/50 transition-all"
           >
             <option value="all">Cualquier Actor</option>
             <option value="org">Organización</option>
@@ -71,11 +71,11 @@ export default function ActivityLogs() {
         </div>
       </div>
 
-      <div className="bg-[#091328]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
+      <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#060e20] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[#a3aac4]">
+              <tr className="bg-[#0a0a0a] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
                 <th className="px-6 py-4">Timestamp</th>
                 <th className="px-6 py-4">Usuario</th>
                 <th className="px-6 py-4">Organización</th>
@@ -88,27 +88,27 @@ export default function ActivityLogs() {
               {filteredLogs.map((log) => (
                 <tr key={log.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-xs text-[#dee5ff]">
-                      <Clock size={12} className="text-[#a3aac4]" />
+                    <div className="flex items-center gap-2 text-xs text-[var(--color-on-surface)]">
+                      <Clock size={12} className="text-[var(--color-on-surface-variant)]" />
                       {new Date(log.timestamp).toLocaleString()}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-[#dee5ff]">
-                      <User size={14} className="text-[#85adff]" />
+                    <div className="flex items-center gap-2 text-sm font-bold text-[var(--color-on-surface)]">
+                      <User size={14} className="text-[#6B4FD8]" />
                       {log.user}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs text-[#a3aac4]">
+                    <span className="text-xs text-[var(--color-on-surface-variant)]">
                       {log.orgId ? (allOrganizations.find(o => o.id === log.orgId)?.name || log.orgId) : '—'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs font-black text-[#fbabff] uppercase tracking-wider">{log.action}</span>
+                    <span className="text-xs font-black text-[#2E8B57] uppercase tracking-wider">{log.action}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-xs text-[#a3aac4] max-w-sm truncate" title={log.details}>{log.details}</p>
+                    <p className="text-xs text-[var(--color-on-surface-variant)] max-w-sm truncate" title={log.details}>{log.details}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${getTypeStyles(log.type)}`}>
@@ -120,7 +120,7 @@ export default function ActivityLogs() {
               ))}
               {filteredLogs.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-[#a3aac4] italic text-sm">
+                  <td colSpan="6" className="px-6 py-12 text-center text-[var(--color-on-surface-variant)] italic text-sm">
                     No se encontraron registros de actividad.
                   </td>
                 </tr>

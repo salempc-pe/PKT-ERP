@@ -41,6 +41,8 @@ const SUBSCRIPTION_PLANS = {
   }
 };
 
+import LoadingScreen from '../components/LoadingScreen';
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -721,14 +723,7 @@ export function AuthProvider({ children }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-background)' }}>
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#85adff]/20 border-t-[#85adff] rounded-full animate-spin"></div>
-          <p className="text-[#85adff] font-black tracking-widest text-xs uppercase animate-pulse">Iniciando PKT ERP...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

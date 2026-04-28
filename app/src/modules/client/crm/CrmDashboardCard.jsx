@@ -11,7 +11,7 @@ export default function CrmDashboardCard({ orgId }) {
       description="Gestión de clientes y prospectos."
       icon={Users}
       path="/client/crm"
-      color="#85adff"
+      color="#6B4FD8"
       loading={loading}
       metrics={[
         { label: "Total Contactos", value: contacts.length + leads.length },

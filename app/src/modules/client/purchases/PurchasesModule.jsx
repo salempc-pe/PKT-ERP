@@ -4,6 +4,7 @@ import { usePurchases } from './usePurchases';
 import { useSuppliers } from './useSuppliers';
 import { useInventory } from '../inventory/useInventory';
 import { useAuth } from '../../../context/AuthContext';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 export default function PurchasesModule() {
   const { user } = useAuth();
@@ -79,7 +80,7 @@ export default function PurchasesModule() {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Borrador': return 'bg-[#a3aac4] text-[#002150]';
-      case 'Solicitada': return 'bg-[#85adff] text-[#002150]';
+      case 'Solicitada': return 'bg-[#6B4FD8] text-[#002150]';
       case 'Recibida': return 'bg-green-500 text-white shadow-[0_0_10px_rgba(34,197,94,0.4)]';
       case 'Pagada': return 'bg-blue-500 text-white';
       case 'Anulada': return 'bg-red-500 text-white opacity-50';
@@ -88,33 +89,29 @@ export default function PurchasesModule() {
   };
 
   if (loading) {
-    return (
-       <div className="flex h-64 items-center justify-center text-[#85adff]">
-        <Loader2 className="animate-spin mr-2" /> Cargando Registro de Compras...
-      </div>
-    );
+    return <LoadingScreen fullScreen={false} message="Cargando Registro de Compras..." />;
   }
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-black text-[#dee5ff] tracking-tight">Órdenes de Compra</h2>
-          <p className="text-[#a3aac4] text-sm">Gestiona el abastecimiento y recepción de mercadería.</p>
+          <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Órdenes de Compra</h2>
+          <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona el abastecimiento y recepción de mercadería.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#85adff] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <ShoppingCart size={18} /> Nueva Compra
         </button>
       </div>
 
-      <div className="bg-[#091328] rounded-2xl border border-[#40485d]/10 overflow-hidden shadow-2xl">
+      <div className="bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0f1930] text-[#a3aac4] text-[10px] uppercase tracking-widest font-black">
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                 <th className="px-6 py-5">N° Orden</th>
                 <th className="px-6 py-5">Proveedor</th>
                 <th className="px-6 py-5">Estado</th>
@@ -125,14 +122,14 @@ export default function PurchasesModule() {
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {purchases.length > 0 ? purchases.map((purchase) => (
-                <tr key={purchase.id} className="hover:bg-[#141f38]/40 transition-colors group">
+                <tr key={purchase.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
                   <td className="px-6 py-4">
-                    <span className="font-mono text-[#85adff] font-black">{purchase.orderNumber}</span>
+                    <span className="font-mono text-[var(--color-primary)] font-black">{purchase.orderNumber}</span>
                   </td>
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-bold text-[#dee5ff]">{purchase.supplierName}</p>
-                      <p className="text-[10px] text-[#a3aac4] uppercase">{new Date(purchase.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
+                      <p className="font-bold text-[var(--color-on-surface)]">{purchase.supplierName}</p>
+                      <p className="text-[10px] text-[var(--color-on-surface-variant)] uppercase">{new Date(purchase.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -141,12 +138,12 @@ export default function PurchasesModule() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="text-xs text-[#a3aac4] font-bold">
+                    <span className="text-xs text-[var(--color-on-surface-variant)] font-bold">
                       {purchase.items.length} sku(s)
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-black text-[#dee5ff] text-base">S/ {purchase.totalAmount?.toFixed(2)}</p>
+                    <p className="font-black text-[var(--color-on-surface)] text-base">S/ {purchase.totalAmount?.toFixed(2)}</p>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -158,13 +155,13 @@ export default function PurchasesModule() {
                           Recibir
                         </button>
                       )}
-                      <button className="p-2 text-[#40485d] hover:text-[#dee5ff] transition-colors"><MoreVertical size={16} /></button>
+                      <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors"><MoreVertical size={16} /></button>
                     </div>
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-[#40485d] italic">No hay órdenes de compra registradas.</td>
+                  <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay órdenes de compra registradas.</td>
                 </tr>
               )}
             </tbody>
@@ -178,14 +175,14 @@ export default function PurchasesModule() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleAddSubmit}
-            className="bg-[#0f1930] w-full max-w-2xl border border-[#40485d]/30 rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
+            className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
           >
-            <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center bg-[#091328]/50">
-              <h3 className="font-black text-[#dee5ff] uppercase tracking-wider text-sm flex items-center gap-2">
-                <ShoppingCart size={18} className="text-[#85adff]" />
+            <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center bg-[var(--color-surface-container-low)]/50">
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
+                <ShoppingCart size={18} className="text-[var(--color-primary)]" />
                 Nueva Orden de Compra
               </h3>
-              <button type="button" onClick={() => setShowModal(false)} disabled={isSaving} className="text-[#a3aac4] hover:text-white transition-colors">
+              <button type="button" onClick={() => setShowModal(false)} disabled={isSaving} className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors">
                 <X size={20}/>
               </button>
             </div>
@@ -200,40 +197,40 @@ export default function PurchasesModule() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[10px] font-black text-[#a3aac4] uppercase">Proveedor</label>
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Proveedor</label>
                   <select required disabled={isSaving} value={formData.supplierId}
                     onChange={(e) => setFormData({...formData, supplierId: e.target.value})}
-                    className="w-full bg-[#141f38] border border-[#40485d]/30 rounded-xl px-4 py-3 text-[#dee5ff] focus:border-[#85adff] outline-none disabled:opacity-50 font-bold"
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 font-bold"
                   >
                     <option value="">Seleccionar Proveedor...</option>
                     {suppliers.map(s => <option key={s.id} value={s.id}>{s.name} ({s.taxId})</option>)}
                   </select>
                 </div>
 
-                <div className="space-y-4 md:col-span-2 p-4 bg-[#141f38]/50 rounded-2xl border border-[#40485d]/10">
-                  <p className="text-[10px] font-black text-[#85adff] uppercase">Añadir Productos</p>
+                <div className="space-y-4 md:col-span-2 p-4 bg-[var(--color-surface-container)]/50 rounded-2xl border border-[var(--color-outline-variant)]">
+                  <p className="text-[10px] font-black text-[var(--color-primary)] uppercase">Añadir Productos</p>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}
-                      className="md:col-span-2 bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-xs text-[#dee5ff] outline-none"
+                      className="md:col-span-2 bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] outline-none"
                     >
                       <option value="">Seleccionar Producto...</option>
                       {products.map(p => <option key={p.id} value={p.id}>{p.sku} - {p.name}</option>)}
                     </select>
                     <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)}
-                      placeholder="Cant." className="bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-xs text-[#dee5ff]" />
+                      placeholder="Cant." className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)]" />
                     <input type="number" min="0" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)}
-                      placeholder="Costo S/" className="bg-[#0f1930] border border-[#40485d]/30 rounded-lg px-3 py-2 text-xs text-[#dee5ff]" />
-                    <button type="button" onClick={handleAddItem} className="md:col-span-4 bg-[#1d2b4a] hover:bg-[#85adff] text-[#dee5ff] hover:text-[#002150] font-bold py-2 rounded-lg transition-all text-xs flex items-center justify-center gap-2">
+                      placeholder="Costo S/" className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)]" />
+                    <button type="button" onClick={handleAddItem} className="md:col-span-4 bg-[var(--color-primary-container)] hover:bg-[#6B4FD8] text-[var(--color-on-surface)] hover:text-[#002150] font-bold py-2 rounded-lg transition-all text-xs flex items-center justify-center gap-2">
                        <Plus size={14} /> Añadir a la lista
                     </button>
                   </div>
                 </div>
 
                 <div className="md:col-span-2 space-y-2">
-                   <label className="text-[10px] font-black text-[#a3aac4] uppercase">Items en la Orden</label>
+                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Items en la Orden</label>
                    <div className="border border-[#40485d]/20 rounded-xl overflow-hidden">
                       <table className="w-full text-[11px]">
-                         <thead className="bg-[#141f38] text-[#a3aac4]">
+                         <thead className="bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)]">
                             <tr>
                                <th className="px-3 py-2 text-left">Producto</th>
                                <th className="px-3 py-2 text-center">Cant.</th>
@@ -243,21 +240,21 @@ export default function PurchasesModule() {
                          </thead>
                          <tbody className="divide-y divide-[#40485d]/10">
                             {formData.items.map((item, idx) => (
-                              <tr key={idx} className="text-[#dee5ff]">
-                                 <td className="px-3 py-2 font-bold">{item.name} <span className="text-[9px] text-[#a3aac4] block">{item.sku}</span></td>
+                              <tr key={idx} className="text-[var(--color-on-surface)]">
+                                 <td className="px-3 py-2 font-bold">{item.name} <span className="text-[9px] text-[var(--color-on-surface-variant)] block">{item.sku}</span></td>
                                  <td className="px-3 py-2 text-center">{item.quantity}</td>
                                  <td className="px-3 py-2 text-right">S/ {item.cost.toFixed(2)}</td>
                                  <td className="px-3 py-2 text-right font-black">S/ {(item.quantity * item.cost).toFixed(2)}</td>
                               </tr>
                             ))}
                             {formData.items.length === 0 && (
-                              <tr><td colSpan="4" className="px-3 py-8 text-center text-[#40485d] italic">No hay productos en la lista.</td></tr>
+                              <tr><td colSpan="4" className="px-3 py-8 text-center text-[var(--color-on-surface-variant)] italic">No hay productos en la lista.</td></tr>
                             )}
                          </tbody>
-                         <tfoot className="bg-[#141f38]/50 border-t border-[#40485d]/30">
+                         <tfoot className="bg-[var(--color-surface-container)]/50 border-t border-[var(--color-outline-variant)]">
                             <tr>
-                               <td colSpan="3" className="px-3 py-3 text-right text-[#a3aac4] font-black uppercase">Total estimado</td>
-                               <td className="px-3 py-3 text-right text-[#85adff] font-black text-lg">S/ {formData.totalAmount.toFixed(2)}</td>
+                               <td colSpan="3" className="px-3 py-3 text-right text-[var(--color-on-surface-variant)] font-black uppercase">Total estimado</td>
+                               <td className="px-3 py-3 text-right text-[var(--color-primary)] font-black text-lg">S/ {formData.totalAmount.toFixed(2)}</td>
                             </tr>
                          </tfoot>
                       </table>
@@ -266,14 +263,14 @@ export default function PurchasesModule() {
               </div>
             </div>
 
-            <div className="p-6 bg-[#141f38] flex gap-4 mt-auto">
+            <div className="p-6 bg-[var(--color-surface-container)] flex gap-4 mt-auto">
               <button type="button" onClick={() => setShowModal(false)} disabled={isSaving}
-                className="flex-1 px-4 py-3 rounded-xl font-bold text-[#a3aac4] hover:bg-[#0f1930] transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
               <button type="submit" disabled={isSaving || formData.items.length === 0}
-                className="flex-[2] bg-[#85adff] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
+                className="flex-[2] bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
               >
                 {isSaving ? <><Loader2 size={18} className="animate-spin" /> Procesando...</> : 'Registrar Orden de Compra'}
               </button>
