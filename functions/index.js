@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_FROM = process.env.EMAIL_FROM || "PKT ERP <onboarding@resend.dev>";
 
 function escapeHtml(str) {
@@ -16,7 +16,7 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-exports.sendInvitationEmail = onCall({ secrets: [RESEND_API_KEY] }, async (request) => {
+exports.sendInvitationEmail = onCall(async (request) => {
   // 1. Verificar autenticación
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "El usuario debe estar autenticado.");
@@ -43,7 +43,7 @@ exports.sendInvitationEmail = onCall({ secrets: [RESEND_API_KEY] }, async (reque
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${RESEND_API_KEY.value()}`,
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: EMAIL_FROM,
