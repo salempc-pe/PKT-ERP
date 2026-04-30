@@ -80,8 +80,7 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
         </div>
       )}
 
-      <div className="bg-[var(--color-surface-container-low)] rounded-xl border border-[var(--color-outline-variant)] overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
@@ -149,7 +148,6 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
             </tbody>
           </table>
         </div>
-      </div>
 
       {/* Modal for Supplier Form */}
       {showModal && (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, CreditCard, TrendingUp, DollarSign, Filter } from 'lucide-react';
+import { Building2, CreditCard, TrendingUp, DollarSign, Filter, Check, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function AdminBillingModule() {
@@ -99,10 +99,7 @@ export default function AdminBillingModule() {
       </div>
 
       {/* Tabla de Suscripciones */}
-      <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
-        <div className="p-5 border-b border-[#40485d]/30 flex justify-between items-center bg-[#0a0a0a]/40">
-        </div>
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[#40485d]/30 md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 backdrop-blur-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#0a0a0a] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
@@ -112,7 +109,7 @@ export default function AdminBillingModule() {
                 <th className="px-6 py-4">Estado</th>
               </tr>
             </thead>
-            <tbody className="divide-y border-white/5">
+            <tbody className="divide-y divide-[#40485d]/10">
               {filteredOrgs.map((org) => {
                 const planId = org.subscription?.planId || 'startup';
                 const planPrice = SUBSCRIPTION_PLANS[planId]?.price;
@@ -121,8 +118,11 @@ export default function AdminBillingModule() {
                 return (
                   <tr key={org.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-bold text-[var(--color-on-surface)]">{org.name}</div>
-                      <div className="text-xs text-[var(--color-on-surface-variant)]">ID: {org.id}</div>
+                      <div className="flex items-center gap-2 text-sm font-bold text-[var(--color-on-surface)]">
+                        <Building2 size={14} className="text-[#6B4FD8]" />
+                        {org.name}
+                      </div>
+                      <div className="text-[10px] text-[var(--color-on-surface-variant)] uppercase tracking-wider mt-0.5 ml-5">ID: {org.id}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-xs font-black text-[#6B4FD8] uppercase tracking-wider">
@@ -133,8 +133,9 @@ export default function AdminBillingModule() {
                       <span className="text-sm font-bold text-[var(--color-on-surface)]">S/ {planPrice ?? fallbackPrice}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2 py-1 rounded bg-[#4ADE80]/10 text-[#4ADE80] text-[10px] uppercase font-bold">
-                        {org.status}
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border bg-[#4ADE80]/10 text-[#4ADE80] border-[#4ADE80]/20">
+                        <Check size={12} strokeWidth={3} />
+                        {org.status.toUpperCase()}
                       </span>
                     </td>
                   </tr>
@@ -151,6 +152,5 @@ export default function AdminBillingModule() {
           </table>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

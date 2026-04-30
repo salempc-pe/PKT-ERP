@@ -146,7 +146,7 @@ export default function FinanceModule() {
             </button>
           </div>
 
-        <div className="overflow-auto border border-[var(--color-outline-variant)] rounded-xl bg-[var(--color-surface-container-low)]">
+        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-xl bg-transparent md:bg-[var(--color-surface-container-low)]">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">

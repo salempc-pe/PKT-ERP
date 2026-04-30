@@ -12,7 +12,7 @@ export default function ModuleRoute({ module }) {
   if (!user) return null;
 
   // Si tiene el módulo activo
-  const isModuleActive = user?.subscription?.activeModules?.includes(module);
+  const isModuleActive = user?.subscription?.activeModules?.includes(module) || user?.role === 'admin';
 
   if (!isModuleActive) {
     console.warn(`Intento de acceso a módulo no activo: ${module}`);

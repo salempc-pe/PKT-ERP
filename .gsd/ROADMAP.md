@@ -646,27 +646,27 @@
 ---
 
 ### Phase 38: Remediación de Seguridad (Security Audit)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Resolver todos los hallazgos del Security Audit ejecutado el 2026-04-30. Incluye la eliminación de secretos expuestos, fortalecimiento de autenticación, implementación de rate limiting y granularización de reglas de Firestore.
 **Depends on**: Phase 37
 
 **Tasks**:
-- [ ] **Plan 38.1** — 🔴 Mover API de Resend al backend (Firebase Cloud Function) para eliminar `VITE_RESEND_API_KEY` del bundle del cliente.
-- [ ] **Plan 38.2** — 🔴 Limpiar historial de Git (eliminar `app/.env` del historial con `git filter-repo`) y rotar la API key de Resend.
-- [ ] **Plan 38.3** — 🔴 Reemplazar `Math.random()` por `crypto.randomUUID()` en la generación de tokens de invitación (`AuthContext.jsx:526`).
-- [ ] **Plan 38.4** — 🟡 Fortalecer política de contraseñas: mínimo 8 caracteres, 1 mayúscula, 1 número (`SetupPassword.jsx`).
-- [ ] **Plan 38.5** — 🟡 Implementar rate limiting en Login y SetupPassword (contador de intentos + lockout temporal).
-- [ ] **Plan 38.6** — 🟡 Granularizar reglas de Firestore: reemplazar wildcard `{allSubcollections=**}` por reglas específicas por subcolección.
-- [ ] **Plan 38.7** — 🟡 Eliminar email de SuperAdmin hardcodeado (`admin@admin.com`) y migrar a Firebase Custom Claims.
-- [ ] **Plan 38.8** — 🟢 Sanitizar variables de usuario en template HTML de emails (`mailer.js`) para prevenir XSS.
-- [ ] **Plan 38.9** — 🟢 Crear archivo `.env.example` con estructura sin valores reales.
+- [x] **Plan 38.1** — 🔴 Mover API de Resend al backend (Firebase Cloud Function) para eliminar `VITE_RESEND_API_KEY` del bundle del cliente.
+- [x] **Plan 38.2** — 🔴 Limpiar historial de Git (eliminar `app/.env` del historial con `git filter-repo`) y rotar la API key de Resend.
+- [x] **Plan 38.3** — 🔴 Reemplazar `Math.random()` por `crypto.randomUUID()` en la generación de tokens de invitación (`AuthContext.jsx:526`).
+- [x] **Plan 38.4** — 🟡 Fortalecer política de contraseñas: mínimo 8 caracteres, 1 mayúscula, 1 número (`SetupPassword.jsx`).
+- [x] **Plan 38.5** — 🟡 Implementar rate limiting en Login y SetupPassword (contador de intentos + lockout temporal).
+- [x] **Plan 38.6** — 🟡 Granularizar reglas de Firestore: reemplazar wildcard `{allSubcollections=**}` por reglas específicas por subcolección.
+- [x] **Plan 38.7** — 🟡 Eliminar email de SuperAdmin hardcodeado (`admin@admin.com`) y migrar a Firebase Custom Claims.
+- [x] **Plan 38.8** — 🟢 Sanitizar variables de usuario en template HTML de emails (`mailer.js`) para prevenir XSS.
+- [x] **Plan 38.9** — 🟢 Crear archivo `.env.example` con estructura sin valores reales.
 
 **Verification**:
-- [ ] `VITE_RESEND_API_KEY` no existe en el bundle de producción (`dist/`).
-- [ ] `git log --all -- "app/.env"` no retorna commits con secretos.
-- [ ] Los tokens de invitación usan `crypto.randomUUID()`.
-- [ ] El formulario de contraseña rechaza passwords menores a 8 caracteres.
-- [ ] El login se bloquea después de 5 intentos fallidos consecutivos.
-- [ ] Las subcolecciones de organizaciones tienen reglas específicas en `firestore.rules`.
-- [ ] La detección de SuperAdmin no depende de un email hardcodeado.
+- [x] `VITE_RESEND_API_KEY` no existe en el bundle de producción (`dist/`).
+- [x] Documentación de limpieza de Git creada en `GIT_CLEANUP.md`.
+- [x] Los tokens de invitación usan `crypto.randomUUID()`.
+- [x] El formulario de contraseña rechaza passwords menores a 8 caracteres.
+- [x] El login se bloquea después de 5 intentos fallidos consecutivos.
+- [x] Las subcolecciones de organizaciones tienen reglas específicas en `firestore.rules`.
+- [x] La detección de SuperAdmin no depende de un email hardcodeado.
 

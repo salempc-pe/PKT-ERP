@@ -242,7 +242,6 @@ export default function WarehouseModule() {
             </table>
           )}
         </div>
-      </div>
 
       {/* Movement Modal */}
       {showModal && (

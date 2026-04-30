@@ -52,9 +52,9 @@ export default function TeamModule() {
         setNewUser({ name: '', email: '', role: 'user' });
         setIsInviteModalOpen(false);
         if (result.inviteToken) {
+          alert('📩 ¡Invitación generada!\n\nSe ha enviado un correo de activación a ' + newUser.email + '.\n\nEl enlace también se ha copiado al portapapeles.');
           const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
           navigator.clipboard.writeText(inviteUrl);
-          alert('¡Invitación generada! El enlace se ha copiado al portapapeles.');
         }
       } else {
         alert(result.error);
@@ -235,7 +235,7 @@ export default function TeamModule() {
       </div>
 
       {/* Team List */}
-      <div className="bg-[var(--color-surface-container-low)]/60 border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden shadow-xl">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#0a0a0a]/50 border-b border-[var(--color-outline-variant)]">

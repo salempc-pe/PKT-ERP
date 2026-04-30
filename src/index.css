@@ -33,6 +33,7 @@
 
 html, body, main {
   overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
 }
 
 @utility logo-pulse {

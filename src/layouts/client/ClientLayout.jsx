@@ -226,7 +226,7 @@ export default function ClientLayout() {
             </Link>
           )}
 
-          {user?.subscription?.activeModules?.includes('payroll') && (
+          {(user?.subscription?.activeModules?.includes('payroll') || user?.role === 'admin') && (
             <Link to="/client/payroll" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/payroll') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Wallet size={20} />
               <span>Nóminas</span>

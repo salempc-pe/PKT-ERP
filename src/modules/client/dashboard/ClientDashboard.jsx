@@ -13,6 +13,7 @@ import FinanceDashboardCard from '../finance/FinanceDashboardCard';
 import PurchasesDashboardCard from '../purchases/PurchasesDashboardCard';
 import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
 import WarehouseDashboardCard from '../inventory/WarehouseDashboardCard';
+import PayrollDashboardCard from '../payroll/PayrollDashboardCard';
 
 
 export default function ClientDashboard() {
@@ -41,7 +42,8 @@ export default function ClientDashboard() {
     finance: FinanceDashboardCard,
     purchases: PurchasesDashboardCard,
     realestate: RealEstateDashboardCard,
-    warehouse: WarehouseDashboardCard
+    warehouse: WarehouseDashboardCard,
+    payroll: PayrollDashboardCard
   };
 
   return (
@@ -82,6 +84,7 @@ export default function ClientDashboard() {
           return <CardComponent key={modKey} orgId={orgId} />;
         })}
         {activeModules.includes('inventory') && <WarehouseDashboardCard orgId={orgId} />}
+        {(user?.role === 'admin' && !activeModules.includes('payroll')) && <PayrollDashboardCard orgId={orgId} />}
       </section>
     </div>
   );

@@ -102,33 +102,33 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
       
       <form 
         onSubmit={handleSubmit}
-        className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
+        className="bg-[var(--color-surface)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="p-8 border-b border-[#40485d]/20 flex justify-between items-center bg-gradient-to-r from-[#141414] to-[#0f1930]">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] shadow-inner">
-              <Building2 size={24} />
+        <div className="p-5 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container-high)] relative">
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-10 h-10 rounded-xl bg-[#6B4FD8] flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+              <Building2 size={20} />
             </div>
             <div>
-              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-[0.2em] text-sm">
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-[0.1em] text-xs">
                 {terrain ? 'Editar Propiedad' : 'Nueva Propiedad'}
               </h3>
-              <p className="text-[10px] text-[var(--color-primary)] font-bold uppercase">Gestión de Terrenos Inmobiliarios</p>
+              <p className="text-[9px] text-[#6B4FD8] font-bold uppercase tracking-wider">Gestión Inmobiliaria</p>
             </div>
           </div>
           <button 
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="w-10 h-10 rounded-full bg-[var(--color-primary-container)] text-[var(--color-on-surface-variant)] flex items-center justify-center hover:text-white hover:bg-red-500/20 transition-all"
+            className="w-8 h-8 rounded-full bg-[var(--color-surface-container-highest)] text-[var(--color-on-surface-variant)] flex items-center justify-center hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all border border-[var(--color-outline-variant)]"
           >
-            <X size={20}/>
+            <X size={18}/>
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-8 space-y-6 overflow-y-auto">
+        <div className="p-5 space-y-4 overflow-y-auto">
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3 text-red-400 text-xs animate-pulse">
               <AlertCircle size={18} /> {error}
@@ -136,7 +136,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           )}
 
           {/* Ubicación */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Ciudad</label>
               <div className="relative">
@@ -145,7 +145,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                   required
                   value={formData.city}
                   onChange={(e) => setFormData({...formData, city: e.target.value})}
-                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none transition-all font-bold text-sm"
+                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm"
                   placeholder="Ej: Lima"
                 />
                 <datalist id="cities-list">
@@ -161,7 +161,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                   required
                   value={formData.district}
                   onChange={(e) => setFormData({...formData, district: e.target.value})}
-                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none transition-all font-bold text-sm"
+                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm"
                   placeholder="Ej: Miraflores"
                 />
                 <datalist id="districts-list">
@@ -179,7 +179,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 required
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl pl-12 pr-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none transition-all text-sm"
+                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl pl-12 pr-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all text-sm"
                 placeholder="Av. Principal 123..."
               />
             </div>
@@ -188,14 +188,14 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           <hr className="border-[var(--color-outline-variant)]" />
 
           {/* Personas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Propietario / Cliente</label>
               <select 
                 required
                 value={formData.ownerId}
                 onChange={(e) => setFormData({...formData, ownerId: e.target.value})}
-                className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none transition-all font-bold text-sm appearance-none"
+                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm appearance-none"
               >
                 <option value="">Seleccionar Contacto...</option>
                 {contacts.map(c => (
@@ -208,7 +208,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
               <select 
                 value={formData.buyerId}
                 onChange={(e) => setFormData({...formData, buyerId: e.target.value})}
-                className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none transition-all font-bold text-sm appearance-none"
+                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm appearance-none"
               >
                 <option value="">Ninguno asignado...</option>
                 {contacts.map(c => (
@@ -219,29 +219,29 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Corredores Asociados</label>
+            <label className="text-[10px] font-black text-white/50 uppercase tracking-wider ml-1">Corredores Asociados</label>
             <div className="flex gap-2">
-              <input 
-                type="text"
-                value={newBroker}
-                onChange={(e) => setNewBroker(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddBroker())}
-                className="flex-1 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-sm"
-                placeholder="Nombre del corredor..."
-              />
+                <input 
+                  type="text"
+                  value={newBroker}
+                  onChange={(e) => setNewBroker(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddBroker())}
+                  className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-5 py-2.5 text-white focus:border-[#6B4FD8] outline-none text-sm font-medium"
+                  placeholder="Nombre del corredor..."
+                />
               <button 
                 type="button"
                 onClick={handleAddBroker}
-                className="p-2.5 bg-[#6B4FD8] text-[#002150] rounded-xl hover:shadow-lg transition-all"
+                className="p-2.5 bg-[#6B4FD8] text-white rounded-xl hover:bg-[#5a42b9] transition-all"
               >
                 <Plus size={20} />
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.brokers.map(broker => (
-                <span key={broker} className="flex items-center gap-2 bg-[var(--color-primary-container)] text-[var(--color-primary)] px-3 py-1.5 rounded-full text-[10px] font-black border border-[#6B4FD8]/10">
+                <span key={broker} className="flex items-center gap-2 bg-[#6B4FD8]/10 text-[#6B4FD8] px-3 py-1.5 rounded-xl text-[10px] font-black border border-[#6B4FD8]/20">
                   {broker}
-                  <button type="button" onClick={() => handleRemoveBroker(broker)} className="text-red-400 hover:text-red-500"><X size={12} /></button>
+                  <button type="button" onClick={() => handleRemoveBroker(broker)} className="text-red-400 hover:text-red-500 transition-colors"><X size={12} /></button>
                 </span>
               ))}
             </div>
@@ -250,40 +250,42 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           <hr className="border-[var(--color-outline-variant)]" />
 
           {/* Calculadora de Precios */}
-          <div className="bg-[var(--color-surface-container)]/50 p-6 rounded-[2rem] border border-[#6B4FD8]/5 space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Calculator size={16} className="text-[var(--color-primary)]" />
-              <span className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-widest">Calculadora de Valor</span>
+          <div className="bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-7 h-7 rounded-lg bg-[#6B4FD8]/10 flex items-center justify-center text-[#6B4FD8]">
+                <Calculator size={14} />
+              </div>
+              <span className="text-[10px] font-black text-[var(--color-on-surface)] uppercase tracking-widest">Calculadora de Valor</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Área (m²)</label>
                 <input 
                   type="number"
                   required
                   value={formData.area}
                   onChange={(e) => handlePriceChange('area', e.target.value)}
-                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-sm font-bold"
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Precio x m² ({currencySymbol})</label>
                 <input 
                   type="number"
                   required
                   value={formData.pricePerM2}
                   onChange={(e) => handlePriceChange('pricePerM2', e.target.value)}
-                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-sm font-bold"
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black text-purple-400"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-[var(--color-primary)] uppercase ml-1">Precio Total ({currencySymbol})</label>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-[#2E8B57] uppercase ml-1">Precio Total ({currencySymbol})</label>
                 <input 
                   type="number"
                   required
                   value={formData.totalPrice}
                   onChange={(e) => handlePriceChange('totalPrice', e.target.value)}
-                  className="w-full bg-[var(--color-surface-variant)] border border-[#6B4FD8]/30 rounded-xl px-4 py-2.5 text-[var(--color-primary)] focus:border-[#6B4FD8] outline-none text-sm font-black"
+                  className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black shadow-[0_0_10px_rgba(46,139,87,0.05)]"
                 />
               </div>
             </div>
@@ -302,19 +304,19 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
         </div>
 
         {/* Footer */}
-        <div className="p-8 bg-[var(--color-surface-container)] flex gap-4">
+        <div className="p-5 bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)] flex gap-4">
           <button 
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="flex-1 px-6 py-4 rounded-2xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all disabled:opacity-50 text-xs uppercase tracking-widest"
           >
             Descartar
           </button>
           <button 
             type="submit"
             disabled={isSaving}
-            className="flex-[2] bg-[#6B4FD8] text-[#002150] font-black px-6 py-4 rounded-2xl hover:shadow-[0_0_25px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest"
+            className="flex-[2] bg-gradient-to-r from-[#6B4FD8] to-[#2E8B57] text-white font-black px-6 py-3 rounded-xl hover:shadow-[0_10px_20px_rgba(107,79,216,0.2)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
           >
             {isSaving ? (
               <>

@@ -170,9 +170,9 @@ export default function AdminClients() {
     }
 
     if (result && result.inviteToken) {
+      alert('📩 ¡Invitación generada!\n\nSe ha enviado un correo automático a ' + newUserInOrg.email + ' con el enlace de activación.\n\nTambién se ha copiado al portapapeles por si deseas enviarlo por otro medio.');
       const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
       navigator.clipboard.writeText(inviteUrl);
-      alert('📩 ¡Invitación generada!\n\nSe ha creado el acceso para ' + newUserInOrg.email + '.\nEl enlace de activación ha sido copiado al portapapeles por si deseas enviarlo manualmente.');
     }
 
     setNewUserInOrg({ name: '', email: '', role: 'admin' });

@@ -71,8 +71,7 @@ export default function ActivityLogs() {
         </div>
       </div>
 
-      <div className="bg-[var(--color-surface-container-low)]/60 border border-[#40485d]/30 rounded-3xl overflow-hidden backdrop-blur-md">
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[#40485d]/30 md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 backdrop-blur-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#0a0a0a] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
@@ -126,9 +125,8 @@ export default function ActivityLogs() {
                 </tr>
               )}
             </tbody>
-          </table>
-        </div>
-      </div>
+      </table>
     </div>
+  </div>
   );
 }
