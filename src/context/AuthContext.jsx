@@ -193,8 +193,8 @@ export function AuthProvider({ children }) {
             }
 
             const { password, ...userWithoutPassword } = userData;
-            const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
-                               (userData.role === 'superadmin' || (userData.role === 'admin' && !userData.organizationId));
+            const isSuperAdmin = userData.role === 'superadmin' || 
+                               (userData.role === 'admin' && !userData.organizationId);
 
             const role = isSuperAdmin ? 'superadmin' : (userData.role || 'user');
             const isAdmin = role === 'admin' || role === 'superadmin';
@@ -281,9 +281,9 @@ export function AuthProvider({ children }) {
 
         const { password: unusedPassword, ...userWithoutPassword } = foundUser;
         
-        // SuperAdmin ÚNICO = correo exacto admin@admin.com + rol admin/superadmin sin organizaciónId
-        const isSuperAdmin = (firebaseUser.email === 'admin@admin.com') && 
-          (foundUser.role === 'superadmin' || (foundUser.role === 'admin' && !foundUser.organizationId));
+        // SuperAdmin = rol admin/superadmin sin organizaciónId
+        const isSuperAdmin = foundUser.role === 'superadmin' || 
+          (foundUser.role === 'admin' && !foundUser.organizationId);
         
         const role = isSuperAdmin ? 'superadmin' : (foundUser.role || 'user');
         const isAdmin = isSuperAdmin || role === 'admin' || role === 'client';
