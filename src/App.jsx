@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -19,6 +20,7 @@ import TeamModule from './modules/client/team/TeamModule';
 import PurchasesModule from './modules/client/purchases/PurchasesModule';
 import RealEstateModule from './modules/client/realestate/RealEstateModule';
 import WarehouseModule from './modules/client/inventory/WarehouseModule';
+import PayrollModule from './modules/client/payroll/PayrollModule';
 
 
 import SetupPassword from './modules/SetupPassword';
@@ -28,6 +30,18 @@ import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
 import FeedbackButton from './components/FeedbackButton';
 
 function App() {
+  useEffect(() => {
+    const handleGesture = (e) => {
+      e.preventDefault();
+    };
+    
+    document.addEventListener('gesturestart', handleGesture);
+    
+    return () => {
+      document.removeEventListener('gesturestart', handleGesture);
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <ThemeProvider>
@@ -67,6 +81,9 @@ function App() {
             </Route>
             <Route element={<ModuleRoute module="realestate" />}>
               <Route path="realestate" element={<RealEstateModule />} />
+            </Route>
+            <Route element={<ModuleRoute module="payroll" />}>
+              <Route path="payroll" element={<PayrollModule />} />
             </Route>
 
             <Route path="settings" element={<SettingsModule />} />

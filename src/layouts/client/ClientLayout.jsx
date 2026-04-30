@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield, ShoppingCart, Package } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield, ShoppingCart, Package, Wallet } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -54,6 +54,7 @@ export default function ClientLayout() {
     '/client/sales': 'Ventas y Facturas',
     '/client/purchases': 'Compras',
     '/client/calendar': 'Agenda',
+    '/client/payroll': 'Nóminas y RRHH',
     '/client/team': 'Mi Equipo',
     '/client/settings': 'Configuración'
   };
@@ -222,6 +223,13 @@ export default function ClientLayout() {
             <Link to="/client/calendar" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/calendar') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Calendar size={20} />
               <span>Agenda</span>
+            </Link>
+          )}
+
+          {user?.subscription?.activeModules?.includes('payroll') && (
+            <Link to="/client/payroll" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/payroll') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
+              <Wallet size={20} />
+              <span>Nóminas</span>
             </Link>
           )}
 
