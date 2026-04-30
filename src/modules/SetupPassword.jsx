@@ -22,8 +22,9 @@ export default function SetupPassword() {
       setError('Token de invitación faltante.');
       return;
     }
-    if (password.length < 4) {
-      setError('La contraseña debe tener al menos 4 caracteres.');
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.');
       return;
     }
     if (password !== confirmPassword) {
@@ -124,7 +125,7 @@ export default function SetupPassword() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-[#0a0a0a] border border-[#40485d]/50 text-[#dee5ff] rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-[#6B4FD8]/50 transition-all text-sm placeholder:text-[#a3aac4]/40"
-                    placeholder="Mínimo 4 caracteres"
+                    placeholder="Mínimo 8 caracteres"
                   />
                 </div>
               </div>

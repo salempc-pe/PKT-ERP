@@ -20,6 +20,7 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
+import { sendInvitationEmail } from '../services/mailer';
 
 const AuthContext = createContext();
 
@@ -522,7 +523,7 @@ export function AuthProvider({ children }) {
         };
       }
       
-      const inviteToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const inviteToken = crypto.randomUUID();
       
       const newUser = {
         email: userData.email,
@@ -537,6 +538,16 @@ export function AuthProvider({ children }) {
 
       const docRef = await addDoc(collection(db, 'users'), newUser);
       const createdUser = { id: docRef.id, ...newUser };
+
+      // Enviar correo de invitación automáticamente
+      const inviteUrl = window.location.origin + '/setup-password?token=' + inviteToken;
+      try {
+        await sendInvitationEmail(userData.email, userData.name, orgName, inviteUrl);
+      } catch (mailError) {
+        console.error("No se pudo enviar el correo de invitación:", mailError);
+        // No bloqueamos la creación del usuario si el correo falla, 
+        // ya que el token aún puede copiarse manualmente.
+      }
 
       setAllUsers(prev => [...prev, createdUser]);
       
