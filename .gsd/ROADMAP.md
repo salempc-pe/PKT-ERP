@@ -615,18 +615,31 @@
 ---
 
 ### Phase 36: Refinamiento de Diseño Móvil (Títulos y Listas)
-**Status**: ⬜ Not Started
+**Status**: ✅ Completed
 **Objective**: Mejorar la visualización en dispositivos móviles reduciendo el tamaño de los títulos de los módulos y expandiendo las tablas/listas al ancho completo de la pantalla.
 **Depends on**: Phase 35
 
 **Tasks**:
-- [ ] Refactorizar títulos de módulos en `ClientLayout.jsx` para una tipografía más delicada en móvil.
-- [ ] Ajustar el padding del contenedor principal (`main`) en móvil para maximizar el espacio de las listas.
-- [ ] Eliminar contenedores de tarjetas (border, rounded, bg) en vistas de listas para dispositivos móviles en todos los módulos (Inventario, Ventas, Finanzas, etc.).
-- [ ] Estandarizar el diseño de tablas "full-width" para que se vean premium sin el encajonamiento de tarjetas.
+- [x] Refactorizar títulos de módulos en `ClientLayout.jsx` para una tipografía más delicada en móvil.
+- [x] Ajustar el padding del contenedor principal (`main`) en móvil para maximizar el espacio de las listas.
+- [x] Eliminar contenedores de tarjetas (border, rounded, bg) en vistas de listas para dispositivos móviles en todos los módulos (Inventario, Ventas, Finanzas, etc.).
+- [x] Estandarizar el diseño de tablas "full-width" para que se vean premium sin el encajonamiento de tarjetas.
 
 **Verification**:
-- [ ] Los títulos en móvil son más pequeños y elegantes (ej. text-2xl en lugar de text-4xl).
-- [ ] Las tablas de información ocupan el 100% del ancho del viewport en móvil (sin márgenes laterales excesivos).
-- [ ] El diseño se mantiene premium y limpio en ambas orientaciones.
+- [x] Los títulos en móvil son más pequeños y elegantes (ej. text-2xl en lugar de text-4xl).
+- [x] Las tablas de información ocupan el 100% del ancho del viewport en móvil (sin márgenes laterales excesivos).
+- [x] El diseño se mantiene premium y limpio en ambas orientaciones.
+
+---
+
+### Phase 37: Módulo de Nóminas y Recursos Humanos
+**Status**: ⬜ Not Started
+**Objective**: Implementar la gestión de colaboradores con registro detallado (DNI, sueldos fijos/variables, métodos de pago) y seguimiento de remuneraciones adicionales (Gratificaciones, CTS, Utilidades), con vista a su futura integración contable como gasto.
+**Depends on**: Phase 36
+
+**Tasks**:
+- [ ] TBD (run /plan 37 to create)
+
+**Verification**:
+- TBD
 
