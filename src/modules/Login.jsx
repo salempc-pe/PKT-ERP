@@ -9,7 +9,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState(null);
   const { login, user } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();
@@ -29,11 +30,27 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const secsLeft = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      setError(`Demasiados intentos. Espera ${secsLeft}s.`);
+      setIsSubmitting(false);
+      return;
+    }
     
     try {
       const response = await login(email, password);
       if (!response?.success) {
         setError(response?.error || 'Credenciales inválidas');
+        const newAttempts = loginAttempts + 1;
+        setLoginAttempts(newAttempts);
+        if (newAttempts >= 5) {
+          setLockoutUntil(Date.now() + 60000);
+          setLoginAttempts(0);
+        }
+      } else {
+        setLoginAttempts(0);
+        setLockoutUntil(null);
       }
     } catch (err) {
       setError('Ocurrió un error. Intente nuevamente.');

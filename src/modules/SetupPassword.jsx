@@ -15,6 +15,8 @@ export default function SetupPassword() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,11 +37,24 @@ export default function SetupPassword() {
     setIsSubmitting(true);
     setError(null);
 
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const secsLeft = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      setError(`Demasiados intentos. Espera ${secsLeft}s.`);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await setupUserPassword(token, password);
       if (response && response.success) {
         setSuccess(true);
       } else {
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        if (newAttempts >= 3) {
+          setLockoutUntil(Date.now() + 120000); // 2 minutos
+          setAttempts(0);
+        }
         setError(response?.error || 'Error al configurar la contraseña.');
       }
     } catch (err) {
