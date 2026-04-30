@@ -12,6 +12,7 @@ export default function TeamModule() {
   const [loading, setLoading] = useState(false);
   const [loadingExport, setLoadingExport] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [generatedInviteLink, setGeneratedInviteLink] = useState(null);
 
   const InviteSchema = z.object({
     name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -49,12 +50,14 @@ export default function TeamModule() {
     try {
       const result = await adminCreateUser(orgId, user.organizationName, newUser);
       if (result.success) {
-        setNewUser({ name: '', email: '', role: 'user' });
-        setIsInviteModalOpen(false);
-        if (result.inviteToken) {
-          alert('📩 ¡Invitación generada!\n\nSe ha enviado un correo de activación a ' + newUser.email + '.\n\nEl enlace también se ha copiado al portapapeles.');
-          const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
-          navigator.clipboard.writeText(inviteUrl);
+        if (result.inviteUrl) {
+          setGeneratedInviteLink(result.inviteUrl);
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(result.inviteUrl).catch(err => console.error("Error al copiar:", err));
+          }
+        } else {
+          setIsInviteModalOpen(false);
+          setNewUser({ name: '', email: '', role: 'user' });
         }
       } else {
         alert(result.error);
@@ -334,13 +337,59 @@ export default function TeamModule() {
             <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[#0a0a0a] rounded-t-3xl">
               <h2 className="text-xl font-black text-[var(--color-on-surface)]">Invitar Miembro</h2>
               <button
-                onClick={() => setIsInviteModalOpen(false)}
+                onClick={() => {
+                  setIsInviteModalOpen(false);
+                  setGeneratedInviteLink(null);
+                  setNewUser({ name: '', email: '', role: 'user' });
+                }}
                 className="p-2 text-[var(--color-on-surface-variant)] hover:text-white rounded-xl"
               >
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleInvite} className="p-6 space-y-4">
+
+            {generatedInviteLink ? (
+              <div className="p-8 space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="w-16 h-16 bg-[#2E8B57]/10 rounded-full flex items-center justify-center text-[#2E8B57] mb-2">
+                    <Check size={32} strokeWidth={3} />
+                  </div>
+                  <h3 className="text-xl font-black text-[var(--color-on-surface)]">¡Invitación Creada!</h3>
+                  <p className="text-xs text-[var(--color-on-surface-variant)] font-bold">
+                    El usuario ha sido registrado. Copia el siguiente enlace y compártelo con <span className="text-[var(--color-primary)]">{newUser.email}</span> para que active su cuenta.
+                  </p>
+                </div>
+
+                <div className="bg-[#0a0a0a] border border-[var(--color-outline-variant)] rounded-2xl p-4 flex items-center gap-3 group">
+                  <input 
+                    readOnly 
+                    value={generatedInviteLink}
+                    className="bg-transparent border-none text-[10px] font-mono text-[#6B4FD8] w-full outline-none"
+                  />
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedInviteLink);
+                      alert("¡Enlace copiado!");
+                    }}
+                    className="p-2 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg hover:bg-[#6B4FD8] hover:text-white transition-all shadow-lg shadow-[#6B4FD8]/10"
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setIsInviteModalOpen(false);
+                    setGeneratedInviteLink(null);
+                    setNewUser({ name: '', email: '', role: 'user' });
+                  }}
+                  className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-[#0a0a0a] hover:bg-[#a6c3ff] transition-all"
+                >
+                  ENTENDIDO
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleInvite} className="p-6 space-y-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Nombre Completo</label>
                 <input
@@ -395,6 +444,7 @@ export default function TeamModule() {
                 Al generar la invitación, se creará un enlace que podrás copiar y compartir con el nuevo miembro.
               </p>
             </form>
+          )}
           </div>
         </div>
       )}

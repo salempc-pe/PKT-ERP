@@ -11,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, user } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Building2, Users, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2, ShieldAlert, Settings } from 'lucide-react';
+import { Search, Building2, Users, Plus, Box, Check, X, HeartPulse, Trash2, Save, Send, ShieldCheck, Mail, Loader2, ShieldAlert, Settings, Copy } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 import LoadingScreen from '../../../components/LoadingScreen';
@@ -12,7 +12,8 @@ const AVAILABLE_MODULES = [
   { id: 'calendar', name: 'Agenda y Citas' },
   { id: 'projects', name: 'Gestión de Proyectos' },
   { id: 'purchases', name: 'Compras y Proveedores' },
-  { id: 'realestate', name: 'Inmobiliaria / Terrenos' }
+  { id: 'realestate', name: 'Inmobiliaria / Terrenos' },
+  { id: 'payroll', name: 'Nóminas y RRHH' }
 ];
 
 export default function AdminClients() {
@@ -34,6 +35,7 @@ export default function AdminClients() {
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
+  const [generatedInviteLink, setGeneratedInviteLink] = useState(null);
 
 
   // Forms State
@@ -103,14 +105,22 @@ export default function AdminClients() {
     
     setIsSaving(true);
     try {
-      await adminCreateOrg(newOrgData);
+      const createdOrg = await adminCreateOrg(newOrgData);
       setNewOrgData({ 
         name: '', ruc: '', address: '', maxUsers: 5, 
         planId: 'startup', activeModules: [], 
         adminName: '', adminEmail: '',
         logoUrl: '', monthlyFee: 0 
       });
-      setIsNewOrgModalOpen(false);
+      
+      if (createdOrg.adminInviteUrl) {
+        setGeneratedInviteLink(createdOrg.adminInviteUrl);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(createdOrg.adminInviteUrl).catch(err => console.error("Error al copiar:", err));
+        }
+      } else {
+        setIsNewOrgModalOpen(false);
+      }
     } catch (error) {
       alert("Error al crear la organización: " + error.message);
     } finally {
@@ -169,10 +179,11 @@ export default function AdminClients() {
       return;
     }
 
-    if (result && result.inviteToken) {
-      alert('📩 ¡Invitación generada!\n\nSe ha enviado un correo automático a ' + newUserInOrg.email + ' con el enlace de activación.\n\nTambién se ha copiado al portapapeles por si deseas enviarlo por otro medio.');
-      const inviteUrl = window.location.origin + '/setup-password?token=' + result.inviteToken;
-      navigator.clipboard.writeText(inviteUrl);
+    if (result && result.inviteUrl) {
+      setGeneratedInviteLink(result.inviteUrl);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(result.inviteUrl).catch(err => console.error("Error al copiar:", err));
+      }
     }
 
     setNewUserInOrg({ name: '', email: '', role: 'admin' });
@@ -350,13 +361,62 @@ export default function AdminClients() {
                 </div>
                 <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">{newOrgData.name || 'Nueva Organización'}</h2>
               </div>
-              <button onClick={() => setIsNewOrgModalOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+              <button 
+                onClick={() => {
+                  setIsNewOrgModalOpen(false);
+                  setGeneratedInviteLink(null);
+                }} 
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+              >
                 <X size={20} />
               </button>
             </div>
 
-            {/* CONTENIDO DESPLAZABLE */}
-            <form onSubmit={handleCreateOrg} className="flex-grow overflow-y-auto custom-scrollbar p-8">
+            {generatedInviteLink ? (
+              <div className="p-12 space-y-8 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300 min-h-[400px]">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                  <Check size={40} strokeWidth={3} />
+                </div>
+                <div className="text-center space-y-2 max-w-md">
+                  <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">¡Éxito Total!</h3>
+                  <p className="text-sm text-slate-500 font-medium">
+                    La organización y el administrador han sido creados correctamente. 
+                    Copia el enlace de activación y compártelo para completar el registro.
+                  </p>
+                </div>
+
+                <div className="w-full max-w-lg bg-slate-50 border border-slate-200 rounded-2xl p-6 flex items-center gap-4 group">
+                  <div className="flex-grow">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Enlace de Activación</p>
+                    <input 
+                      readOnly 
+                      value={generatedInviteLink}
+                      className="bg-transparent border-none text-xs font-mono text-[#6B4FD8] w-full outline-none font-bold"
+                    />
+                  </div>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedInviteLink);
+                      alert("¡Enlace copiado!");
+                    }}
+                    className="p-3 bg-[#6B4FD8] text-white rounded-xl hover:bg-[#7c7cf5] transition-all shadow-lg shadow-[#6B4FD8]/20"
+                  >
+                    <Copy size={20} />
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setIsNewOrgModalOpen(false);
+                    setGeneratedInviteLink(null);
+                  }}
+                  className="px-10 py-4 rounded-xl font-black bg-slate-800 text-white hover:bg-slate-700 transition-all uppercase text-xs tracking-[0.2em]"
+                >
+                  Continuar
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleCreateOrg} className="flex-grow overflow-y-auto custom-scrollbar p-8">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
                 {/* Columna Izquierda: Datos y Plan */}
                 <div className="lg:col-span-3 space-y-10">
@@ -556,6 +616,7 @@ export default function AdminClients() {
                 </div>
               </div>
             </form>
+          )}
           </div>
         </div>
       )}
@@ -751,39 +812,75 @@ export default function AdminClients() {
                     </div>
 
                     {/* Invitación por Correo */}
-                    <form onSubmit={handleAddUser} className="bg-slate-50 border border-slate-100 p-5 rounded-3xl space-y-4 shadow-sm">
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
-                        <Mail size={12} /> INVITAR ADMINISTRADOR
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input 
-                          required type="text" placeholder="Nombre completo" 
-                          value={newUserInOrg.name} onChange={e => setNewUserInOrg({...newUserInOrg, name: e.target.value})}
-                          className="bg-white border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-[#7c7cf5] shadow-sm" 
-                        />
-                        <input 
-                          required type="email" placeholder="Correo corporativo" 
-                          value={newUserInOrg.email} onChange={e => setNewUserInOrg({...newUserInOrg, email: e.target.value})}
-                          className="bg-white border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-[#7c7cf5] shadow-sm" 
-                        />
+                    {generatedInviteLink ? (
+                      <div className="bg-[#2E8B57]/5 border border-[#2E8B57]/20 p-6 rounded-3xl space-y-4 animate-in slide-in-from-bottom-2 duration-300">
+                        <div className="flex flex-col items-center text-center space-y-2">
+                          <div className="w-10 h-10 bg-[#2E8B57]/10 rounded-full flex items-center justify-center text-[#2E8B57]">
+                            <Check size={20} strokeWidth={3} />
+                          </div>
+                          <p className="text-xs font-black text-slate-700 uppercase tracking-tight">¡Invitación Lista!</p>
+                          <p className="text-[10px] text-slate-500 font-bold">Comparte este enlace para activar la cuenta.</p>
+                        </div>
+                        
+                        <div className="bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                          <input 
+                            readOnly 
+                            value={generatedInviteLink}
+                            className="bg-transparent border-none text-[9px] font-mono text-[#6B4FD8] w-full outline-none font-bold"
+                          />
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedInviteLink);
+                              alert("¡Enlace copiado!");
+                            }}
+                            className="p-2 text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-lg transition-all"
+                          >
+                            <Copy size={14} />
+                          </button>
+                        </div>
+
+                        <button 
+                          onClick={() => setGeneratedInviteLink(null)}
+                          className="w-full py-2.5 text-[10px] font-black text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-widest"
+                        >
+                          Cerrar
+                        </button>
                       </div>
-                      <button 
-                        type="submit" 
-                        disabled={isInviting}
-                        className="w-full py-3 bg-[#6B4FD8] text-white rounded-xl text-[10px] font-black hover:bg-[#7c7cf5] transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
-                      >
-                        {isInviting ? (
-                          <>
-                            <div className="w-3 h-3 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
-                            ENVIANDO...
-                          </>
-                        ) : (
-                          <>
-                            <Send size={12} /> ENVIAR ACTIVACIÓN
-                          </>
-                        )}
-                      </button>
-                    </form>
+                    ) : (
+                      <form onSubmit={handleAddUser} className="bg-slate-50 border border-slate-100 p-5 rounded-3xl space-y-4 shadow-sm">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                          <Mail size={12} /> INVITAR ADMINISTRADOR
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input 
+                            required type="text" placeholder="Nombre completo" 
+                            value={newUserInOrg.name} onChange={e => setNewUserInOrg({...newUserInOrg, name: e.target.value})}
+                            className="bg-white border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-[#7c7cf5] shadow-sm" 
+                          />
+                          <input 
+                            required type="email" placeholder="Correo corporativo" 
+                            value={newUserInOrg.email} onChange={e => setNewUserInOrg({...newUserInOrg, email: e.target.value})}
+                            className="bg-white border border-slate-200 text-slate-900 rounded-xl px-4 py-3 text-[10px] outline-none focus:border-[#7c7cf5] shadow-sm" 
+                          />
+                        </div>
+                        <button 
+                          type="submit" 
+                          disabled={isInviting}
+                          className="w-full py-3 bg-[#6B4FD8] text-white rounded-xl text-[10px] font-black hover:bg-[#7c7cf5] transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+                        >
+                          {isInviting ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
+                              ENVIANDO...
+                            </>
+                          ) : (
+                            <>
+                              <Send size={12} /> ENVIAR ACTIVACIÓN
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    )}
                   </section>
                 </div>
 

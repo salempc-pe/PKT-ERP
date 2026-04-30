@@ -20,7 +20,6 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
-import { sendInvitationEmail } from '../services/mailer';
 
 const AuthContext = createContext();
 
@@ -443,15 +442,17 @@ export function AuthProvider({ children }) {
       addLog('Org Created', `Nueva organización creada: ${newOrg.name}`, 'success', docRef.id);
 
       // 2. Si se proporcionó email de admin, crearlo automáticamente
+      let adminInviteUrl = null;
       if (orgData.adminEmail && orgData.adminName) {
-        await adminCreateUser(docRef.id, orgData.name, {
+        const result = await adminCreateUser(docRef.id, orgData.name, {
           email: orgData.adminEmail,
           name: orgData.adminName,
           role: 'admin'
         });
+        adminInviteUrl = result.inviteUrl;
       }
 
-      return createdOrg;
+      return { ...createdOrg, adminInviteUrl };
     } catch (error) {
       console.error("Error creating org in Firestore:", error);
       throw error;
@@ -523,7 +524,9 @@ export function AuthProvider({ children }) {
         };
       }
       
-      const inviteToken = crypto.randomUUID();
+      const inviteToken = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+        ? crypto.randomUUID() 
+        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       
       const newUser = {
         email: userData.email,
@@ -539,21 +542,13 @@ export function AuthProvider({ children }) {
       const docRef = await addDoc(collection(db, 'users'), newUser);
       const createdUser = { id: docRef.id, ...newUser };
 
-      // Enviar correo de invitación automáticamente
       const inviteUrl = window.location.origin + '/setup-password?token=' + inviteToken;
-      try {
-        await sendInvitationEmail(userData.email, userData.name, orgName, inviteUrl);
-      } catch (mailError) {
-        console.error("No se pudo enviar el correo de invitación:", mailError);
-        // No bloqueamos la creación del usuario si el correo falla, 
-        // ya que el token aún puede copiarse manualmente.
-      }
-
+      
       setAllUsers(prev => [...prev, createdUser]);
       
-      addLog('User Invited', `Usuario invitado en DB a ${orgName}: ${userData.email}`, 'info', orgId);
+      addLog('User Invited', `Usuario creado (pendiente) en DB para ${orgName}: ${userData.email}`, 'info', orgId);
 
-      return { success: true, inviteToken };
+      return { success: true, inviteToken, inviteUrl };
     } catch (error) {
       console.error("Error creating user in Firestore:", error);
       return { success: false, error: 'Error al guardar el usuario en la base de datos' };

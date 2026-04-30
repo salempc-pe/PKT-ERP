@@ -1,0 +1,2 @@
+"import { Wallet } from 'lucide-react';\nimport DashboardCard from '../../../components/DashboardCard';\nimport { useEmployees } from './useEmployees';\nimport { useAuth } from '../../../context/AuthContext';\n\n/**\n * Tarjeta de resumen para el Dashboard
+<truncated 756 bytes>
