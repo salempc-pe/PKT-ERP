@@ -680,10 +680,14 @@
 **Depends on**: Phase 7
 
 **Tasks**:
-- [ ] TBD (run /plan 39 to create)
+- [ ] Plan 39.1: Gestión de Recursos Físicos y Conflictos (Data model + UI en evento)
+- [ ] Plan 39.2: Integraciones y Webhooks (Notificaciones por correo/WhatsApp)
 
 **Verification**:
-- TBD
+- [ ] Módulo Agenda gestiona `resources` de Firestore.
+- [ ] Se bloquea la superposición de horarios para un mismo recurso.
+- [ ] El sistema expone un panel para configurar webhooks de integración.
+- [ ] Creación de eventos dispara llamadas a webhooks externos configurados.
 
 ---
 
