@@ -22,13 +22,15 @@ import { useAuth } from '../../../context/AuthContext';
 import TerrainModal from './TerrainModal';
 import LoadingScreen from '../../../components/LoadingScreen';
 
+import MapViewer from './MapViewer';
+
 export default function RealEstateModule() {
   const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { terrains, loading, addTerrain, updateTerrain, deleteTerrain } = useRealEstate(orgId);
   const { contacts } = useCrm(orgId);
   
-  const [activeTab, setActiveTab] = useState('database'); // database | pipeline
+  const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map
   const [showModal, setShowModal] = useState(false);
   const [editingTerrain, setEditingTerrain] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -77,13 +79,19 @@ export default function RealEstateModule() {
             onClick={() => setActiveTab('database')}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'database' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <List size={16} /> Base de Datos
+            <List size={16} /> Base
           </button>
           <button 
             onClick={() => setActiveTab('pipeline')}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
             <Kanban size={16} /> Pipeline
+          </button>
+          <button 
+            onClick={() => setActiveTab('map')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'map' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+          >
+            <MapPin size={16} /> Mapa
           </button>
         </div>
 
@@ -198,7 +206,7 @@ export default function RealEstateModule() {
               </tbody>
             </table>
           </div>
-      ) : (
+      ) : activeTab === 'pipeline' ? (
         /* Kanban View */
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[500px]">
           {pipelineStages.map(stage => (
@@ -287,12 +295,17 @@ export default function RealEstateModule() {
 
                 {terrains.filter(t => t.status === stage.id).length === 0 && (
                   <div className="flex-1 flex items-center justify-center text-[var(--color-on-surface-variant)] opacity-20 text-[10px] italic py-10">
-                    Vaciío
+                    Vacío
                   </div>
                 )}
               </div>
             </div>
           ))}
+        </div>
+      ) : (
+        /* Map View */
+        <div className="animate-in fade-in zoom-in duration-500">
+          <MapViewer terrains={terrains} readOnly={true} height="600px" />
         </div>
       )}
 

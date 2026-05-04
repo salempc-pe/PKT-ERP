@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle, Map as MapIcon } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import MapViewer from './MapViewer';
 
 export default function TerrainModal({ isOpen, onClose, terrain, onSave, contacts, terrains }) {
   const { currencySymbol } = useAuth();
@@ -15,7 +16,8 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
     totalPrice: 0,
     notes: '',
     status: 'presentacion',
-    buyerId: ''
+    buyerId: '',
+    coordinates: null
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -169,6 +171,29 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 </datalist>
               </div>
             </div>
+          </div>
+
+          {/* Ubicación Geográfica */}
+          <div className="space-y-3 bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)]">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1 flex items-center gap-2">
+                <MapIcon size={12} className="text-[#6B4FD8]" /> Ubicación en el Mapa
+              </label>
+              <span className="text-[9px] font-bold text-[#6B4FD8]">Haz clic en el mapa para marcar</span>
+            </div>
+            
+            <MapViewer 
+              height="200px" 
+              selectedLocation={formData.coordinates} 
+              onLocationSelect={(latlng) => setFormData({...formData, coordinates: { lat: latlng.lat, lng: latlng.lng }})}
+            />
+
+            {formData.coordinates && (
+              <div className="flex gap-4 text-[10px] font-bold text-[var(--color-on-surface-variant)] bg-[var(--color-surface)]/50 p-2 rounded-lg border border-[var(--color-outline-variant)]">
+                <span>Lat: {formData.coordinates.lat.toFixed(6)}</span>
+                <span>Lng: {formData.coordinates.lng.toFixed(6)}</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
