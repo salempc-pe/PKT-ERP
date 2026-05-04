@@ -17,13 +17,24 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
     phone: '',
     notes: '',
     budget: 0,
+    minInvestment: 0,
+    maxInvestment: 0,
+    minArea: 0,
+    maxArea: 0,
     status: 'activo'
   });
 
-  const filtered = investors.filter(i => 
-    i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    i.contactName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filterMinInv, setFilterMinInv] = useState(0);
+  const [filterMaxArea, setFilterMaxArea] = useState(0);
+
+  const filtered = investors.filter(i => {
+    const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        i.contactName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesInvestment = filterMinInv === 0 || (i.maxInvestment >= filterMinInv);
+    const matchesArea = filterMaxArea === 0 || (i.minArea <= filterMaxArea);
+    
+    return matchesSearch && matchesInvestment && matchesArea;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +59,10 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
       phone: '',
       notes: '',
       budget: 0,
+      minInvestment: 0,
+      maxInvestment: 0,
+      minArea: 0,
+      maxArea: 0,
       status: 'activo'
     });
     setEditingId(null);
@@ -73,6 +88,30 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
             className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-10 pr-4 py-2.5 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-sm"
           />
         </div>
+
+        <div className="flex gap-4 w-full md:w-auto">
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] ml-1">Inversión Mín.</label>
+            <input 
+              type="number"
+              value={filterMinInv}
+              onChange={(e) => setFilterMinInv(Number(e.target.value))}
+              placeholder="Min Inversión"
+              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-1.5 text-xs font-bold outline-none focus:border-[#6B4FD8] w-28"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] ml-1">Área Máx. m²</label>
+            <input 
+              type="number"
+              value={filterMaxArea}
+              onChange={(e) => setFilterMaxArea(Number(e.target.value))}
+              placeholder="Max Área"
+              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-1.5 text-xs font-bold outline-none focus:border-[#6B4FD8] w-28"
+            />
+          </div>
+        </div>
+
         <button 
           onClick={() => setShowForm(true)}
           className="w-full md:w-auto bg-[#6B4FD8] text-white font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all"
@@ -135,6 +174,58 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
                 className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
               />
             </div>
+            
+            {/* Rangos */}
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Rango Inversión (Min - Max)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="number"
+                  value={formData.minInvestment}
+                  onChange={(e) => setFormData({...formData, minInvestment: Number(e.target.value)})}
+                  className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
+                  placeholder="Min"
+                />
+                <input 
+                  type="number"
+                  value={formData.maxInvestment}
+                  onChange={(e) => setFormData({...formData, maxInvestment: Number(e.target.value)})}
+                  className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Rango Área m² (Min - Max)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="number"
+                  value={formData.minArea}
+                  onChange={(e) => setFormData({...formData, minArea: Number(e.target.value)})}
+                  className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
+                  placeholder="Min"
+                />
+                <input 
+                  type="number"
+                  value={formData.maxArea}
+                  onChange={(e) => setFormData({...formData, maxArea: Number(e.target.value)})}
+                  className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2 space-y-1.5">
+              <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Notas / Preferencias</label>
+              <textarea 
+                value={formData.notes}
+                onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8] h-20 resize-none"
+                placeholder="Ej: Interesado solo en zonas comerciales, requiere documentación saneada..."
+              />
+            </div>
+
             <div className="flex gap-3 items-end">
               <button 
                 type="button" 
@@ -191,13 +282,39 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
                 <Users size={14} className="text-[#6B4FD8]" />
                 <span className="font-bold text-[var(--color-on-surface)]">{investor.contactName || 'Sin contacto'}</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[var(--color-on-surface-variant)]">
-                <Mail size={14} />
-                <span className="truncate">{investor.email || 'No registra'}</span>
+              
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
+                  <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Inversión</p>
+                  <p className="text-[10px] font-black text-[var(--color-on-surface)]">
+                    ${investor.minInvestment?.toLocaleString()} - ${investor.maxInvestment?.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
+                  <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Área m²</p>
+                  <p className="text-[10px] font-black text-[var(--color-on-surface)]">
+                    {investor.minArea?.toLocaleString()} - {investor.maxArea?.toLocaleString()}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[var(--color-on-surface-variant)]">
-                <Phone size={14} />
-                <span>{investor.phone || 'No registra'}</span>
+
+              {investor.notes && (
+                <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 mt-2">
+                  <p className="text-[9px] text-amber-600 font-medium leading-relaxed italic">
+                    "{investor.notes}"
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2 mt-2">
+                <div className="flex items-center gap-2 text-[10px] text-[var(--color-on-surface-variant)]">
+                  <Mail size={12} />
+                  <span className="truncate">{investor.email || 'No registra'}</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-[var(--color-on-surface-variant)]">
+                  <Phone size={12} />
+                  <span>{investor.phone || 'No registra'}</span>
+                </div>
               </div>
             </div>
 

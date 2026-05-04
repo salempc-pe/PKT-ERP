@@ -20,7 +20,11 @@ const InvestorSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
   notes: z.string().optional(),
-  budget: z.number().optional(),
+  budget: z.number().optional(), // Presupuesto total o estimado
+  minInvestment: z.number().optional().default(0),
+  maxInvestment: z.number().optional().default(0),
+  minArea: z.number().optional().default(0),
+  maxArea: z.number().optional().default(0),
   status: z.enum(["activo", "inactivo"]).default("activo")
 });
 
