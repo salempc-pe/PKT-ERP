@@ -3,17 +3,20 @@ import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, Alert
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
+import { InteractionHistory } from './InteractionHistory';
 
 export default function CRMModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { contacts, leads, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead } = useCrm(orgId);
+  const { contacts, leads, interactions, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead, addInteraction } = useCrm(orgId);
   const [activeTab, setActiveTab] = useState('pipeline');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('lead');
   const [editingLead, setEditingLead] = useState(null);
   const [editingContact, setEditingContact] = useState(null);
   const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0, tags: '', score: 0 });
+  const [historyEntity, setHistoryEntity] = useState(null);
+  const [historyEntityType, setHistoryEntityType] = useState('lead');
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
@@ -182,7 +185,11 @@ export default function CRMModule() {
               
               <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-variant)]/40 border border-[var(--color-outline-variant)] rounded-2xl h-full min-h-[300px]">
                 {leads.filter(l => l.status === stage.id).map(lead => (
-                  <div key={lead.id} className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden">
+                  <div 
+                    key={lead.id} 
+                    onClick={() => { setHistoryEntity(lead); setHistoryEntityType('lead'); }}
+                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
+                  >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
                     <div className="flex justify-between items-start mb-1">
@@ -276,7 +283,11 @@ export default function CRMModule() {
               </thead>
               <tbody className="divide-y divide-[#40485d]/10 text-sm">
                 {contacts.length > 0 ? contacts.map((contact) => (
-                  <tr key={contact.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
+                  <tr 
+                    key={contact.id} 
+                    onClick={() => { setHistoryEntity(contact); setHistoryEntityType('contact'); }}
+                    className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs">
@@ -330,7 +341,7 @@ export default function CRMModule() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button 
-                        onClick={() => handleOpenEditContact(contact)}
+                        onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}
                         className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
                       >
                         <MoreVertical size={16} />
@@ -484,6 +495,16 @@ export default function CRMModule() {
             </div>
           </form>
         </div>
+      )}
+
+      {historyEntity && (
+        <InteractionHistory 
+          entity={historyEntity}
+          entityType={historyEntityType}
+          interactions={interactions}
+          onClose={() => setHistoryEntity(null)}
+          onAddInteraction={addInteraction}
+        />
       )}
     </div>
   );
