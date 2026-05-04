@@ -753,7 +753,7 @@
 ---
 
 ### Phase 45: Nóminas — Asistencia, Boletas PDF y Préstamos (payroll)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Evolucionar el módulo de nóminas con control de asistencia (horas, tardanzas, faltas), generación y envío masivo de boletas de pago en PDF firmadas digitalmente, y gestión de préstamos/adelantos con descuento automático en la siguiente nómina.
 **Depends on**: Phase 37
 
