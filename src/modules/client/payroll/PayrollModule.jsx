@@ -10,6 +10,7 @@ import LoadingScreen from '../../../components/LoadingScreen';
 import EmployeeModal from './EmployeeModal';
 import AttendanceTab from './AttendanceTab';
 import LoansTab from './LoansTab';
+import PayslipsTab from './PayslipsTab';
 
 /**
  * Módulo de Nóminas y Recursos Humanos
@@ -243,12 +244,7 @@ export default function PayrollModule() {
 
         {activeTab === 'asistencia' && <AttendanceTab orgId={orgId} />}
         {activeTab === 'prestamos' && <LoansTab orgId={orgId} />}
-        {activeTab === 'boletas' && (
-          <div className="flex flex-col items-center justify-center py-20 opacity-50 bg-[var(--color-surface-container-low)] rounded-[2rem] border border-[var(--color-outline-variant)]">
-            <ReceiptText size={48} className="text-[#6B4FD8] mb-4" />
-            <p className="text-xs font-black uppercase tracking-[0.2em]">Próximamente: Generación de Boletas PDF</p>
-          </div>
-        )}
+        {activeTab === 'boletas' && <PayslipsTab orgId={orgId} />}
       </div>
 
       <EmployeeModal 
