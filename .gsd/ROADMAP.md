@@ -710,10 +710,14 @@
 **Depends on**: Phase 18
 
 **Tasks**:
-- [ ] TBD (run /plan 41 to create)
+- [ ] Plan 41.1: Personalización de Widgets del Dashboard (Modal de preferencias de usuario).
+- [ ] Plan 41.2: Drill-down y Navegación de KPIs (CRM e Inventario como patrón base).
 
 **Verification**:
-- TBD
+- [ ] El usuario puede elegir qué módulos mostrar/ocultar en su dashboard.
+- [ ] Las preferencias del dashboard se guardan y mantienen entre sesiones.
+- [ ] Al hacer clic en la tarjeta de CRM en el dashboard, se navega al módulo de CRM en la pestaña correcta.
+- [ ] Al hacer clic en un KPI de Inventario, se navega al inventario con el filtro apropiado.
 
 ---
 
