@@ -675,19 +675,19 @@
 ## Milestone 4: Module Enhancements & Advanced Features
 
 ### Phase 39: Agenda y Citas — Mejoras Avanzadas (calendar)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Evolucionar el módulo de agenda con sincronización externa (Google Calendar/Outlook), recordatorios multicanal (correo/WhatsApp vía webhooks) y gestión de recursos físicos para evitar conflictos de capacidad.
 **Depends on**: Phase 7
 
 **Tasks**:
-- [ ] Plan 39.1: Gestión de Recursos Físicos y Conflictos (Data model + UI en evento)
-- [ ] Plan 39.2: Integraciones y Webhooks (Notificaciones por correo/WhatsApp)
+- [x] Plan 39.1: Gestión de Recursos Físicos y Conflictos (Data model + UI en evento)
+- [x] Plan 39.2: Integraciones y Webhooks (Notificaciones por correo/WhatsApp)
 
 **Verification**:
-- [ ] Módulo Agenda gestiona `resources` de Firestore.
-- [ ] Se bloquea la superposición de horarios para un mismo recurso.
-- [ ] El sistema expone un panel para configurar webhooks de integración.
-- [ ] Creación de eventos dispara llamadas a webhooks externos configurados.
+- [x] Módulo Agenda gestiona `resources` de Firestore.
+- [x] Se bloquea la superposición de horarios para un mismo recurso.
+- [x] El sistema expone un panel para configurar webhooks de integración.
+- [x] Creación de eventos dispara llamadas a webhooks externos configurados.
 
 ---
 
