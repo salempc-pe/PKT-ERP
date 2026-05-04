@@ -3,7 +3,7 @@ import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle, Map
 import { useAuth } from '../../../context/AuthContext';
 import MapViewer from './MapViewer';
 
-export default function TerrainModal({ isOpen, onClose, terrain, onSave, contacts, terrains }) {
+export default function TerrainModal({ isOpen, onClose, terrain, onSave, contacts, investors, terrains }) {
   const { currencySymbol } = useAuth();
   const [formData, setFormData] = useState({
     city: '',
@@ -24,9 +24,10 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
   const [error, setError] = useState(null);
   const [newBroker, setNewBroker] = useState('');
 
-  // Listas para los dropdowns editables (únicos de los datos existentes)
+  // Listas para los dropdowns editables
   const cities = [...new Set(terrains.map(t => t.city))].filter(Boolean);
   const districts = [...new Set(terrains.map(t => t.district))].filter(Boolean);
+  const existingBrokers = [...new Set(terrains.flatMap(t => t.brokers || []))].filter(Boolean);
 
   useEffect(() => {
     if (terrain) {
@@ -229,15 +230,15 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Posible Comprador (Opcional)</label>
+              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Posible Comprador (Inversionista/Constructora)</label>
               <select 
                 value={formData.buyerId}
                 onChange={(e) => setFormData({...formData, buyerId: e.target.value})}
                 className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm appearance-none"
               >
                 <option value="">Ninguno asignado...</option>
-                {contacts.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.company})</option>
+                {investors.map(inv => (
+                  <option key={inv.id} value={inv.id}>{inv.name} ({inv.type})</option>
                 ))}
               </select>
             </div>
@@ -246,18 +247,22 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           <div className="space-y-3">
             <label className="text-[10px] font-black text-white/50 uppercase tracking-wider ml-1">Corredores Asociados</label>
             <div className="flex gap-2">
-                <input 
-                  type="text"
-                  value={newBroker}
-                  onChange={(e) => setNewBroker(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddBroker())}
-                  className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-5 py-2.5 text-white focus:border-[#6B4FD8] outline-none text-sm font-medium"
-                  placeholder="Nombre del corredor..."
-                />
+              <input 
+                type="text"
+                list="brokers-list"
+                value={newBroker}
+                onChange={(e) => setNewBroker(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddBroker())}
+                className="flex-1 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all text-sm"
+                placeholder="Nombre del corredor..."
+              />
+              <datalist id="brokers-list">
+                {existingBrokers.map(b => <option key={b} value={b} />)}
+              </datalist>
               <button 
                 type="button"
                 onClick={handleAddBroker}
-                className="p-2.5 bg-[#6B4FD8] text-white rounded-xl hover:bg-[#5a42b9] transition-all"
+                className="p-3 bg-[#6B4FD8] text-white rounded-xl hover:bg-[#5a42b9] transition-all"
               >
                 <Plus size={20} />
               </button>

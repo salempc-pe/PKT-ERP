@@ -17,10 +17,12 @@ import {
   Maximize2
 } from 'lucide-react';
 import { useRealEstate } from './useRealEstate';
+import { useInvestors } from './useInvestors';
 import { useCrm } from '../crm/useCrm';
 import { useAuth } from '../../../context/AuthContext';
 import TerrainModal from './TerrainModal';
 import TerrainDetailsModal from './TerrainDetailsModal';
+import InvestorsList from './InvestorsList';
 import LoadingScreen from '../../../components/LoadingScreen';
 
 import MapViewer from './MapViewer';
@@ -29,9 +31,10 @@ export default function RealEstateModule() {
   const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { terrains, loading, addTerrain, updateTerrain, deleteTerrain } = useRealEstate(orgId);
+  const { investors, loading: loadingInv, addInvestor, updateInvestor, deleteInvestor } = useInvestors(orgId);
   const { contacts } = useCrm(orgId);
   
-  const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map
+  const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map | buyers
   const [showModal, setShowModal] = useState(false);
   const [editingTerrain, setEditingTerrain] = useState(null);
   const [selectedTerrainForDetails, setSelectedTerrainForDetails] = useState(null);
@@ -95,6 +98,12 @@ export default function RealEstateModule() {
           >
             <MapPin size={16} /> Mapa
           </button>
+          <button 
+            onClick={() => setActiveTab('buyers')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'buyers' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+          >
+            <Users size={16} /> Compradores
+          </button>
         </div>
 
         <button 
@@ -142,6 +151,7 @@ export default function RealEstateModule() {
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                   <th className="px-6 py-5">Propiedad / Ubicación</th>
                   <th className="px-6 py-5">Propietario</th>
+                  <th className="px-6 py-5">Corredores</th>
                   <th className="px-6 py-5">Área / Precio</th>
                   <th className="px-6 py-5">Estado</th>
                   <th className="px-6 py-5 text-right">Acciones</th>
@@ -171,6 +181,17 @@ export default function RealEstateModule() {
                         <span className="text-xs text-[var(--color-on-surface)] font-medium">
                           {contacts.find(c => c.id === t.ownerId)?.name || 'Desconocido'}
                         </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-1 max-w-[150px]">
+                        {t.brokers && t.brokers.length > 0 ? t.brokers.map((b, i) => (
+                          <span key={i} className="text-[9px] bg-[#6B4FD8]/10 text-[#6B4FD8] px-2 py-0.5 rounded-full font-black border border-[#6B4FD8]/10">
+                            {b}
+                          </span>
+                        )) : (
+                          <span className="text-[10px] text-[var(--color-on-surface-variant)] italic">Sin asignar</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -313,10 +334,21 @@ export default function RealEstateModule() {
             </div>
           ))}
         </div>
-      ) : (
+      ) : activeTab === 'map' ? (
         /* Map View */
         <div className="animate-in fade-in zoom-in duration-500">
           <MapViewer terrains={terrains} readOnly={true} height="600px" />
+        </div>
+      ) : (
+        /* Buyers View */
+        <div className="animate-in fade-in slide-in-from-bottom duration-500">
+          <InvestorsList 
+            investors={investors}
+            onAdd={addInvestor}
+            onUpdate={updateInvestor}
+            onDelete={deleteInvestor}
+            loading={loadingInv}
+          />
         </div>
       )}
 
@@ -328,6 +360,7 @@ export default function RealEstateModule() {
           orgId={orgId}
           onSave={editingTerrain ? updateTerrain : addTerrain}
           contacts={contacts}
+          investors={investors}
           terrains={terrains}
         />
       )}
@@ -339,6 +372,7 @@ export default function RealEstateModule() {
           terrain={selectedTerrainForDetails}
           onUpdate={updateTerrain}
           contacts={contacts}
+          investors={investors}
         />
       )}
     </div>

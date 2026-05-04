@@ -8,7 +8,7 @@ import {
 import { useAuth } from '../../../context/AuthContext';
 import MapViewer from './MapViewer';
 
-export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate, contacts }) {
+export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate, contacts, investors }) {
   const { formatPrice } = useAuth();
   const [activeTab, setActiveTab] = useState('overview'); // overview | presentations | documents
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,7 +27,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
     if (!newPresentation.buyerId) return;
     setIsSubmitting(true);
     try {
-      const buyer = contacts.find(c => c.id === newPresentation.buyerId);
+      const buyer = investors.find(i => i.id === newPresentation.buyerId);
       const presentation = {
         ...newPresentation,
         id: crypto.randomUUID(),
@@ -205,12 +205,12 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
                     {terrain.buyerId && (
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 font-black">
-                          {contacts.find(c => c.id === terrain.buyerId)?.name.charAt(0)}
+                          {investors.find(i => i.id === terrain.buyerId)?.name.charAt(0)}
                         </div>
                         <div>
                           <p className="text-[9px] text-[var(--color-on-surface-variant)] font-bold uppercase">Comprador Asignado</p>
                           <p className="text-xs font-bold text-[var(--color-on-surface)]">
-                            {contacts.find(c => c.id === terrain.buyerId)?.name}
+                            {investors.find(i => i.id === terrain.buyerId)?.name}
                           </p>
                         </div>
                       </div>
@@ -230,14 +230,14 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Comprador</label>
+                    <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Comprador (Inv/Cons)</label>
                     <select 
                       value={newPresentation.buyerId}
                       onChange={(e) => setNewPresentation({...newPresentation, buyerId: e.target.value})}
                       className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                     >
                       <option value="">Seleccionar...</option>
-                      {contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      {investors.map(inv => <option key={inv.id} value={inv.id}>{inv.name}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1.5">
