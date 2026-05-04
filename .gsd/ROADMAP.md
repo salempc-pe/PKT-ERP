@@ -827,8 +827,14 @@
 **Depends on**: Phase 23, Phase 29
 
 **Tasks**:
-- [ ] TBD (run /plan 50 to create)
+- [ ] Plan 50.1: Sistema de ACL Granular (Modelo, Contexto y Configuración en UI).
+- [ ] Plan 50.2: Registro de Auditoría (Hook, Colección y Visor de Audit Logs).
+- [ ] Plan 50.3: Control de Sesiones Activas (Cierre Remoto).
 
 **Verification**:
-- TBD
+- [ ] El `AuthContext` expone un helper de permisos.
+- [ ] El administrador puede asignar permisos a cada usuario en el equipo.
+- [ ] Las acciones críticas se registran en `audit_logs`.
+- [ ] Existe una pestaña de "Registro de Actividad" visible para administradores.
+- [ ] Forzar el cierre de sesión remotamente desloguea al usuario en tiempo real.
 
