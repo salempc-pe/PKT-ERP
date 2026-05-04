@@ -822,19 +822,19 @@
 ---
 
 ### Phase 50: Equipo — ACL Granular, Audit Log y Sesiones Activas (team)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar permisos granulares (ACL) por módulo y acción (Leer, Crear, Editar, Eliminar), registro de auditoría completo ("quién hizo qué y cuándo") en todo el sistema, y gestión de sesiones activas con capacidad de cierre remoto por seguridad.
 **Depends on**: Phase 23, Phase 29
 
 **Tasks**:
-- [ ] Plan 50.1: Sistema de ACL Granular (Modelo, Contexto y Configuración en UI).
-- [ ] Plan 50.2: Registro de Auditoría (Hook, Colección y Visor de Audit Logs).
-- [ ] Plan 50.3: Control de Sesiones Activas (Cierre Remoto).
+- [x] Plan 50.1: Sistema de ACL Granular (Modelo, Contexto y Configuración en UI).
+- [x] Plan 50.2: Registro de Auditoría (Hook, Colección y Visor de Audit Logs).
+- [x] Plan 50.3: Control de Sesiones Activas (Cierre Remoto).
 
 **Verification**:
-- [ ] El `AuthContext` expone un helper de permisos.
-- [ ] El administrador puede asignar permisos a cada usuario en el equipo.
-- [ ] Las acciones críticas se registran en `audit_logs`.
-- [ ] Existe una pestaña de "Registro de Actividad" visible para administradores.
-- [ ] Forzar el cierre de sesión remotamente desloguea al usuario en tiempo real.
+- [x] El `AuthContext` expone un helper de permisos.
+- [x] El administrador puede asignar permisos a cada usuario en el equipo.
+- [x] Las acciones críticas se registran en `audit_logs`.
+- [x] Existe una pestaña de "Registro de Actividad" visible para administradores.
+- [x] Forzar el cierre de sesión remotamente desloguea al usuario en tiempo real.
 

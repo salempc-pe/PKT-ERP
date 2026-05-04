@@ -17,7 +17,8 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
-  deleteDoc
+  deleteDoc,
+  onSnapshot
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 
@@ -198,17 +199,18 @@ export function AuthProvider({ children }) {
             const role = isSuperAdmin ? 'superadmin' : (userData.role || 'user');
             const isAdmin = role === 'admin' || role === 'superadmin';
 
-            const userWithSub = {
-              ...userWithoutPassword,
-              email: firebaseUser.email,
-              uid: firebaseUser.uid,
-              role: role,
-              subscription: orgSubscription || null,
-              currencySymbol: currencySymbol,
-              isAdmin: isAdmin
-            };
-            
-            setUser(userWithSub);
+              const userWithSub = {
+                ...userWithoutPassword,
+                email: firebaseUser.email,
+                uid: firebaseUser.uid,
+                role: role,
+                subscription: orgSubscription || null,
+                currencySymbol: currencySymbol,
+                isAdmin: isAdmin,
+                loginAt: user?.loginAt || new Date().toISOString()
+              };
+              
+              setUser(userWithSub);
             sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
           } else {
             setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
@@ -293,7 +295,8 @@ export function AuthProvider({ children }) {
           role: role,
           subscription: orgSubscription || null,
           currencySymbol: currencySymbol,
-          isAdmin: isAdmin
+          isAdmin: isAdmin,
+          loginAt: new Date().toISOString()
         };
 
         setUser(userWithSub);
@@ -409,6 +412,38 @@ export function AuthProvider({ children }) {
       console.error("Error updating org modules:", error);
     }
   };
+
+  // Listener reactivo para ACL y Sesiones
+  useEffect(() => {
+    if (!user?.uid || !user?.loginAt) return;
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const newData = docSnap.data();
+        
+        // 1. Verificar revocación
+        if (newData.sessionRevokedAt) {
+          const revokedAt = newData.sessionRevokedAt.toDate();
+          const loginAt = new Date(user.loginAt);
+          if (revokedAt > loginAt) {
+            console.log("⚠️ Sesión revocada remotamente por seguridad.");
+            logout();
+            return;
+          }
+        }
+
+        // 2. Actualizar permisos/roles si cambiaron (evita loops si no hay cambios reales)
+        const currentPerms = JSON.stringify(user.permissions || {});
+        const newPerms = JSON.stringify(newData.permissions || {});
+        if (currentPerms !== newPerms || newData.role !== user.role) {
+          setUser(prev => ({ ...prev, ...newData }));
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user?.uid, user?.loginAt]);
 
   // Crear Organización COMPLETA en Firestore (con opción de primer admin)
   const adminCreateOrg = async (orgData) => {
@@ -755,7 +790,13 @@ export function AuthProvider({ children }) {
       seedDatabase,
       currencySymbol: user?.currencySymbol || '$',
       formatPrice,
-      isAdmin: user?.role === 'superadmin' || user?.role === 'admin'
+      isAdmin: user?.role === 'superadmin' || user?.role === 'admin',
+      hasPermission: (moduleKey, actionKey) => {
+        if (user?.role === 'superadmin' || user?.role === 'admin') return true;
+        const permissions = user?.permissions;
+        if (!permissions || !permissions[moduleKey]) return false;
+        return !!permissions[moduleKey][actionKey];
+      }
     }}>
       {children}
     </AuthContext.Provider>

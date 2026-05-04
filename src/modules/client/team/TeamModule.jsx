@@ -1,13 +1,21 @@
 import { useState, useMemo } from 'react';
-import { Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, Loader2, AlertCircle, Download, ShieldAlert, Database } from 'lucide-react';
+import { 
+  Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, 
+  Loader2, AlertCircle, Download, ShieldAlert, Database,
+  Lock, Activity, LogOut
+} from 'lucide-react';
 import { z } from 'zod';
 import { useAuth } from '../../../context/AuthContext';
 import { db } from '../../../services/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import AuditLogsTab from './AuditLogsTab';
+import PermissionsModal from './PermissionsModal';
 
 export default function TeamModule() {
   const { user, allUsers, adminCreateUser, adminRemoveUser, allOrganizations } = useAuth();
+  const [activeTab, setActiveTab] = useState('members'); // 'members' | 'audit'
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [permissionsModal, setPermissionsModal] = useState({ isOpen: false, targetUser: null });
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const [loading, setLoading] = useState(false);
   const [loadingExport, setLoadingExport] = useState(false);
@@ -23,6 +31,7 @@ export default function TeamModule() {
   const orgId = user?.organizationId;
   const currentOrg = allOrganizations.find(o => o.id === orgId);
   const maxUsers = currentOrg?.subscription?.maxUsers || currentOrg?.maxUsers || 5;
+  const activeModules = currentOrg?.subscription?.activeModules || [];
 
   const teamMembers = useMemo(() => {
     return allUsers.filter(u => u.organizationId === orgId);
@@ -73,6 +82,21 @@ export default function TeamModule() {
     const inviteUrl = window.location.origin + '/setup-password?token=' + token;
     navigator.clipboard.writeText(inviteUrl);
     alert('Enlace de invitación copiado al portapapeles');
+  };
+
+  const handleRevokeSession = async (member) => {
+    if (!window.confirm(`¿Estás seguro de que deseas cerrar todas las sesiones activas de ${member.name}? El usuario será expulsado del sistema inmediatamente.`)) return;
+    
+    try {
+      const userRef = doc(db, 'users', member.id);
+      await updateDoc(userRef, {
+        sessionRevokedAt: serverTimestamp()
+      });
+      alert(`Sesiones de ${member.name} revocadas.`);
+    } catch (error) {
+      console.error("Error revoking session:", error);
+      alert("Error al revocar la sesión.");
+    }
   };
 
   const handleExportData = async () => {
@@ -155,8 +179,33 @@ export default function TeamModule() {
 
   return (
     <div className="space-y-8 animate-fade-in pb-20">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4">
+      {/* Header & Tabs */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center p-1 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl w-fit">
+          <button
+            onClick={() => setActiveTab('members')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+              activeTab === 'members' 
+                ? 'bg-[#6B4FD8] text-[#0a0a0a] shadow-lg shadow-[#6B4FD8]/20' 
+                : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
+            }`}
+          >
+            <Users size={18} />
+            <span>Equipo</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('audit')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+              activeTab === 'audit' 
+                ? 'bg-[#6B4FD8] text-[#0a0a0a] shadow-lg shadow-[#6B4FD8]/20' 
+                : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
+            }`}
+          >
+            <Activity size={18} />
+            <span>Auditoría</span>
+          </button>
+        </div>
+
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
@@ -170,154 +219,178 @@ export default function TeamModule() {
         </button>
       </div>
 
-      {/* Stats / Quota */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--color-surface-container-low)]/60 border border-[var(--color-outline-variant)] rounded-3xl p-6">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="w-10 h-10 bg-[#6B4FD8]/10 rounded-xl flex items-center justify-center text-[var(--color-primary)]">
-              <Users size={20} />
-            </div>
-            <h3 className="text-sm font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Capacidad de Usuarios</h3>
-          </div>
-          <p className="text-2xl font-black text-[var(--color-on-surface)] mb-1">{teamMembers.length} / {maxUsers}</p>
-          <div className="w-full bg-[var(--color-surface-container)] h-2 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all ${isLimitReached ? 'bg-red-400' : 'bg-[#6B4FD8]'}`}
-              style={{ width: `${Math.min((teamMembers.length / maxUsers) * 100, 100)}%` }}
-            ></div>
-          </div>
-          {isLimitReached && (
-            <p className="text-[10px] text-red-400 mt-2 font-bold flex items-center gap-1">
-              <Shield size={10} /> Has alcanzado el límite de tu plan.
-            </p>
-          )}
-        </div>
-
-        {/* Zona de Seguridad (Solo Admin) */}
-        {user?.role === 'admin' && (
-          <div className="md:col-span-2 bg-[var(--color-surface-container-low)]/60 border border-amber-500/20 rounded-3xl p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <ShieldAlert size={120} />
-            </div>
-            
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 mb-1">
-                  <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
-                    <Database size={20} />
-                  </div>
-                  <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">Zona de Resguardo de Datos</h3>
+      {activeTab === 'members' ? (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          {/* Stats / Quota */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-[var(--color-surface-container-low)]/60 border border-[var(--color-outline-variant)] rounded-3xl p-6">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-10 h-10 bg-[#6B4FD8]/10 rounded-xl flex items-center justify-center text-[var(--color-primary)]">
+                  <Users size={20} />
                 </div>
-                <p className="text-[var(--color-on-surface)] font-bold">Respaldo Total del Sistema</p>
-                <p className="text-xs text-[var(--color-on-surface-variant)] max-w-md">
-                  Descarga una copia local de toda la información de tu empresa (clientes, ventas, inventario y más). 
-                  Útil para auditorías o como medida de seguridad ante cualquier eventualidad.
-                </p>
+                <h3 className="text-sm font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Capacidad de Usuarios</h3>
               </div>
-
-              <button
-                onClick={handleExportData}
-                disabled={loadingExport}
-                className="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loadingExport ? (
-                  <>
-                    <Loader2 size={20} className="animate-spin" />
-                    <span>PROCESANDO...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download size={20} />
-                    <span>RESCATAR TODOS LOS DATOS</span>
-                  </>
-                )}
-              </button>
+              <p className="text-2xl font-black text-[var(--color-on-surface)] mb-1">{teamMembers.length} / {maxUsers}</p>
+              <div className="w-full bg-[var(--color-surface-container)] h-2 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all ${isLimitReached ? 'bg-red-400' : 'bg-[#6B4FD8]'}`}
+                  style={{ width: `${Math.min((teamMembers.length / maxUsers) * 100, 100)}%` }}
+                ></div>
+              </div>
+              {isLimitReached && (
+                <p className="text-[10px] text-red-400 mt-2 font-bold flex items-center gap-1">
+                  <Shield size={10} /> Has alcanzado el límite de tu plan.
+                </p>
+              )}
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* Team List */}
-      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#0a0a0a]/50 border-b border-[var(--color-outline-variant)]">
-              <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Colaborador</th>
-              <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Rol</th>
-              <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#40485d]/10">
-            {teamMembers.map((member) => (
-              <tr key={member.id} className="hover:bg-[var(--color-surface-container)]/30 transition-colors group">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[var(--color-surface-container)] border border-[#6B4FD8]/20 flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">
-                      {member.name.substring(0, 2).toUpperCase()}
+            {/* Zona de Seguridad (Solo Admin) */}
+            {user?.role === 'admin' && (
+              <div className="md:col-span-2 bg-[var(--color-surface-container-low)]/60 border border-amber-500/20 rounded-3xl p-6 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <ShieldAlert size={120} />
+                </div>
+                
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
+                        <Database size={20} />
+                      </div>
+                      <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">Zona de Resguardo de Datos</h3>
                     </div>
-                    <div>
-                      <p className="font-bold text-[var(--color-on-surface)]">{member.name}</p>
-                      <p className="text-xs text-[var(--color-on-surface-variant)] flex items-center gap-1">
-                        <Mail size={10} /> {member.email}
-                      </p>
-                    </div>
+                    <p className="text-[var(--color-on-surface)] font-bold">Respaldo Total del Sistema</p>
+                    <p className="text-xs text-[var(--color-on-surface-variant)] max-w-md">
+                      Descarga una copia local de toda la información de tu empresa (clientes, ventas, inventario y más). 
+                      Útil para auditorías o como medida de seguridad ante cualquier eventualidad.
+                    </p>
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`text-[10px] uppercase font-black px-2 py-1 rounded border tracking-widest leading-none flex items-center w-fit gap-1 ${member.role === 'admin'
-                      ? 'bg-[#2E8B57]/10 text-[#2E8B57] border-[#2E8B57]/20'
-                      : 'bg-[#6B4FD8]/10 text-[var(--color-primary)] border-[#6B4FD8]/20'
-                    }`}>
-                    {member.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
-                    {member.role === 'admin' ? 'Admin' : 'User'}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${member.status === 'active' ? 'bg-[#4ADE80]' : 'bg-amber-400'}`}></div>
-                    <span className={`text-xs font-bold ${member.status === 'active' ? 'text-[#4ADE80]' : 'text-amber-400'}`}>
-                      {member.status === 'active' ? 'Activo' : 'Pendiente'}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    {member.status === 'pending' && (
-                      <button
-                        onClick={() => copyInviteLink(member.inviteToken)}
-                        className="p-2 text-[var(--color-primary)] hover:bg-[#6B4FD8]/10 rounded-lg transition-all"
-                        title="Copiar Link de Invitación"
-                      >
-                        <Copy size={16} />
-                      </button>
+
+                  <button
+                    onClick={handleExportData}
+                    disabled={loadingExport}
+                    className="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loadingExport ? (
+                      <>
+                        <Loader2 size={20} className="animate-spin" />
+                        <span>PROCESANDO...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download size={20} />
+                        <span>RESCATAR TODOS LOS DATOS</span>
+                      </>
                     )}
-                    {member.id !== user.id && (
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`¿Quitar a ${member.name} del equipo?`)) {
-                            adminRemoveUser(member.id);
-                          }
-                        }}
-                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                        title="Eliminar Miembro"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {teamMembers.length === 0 && (
-          <div className="p-12 text-center">
-            <Users size={48} className="mx-auto text-[var(--color-on-surface-variant)]/30 mb-4" />
-            <p className="text-[var(--color-on-surface-variant)]">No hay otros colaboradores en tu equipo.</p>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+
+          {/* Team List */}
+          <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#0a0a0a]/50 border-b border-[var(--color-outline-variant)]">
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Colaborador</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Rol</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Estado</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#40485d]/10">
+                {teamMembers.map((member) => (
+                  <tr key={member.id} className="hover:bg-[var(--color-surface-container)]/30 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[var(--color-surface-container)] border border-[#6B4FD8]/20 flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">
+                          {member.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-bold text-[var(--color-on-surface)]">{member.name}</p>
+                          <p className="text-xs text-[var(--color-on-surface-variant)] flex items-center gap-1">
+                            <Mail size={10} /> {member.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-[10px] uppercase font-black px-2 py-1 rounded border tracking-widest leading-none flex items-center w-fit gap-1 ${member.role === 'admin'
+                          ? 'bg-[#2E8B57]/10 text-[#2E8B57] border-[#2E8B57]/20'
+                          : 'bg-[#6B4FD8]/10 text-[var(--color-primary)] border-[#6B4FD8]/20'
+                        }`}>
+                        {member.role === 'admin' ? <Shield size={10} /> : <Users size={10} />}
+                        {member.role === 'admin' ? 'Admin' : 'User'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${member.status === 'active' ? 'bg-[#4ADE80]' : 'bg-amber-400'}`}></div>
+                        <span className={`text-xs font-bold ${member.status === 'active' ? 'text-[#4ADE80]' : 'text-amber-400'}`}>
+                          {member.status === 'active' ? 'Activo' : 'Pendiente'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {member.status === 'pending' && (
+                          <button
+                            onClick={() => copyInviteLink(member.inviteToken)}
+                            className="p-2 text-[var(--color-primary)] hover:bg-[#6B4FD8]/10 rounded-lg transition-all"
+                            title="Copiar Link de Invitación"
+                          >
+                            <Copy size={16} />
+                          </button>
+                        )}
+                        {member.id !== user.id && member.status === 'active' && (
+                          <>
+                            <button
+                              onClick={() => setPermissionsModal({ isOpen: true, targetUser: member })}
+                              className="p-2 text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all"
+                              title="Configurar Permisos (ACL)"
+                            >
+                              <Lock size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleRevokeSession(member)}
+                              className="p-2 text-orange-400 hover:bg-orange-400/10 rounded-lg transition-all"
+                              title="Cerrar Sesiones Remotamente"
+                            >
+                              <LogOut size={16} />
+                            </button>
+                          </>
+                        )}
+                        {member.id !== user.id && (
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`¿Quitar a ${member.name} del equipo?`)) {
+                                adminRemoveUser(member.id);
+                              }
+                            }}
+                            className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                            title="Eliminar Miembro"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {teamMembers.length === 0 && (
+              <div className="p-12 text-center">
+                <Users size={48} className="mx-auto text-[var(--color-on-surface-variant)]/30 mb-4" />
+                <p className="text-[var(--color-on-surface-variant)]">No hay otros colaboradores en tu equipo.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <AuditLogsTab orgId={orgId} />
+      )}
 
       {/* Invite Modal */}
       {isInviteModalOpen && (
@@ -447,6 +520,16 @@ export default function TeamModule() {
           )}
           </div>
         </div>
+      )}
+
+      {/* Permissions Modal */}
+      {permissionsModal.isOpen && (
+        <PermissionsModal 
+          isOpen={permissionsModal.isOpen}
+          onClose={() => setPermissionsModal({ isOpen: false, targetUser: null })}
+          targetUser={permissionsModal.targetUser}
+          activeModules={activeModules}
+        />
       )}
     </div>
   );
