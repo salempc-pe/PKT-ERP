@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardCard({ 
   title, 
@@ -10,10 +10,23 @@ export default function DashboardCard({
   loading, 
   metrics 
 }) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(path);
+  };
+
+  const handleMetricClick = (e, metricPath) => {
+    if (metricPath) {
+      e.stopPropagation();
+      navigate(metricPath);
+    }
+  };
+
   return (
-    <Link 
-      to={path} 
-      className="group relative bg-[var(--color-surface-container)] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 shadow-sm hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden"
+    <div 
+      onClick={handleCardClick}
+      className="group relative bg-[var(--color-surface-container)] border border-white/5 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 shadow-sm hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden cursor-pointer"
       style={{ borderColor: `${color}15` }}
     >
       {/* Background Glow */}
@@ -41,12 +54,16 @@ export default function DashboardCard({
       {/* Metrics Section */}
       <div className="mt-auto grid grid-cols-2 gap-4 pt-4 md:pt-6 border-t border-white/5 relative z-10">
         {metrics.map((m, idx) => (
-          <div key={idx}>
+          <div 
+            key={idx} 
+            onClick={(e) => handleMetricClick(e, m.path)}
+            className={`transition-all ${m.path ? 'hover:scale-105 active:scale-95' : ''}`}
+          >
             <p className="text-[9px] md:text-[10px] uppercase font-bold text-[var(--color-on-surface-variant)] tracking-widest mb-1 md:mb-1.5">{m.label}</p>
             {loading ? (
               <div className="h-6 w-16 bg-white/5 animate-pulse rounded"></div>
             ) : (
-              <p className={`text-base md:text-lg font-black ${m.color || 'text-[var(--color-on-surface)]'}`}>{m.value}</p>
+              <p className={`text-base md:text-lg font-black ${m.color || 'text-[var(--color-on-surface)]'} ${m.path ? 'hover:text-[#6B4FD8]' : ''}`}>{m.value}</p>
             )}
           </div>
         ))}
@@ -57,6 +74,6 @@ export default function DashboardCard({
         className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-500"
         style={{ backgroundColor: color }}
       ></div>
-    </Link>
+    </div>
   );
 }

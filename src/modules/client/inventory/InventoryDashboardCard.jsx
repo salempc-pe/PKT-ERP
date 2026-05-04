@@ -21,11 +21,13 @@ export default function InventoryDashboardCard({ orgId }) {
       metrics={[
         { 
           label: "Valor Total", 
-          value: formatPrice(totalValue)
+          value: formatPrice(totalValue),
+          path: "/client/inventory?tab=inventory"
         },
         { 
           label: "Bajo Stock", 
-          value: lowStockCount 
+          value: lowStockCount,
+          path: "/client/inventory?tab=alerts"
         }
       ]}
     />

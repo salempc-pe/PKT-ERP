@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, AlertCircle } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
@@ -8,9 +9,18 @@ import { InteractionHistory } from './InteractionHistory';
 export default function CRMModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
+  const [searchParams, setSearchParams] = useSearchParams();
   const { contacts, leads, interactions, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead, addInteraction } = useCrm(orgId);
-  const [activeTab, setActiveTab] = useState('pipeline');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'pipeline');
   const [showModal, setShowModal] = useState(false);
+  
+  // Sincronizar pestaña activa con query param de forma reactiva
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['pipeline', 'contacts'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   const [modalType, setModalType] = useState('lead');
   const [editingLead, setEditingLead] = useState(null);
   const [editingContact, setEditingContact] = useState(null);

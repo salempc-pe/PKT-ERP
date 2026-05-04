@@ -14,8 +14,8 @@ export default function CrmDashboardCard({ orgId }) {
       color="#6B4FD8"
       loading={loading}
       metrics={[
-        { label: "Total Contactos", value: contacts.length + leads.length },
-        { label: "Nuevos Leads", value: leads.length }
+        { label: "Total Contactos", value: contacts.length + leads.length, path: "/client/crm?tab=clients" },
+        { label: "Nuevos Leads", value: leads.length, path: "/client/crm?tab=leads" }
       ]}
     />
   );

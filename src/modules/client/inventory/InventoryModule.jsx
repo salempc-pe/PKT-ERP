@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Search, Filter, AlertTriangle, Plus, ArrowDown, ArrowUp, Loader2, X, Edit2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { useInventory } from './useInventory';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
@@ -8,11 +9,22 @@ export default function InventoryModule() {
   const { user, formatPrice, currencySymbol } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { products, loading, addProduct, updateProduct } = useInventory(orgId);
+  const [searchParams] = useSearchParams();
   
   // -- Modal State --
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'inventory');
+
+  // Sincronizar pestaña activa de forma reactiva
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['inventory', 'alerts', 'movements'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   const [formData, setFormData] = useState({
     sku: '',
     name: '',
