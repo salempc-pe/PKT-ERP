@@ -2,21 +2,26 @@ import { useState } from 'react';
 import { 
   Users, Search, Filter, Plus, Edit2, 
   Trash2, CreditCard, Banknote, 
-  Calendar, TrendingUp, Wallet
+  Calendar, TrendingUp, Wallet, Clock, ReceiptText
 } from 'lucide-react';
 import { useEmployees } from './useEmployees';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingScreen from '../../../components/LoadingScreen';
 import EmployeeModal from './EmployeeModal';
+import AttendanceTab from './AttendanceTab';
+import LoansTab from './LoansTab';
 
 /**
  * Módulo de Nóminas y Recursos Humanos
- * Permite gestionar colaboradores, sueldos y beneficios.
+ * Permite gestionar colaboradores, sueldos, asistencia y préstamos.
  */
 export default function PayrollModule() {
-  const { user, formatPrice, currencySymbol } = useAuth();
+  const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { employees, loading, addEmployee, updateEmployee, deleteEmployee } = useEmployees(orgId);
+
+  // -- Navigation State --
+  const [activeTab, setActiveTab] = useState('colaboradores');
 
   // -- Modal State --
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,12 +84,19 @@ export default function PayrollModule() {
     );
   });
 
+  const tabs = [
+    { id: 'colaboradores', label: 'Colaboradores', icon: <Users size={16} /> },
+    { id: 'asistencia', label: 'Asistencia', icon: <Clock size={16} /> },
+    { id: 'prestamos', label: 'Préstamos', icon: <Wallet size={16} /> },
+    { id: 'boletas', label: 'Boletas', icon: <ReceiptText size={16} /> }
+  ];
+
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[var(--color-on-surface)] uppercase tracking-tight">Gestión de Nóminas</h2>
-          <p className="text-sm text-[var(--color-on-surface-variant)] font-medium">Control de personal, sueldos y beneficios de ley</p>
+          <h2 className="text-2xl font-black text-[var(--color-on-surface)] uppercase tracking-tight">Recursos Humanos</h2>
+          <p className="text-sm text-[var(--color-on-surface-variant)] font-medium">Gestión integral de personal y nóminas</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
@@ -109,103 +121,134 @@ export default function PayrollModule() {
         ))}
       </div>
 
-      {/* Main Table */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[var(--color-surface-container-low)] p-2 rounded-2xl border border-[var(--color-outline-variant)]">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
-            <input 
-              type="text" 
-              placeholder="Buscar colaborador..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-[var(--color-on-surface)] text-sm rounded-xl pl-12 pr-4 py-2.5 outline-none font-medium"
-            />
-          </div>
-          <div className="flex items-center gap-2 px-2">
-            <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] transition-colors"><Filter size={20}/></button>
-          </div>
-        </div>
+      {/* Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-[var(--color-outline-variant)] pb-4 overflow-x-auto no-scrollbar">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              activeTab === tab.id 
+                ? 'bg-[#6B4FD8] text-white shadow-lg' 
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-high)]'
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-[2rem] bg-[var(--color-surface-container-low)] shadow-sm">
-          <table className="w-full text-left border-separate border-spacing-0">
-            <thead>
-              <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-[0.2em] font-black">
-                <th className="px-6 py-5 first:rounded-tl-[2rem]">Colaborador</th>
-                <th className="px-6 py-5">Cargo</th>
-                <th className="px-6 py-5">Sueldo Bruto</th>
-                <th className="px-6 py-5">Método Pago</th>
-                <th className="px-6 py-5 text-right last:rounded-tr-[2rem]">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-outline-variant)]">
-              {filteredEmployees.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="px-6 py-20 text-center">
-                    <div className="flex flex-col items-center gap-3 opacity-50">
-                      <Users size={48} className="text-[var(--color-on-surface-variant)]" />
-                      <p className="text-sm font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Sin registros disponibles</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredEmployees.map((emp) => (
-                  <tr key={emp.id} className="group hover:bg-[var(--color-surface-container)] transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#6B4FD8] to-[#2E8B57] flex items-center justify-center text-white font-black text-[10px]">
-                          {emp.firstName?.[0]}{emp.lastName?.[0]}
-                        </div>
-                        <div>
-                          <p className="font-black text-sm text-[var(--color-on-surface)]">{emp.firstName} {emp.lastName}</p>
-                          <p className="text-[10px] font-mono text-[#6B4FD8] uppercase font-bold">{emp.documentId}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wide bg-[var(--color-surface-container-high)] px-2 py-1 rounded-md">{emp.position}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-black text-sm text-[var(--color-on-surface)]">{formatPrice(emp.baseSalary)}</p>
-                      {emp.variableSalary > 0 && <p className="text-[10px] text-[#2E8B57] font-bold">+{formatPrice(emp.variableSalary)} Var.</p>}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        {emp.paymentMethod === 'deposito' ? (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg border border-[#6B4FD8]/20" title={emp.bankInfo?.bankName}>
-                            <Banknote size={12} />
-                            <span className="text-[10px] font-black uppercase">Banco</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20">
-                            <CreditCard size={12} />
-                            <span className="text-[10px] font-black uppercase">Efectivo</span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={() => handleOpenEdit(emp)}
-                          className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-xl transition-all"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(emp.id)}
-                          className="p-2 text-[var(--color-on-surface-variant)] hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+      {/* Tab Content */}
+      <div className="min-h-[400px]">
+        {activeTab === 'colaboradores' && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[var(--color-surface-container-low)] p-2 rounded-2xl border border-[var(--color-outline-variant)]">
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Buscar colaborador..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-[var(--color-on-surface)] text-sm rounded-xl pl-12 pr-4 py-2.5 outline-none font-medium"
+                />
+              </div>
+              <div className="flex items-center gap-2 px-2">
+                <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] transition-colors"><Filter size={20}/></button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-[2rem] bg-[var(--color-surface-container-low)] shadow-sm">
+              <table className="w-full text-left border-separate border-spacing-0">
+                <thead>
+                  <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-[0.2em] font-black">
+                    <th className="px-6 py-5 first:rounded-tl-[2rem]">Colaborador</th>
+                    <th className="px-6 py-5">Cargo</th>
+                    <th className="px-6 py-5">Sueldo Bruto</th>
+                    <th className="px-6 py-5">Método Pago</th>
+                    <th className="px-6 py-5 text-right last:rounded-tr-[2rem]">Acciones</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody className="divide-y divide-[var(--color-outline-variant)]">
+                  {filteredEmployees.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-20 text-center">
+                        <div className="flex flex-col items-center gap-3 opacity-50">
+                          <Users size={48} className="text-[var(--color-on-surface-variant)]" />
+                          <p className="text-sm font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Sin registros disponibles</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredEmployees.map((emp) => (
+                      <tr key={emp.id} className="group hover:bg-[var(--color-surface-container)] transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#6B4FD8] to-[#2E8B57] flex items-center justify-center text-white font-black text-[10px]">
+                              {emp.firstName?.[0]}{emp.lastName?.[0]}
+                            </div>
+                            <div>
+                              <p className="font-black text-sm text-[var(--color-on-surface)]">{emp.firstName} {emp.lastName}</p>
+                              <p className="text-[10px] font-mono text-[#6B4FD8] uppercase font-bold">{emp.documentId}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wide bg-[var(--color-surface-container-high)] px-2 py-1 rounded-md">{emp.position}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-black text-sm text-[var(--color-on-surface)]">{formatPrice(emp.baseSalary)}</p>
+                          {emp.variableSalary > 0 && <p className="text-[10px] text-[#2E8B57] font-bold">+{formatPrice(emp.variableSalary)} Var.</p>}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            {emp.paymentMethod === 'deposito' ? (
+                              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg border border-[#6B4FD8]/20" title={emp.bankInfo?.bankName}>
+                                <Banknote size={12} />
+                                <span className="text-[10px] font-black uppercase">Banco</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/20">
+                                <CreditCard size={12} />
+                                <span className="text-[10px] font-black uppercase">Efectivo</span>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => handleOpenEdit(emp)}
+                              className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-xl transition-all"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(emp.id)}
+                              className="p-2 text-[var(--color-on-surface-variant)] hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'asistencia' && <AttendanceTab orgId={orgId} />}
+        {activeTab === 'prestamos' && <LoansTab orgId={orgId} />}
+        {activeTab === 'boletas' && (
+          <div className="flex flex-col items-center justify-center py-20 opacity-50 bg-[var(--color-surface-container-low)] rounded-[2rem] border border-[var(--color-outline-variant)]">
+            <ReceiptText size={48} className="text-[#6B4FD8] mb-4" />
+            <p className="text-xs font-black uppercase tracking-[0.2em]">Próximamente: Generación de Boletas PDF</p>
+          </div>
+        )}
       </div>
 
       <EmployeeModal 
