@@ -670,3 +670,161 @@
 - [x] Las subcolecciones de organizaciones tienen reglas específicas en `firestore.rules`.
 - [x] La detección de SuperAdmin no depende de un email hardcodeado.
 
+---
+
+## Milestone 4: Module Enhancements & Advanced Features
+
+### Phase 39: Agenda y Citas — Mejoras Avanzadas (calendar)
+**Status**: ⬜ Not Started
+**Objective**: Evolucionar el módulo de agenda con sincronización externa (Google Calendar/Outlook), recordatorios multicanal (correo/WhatsApp vía webhooks) y gestión de recursos físicos para evitar conflictos de capacidad.
+**Depends on**: Phase 7
+
+**Tasks**:
+- [ ] TBD (run /plan 39 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 40: CRM — Historial, Segmentación y Lead Scoring (crm)
+**Status**: ⬜ Not Started
+**Objective**: Potenciar el CRM con un log cronológico de interacciones por contacto, segmentación dinámica con etiquetas (Cliente VIP, Proveedor Crítico) y un sistema de puntuación automática (Lead Scoring) para priorizar esfuerzo comercial.
+**Depends on**: Phase 2
+
+**Tasks**:
+- [ ] TBD (run /plan 40 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 41: Dashboard Central — KPIs Configurables y Drill-down (dashboard)
+**Status**: ⬜ Not Started
+**Objective**: Permitir que los usuarios configuren qué métricas ver en el dashboard mediante widgets personalizables, e implementar drill-down para navegar del gráfico al listado filtrado de datos.
+**Depends on**: Phase 18
+
+**Tasks**:
+- [ ] TBD (run /plan 41 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 42: Contabilidad — Conciliación Bancaria, Centros de Costos y Multimoneda (finance)
+**Status**: ⬜ Not Started
+**Objective**: Implementar conciliación bancaria para comparar movimientos ERP vs estados de cuenta, centros de costos por proyecto y soporte multimoneda con tipos de cambio diarios.
+**Depends on**: Phase 6
+
+**Tasks**:
+- [ ] TBD (run /plan 42 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 43: Inventario — Valorización, Transferencias y QR/Barras (inventory)
+**Status**: ⬜ Not Started
+**Objective**: Agregar valorización automática de inventario (FIFO/Promedio Ponderado), transferencias entre almacenes con estado "en tránsito" y soporte para lectura de códigos QR/barras desde cámara o lector.
+**Depends on**: Phase 3, Phase 35
+
+**Tasks**:
+- [ ] TBD (run /plan 43 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 44: Marketplace — Add-ons y Portal de Facturación (marketplace)
+**Status**: ⬜ Not Started
+**Objective**: Implementar gestión de add-ons activables sin cambio de plan y un portal donde el tenant descargue sus facturas de uso del software y gestione su método de pago (Stripe/PayPal).
+**Depends on**: Phase 9, Phase 11
+
+**Tasks**:
+- [ ] TBD (run /plan 44 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 45: Nóminas — Asistencia, Boletas PDF y Préstamos (payroll)
+**Status**: ⬜ Not Started
+**Objective**: Evolucionar el módulo de nóminas con control de asistencia (horas, tardanzas, faltas), generación y envío masivo de boletas de pago en PDF firmadas digitalmente, y gestión de préstamos/adelantos con descuento automático en la siguiente nómina.
+**Depends on**: Phase 37
+
+**Tasks**:
+- [ ] TBD (run /plan 45 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 46: Proyectos — Gantt, Gestión Documental y Timesheet (projects)
+**Status**: ⬜ Not Started
+**Objective**: Agregar diagrama de Gantt con dependencias entre tareas, espacio de gestión documental (planos, contratos, archivos técnicos) por proyecto/tarea, y control de horas (timesheet) por colaborador para cálculo de costos operativos.
+**Depends on**: Phase 8, Phase 22
+
+**Tasks**:
+- [ ] TBD (run /plan 46 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 47: Compras — RFQ y Recepciones Parciales (purchases)
+**Status**: ⬜ Not Started
+**Objective**: Implementar Solicitud de Cotización (RFQ) como paso previo a la Orden de Compra para comparar precios de proveedores, y manejo de recepciones parciales donde la OC permanece abierta hasta completar la entrega.
+**Depends on**: Phase 28
+
+**Tasks**:
+- [ ] TBD (run /plan 47 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 48: Terrenos e Inmobiliaria — Geolocalización, Pagos y Repositorio Legal (realestate)
+**Status**: ⬜ Not Started
+**Objective**: Integrar geolocalización con mapas (Google Maps/Leaflet) para ubicación de terrenos, generar cronogramas de pago automáticos para ventas a plazos (cuotas, vencimientos, intereses) y crear repositorio legal para partidas registrales, minutas y documentos de propiedad.
+**Depends on**: Phase 32
+
+**Tasks**:
+- [ ] TBD (run /plan 48 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 49: Ventas — Facturación Electrónica, NC/ND y Cierre de Caja (sales)
+**Status**: ⬜ Not Started
+**Objective**: Conectar con el ente tributario (SUNAT) para envío y validación de documentos electrónicos en tiempo real, implementar flujos de Notas de Crédito/Débito para anulación o corrección, y crear reporte de cierre de caja diario por medio de pago.
+**Depends on**: Phase 4, Phase 17
+
+**Tasks**:
+- [ ] TBD (run /plan 49 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 50: Equipo — ACL Granular, Audit Log y Sesiones Activas (team)
+**Status**: ⬜ Not Started
+**Objective**: Implementar permisos granulares (ACL) por módulo y acción (Leer, Crear, Editar, Eliminar), registro de auditoría completo ("quién hizo qué y cuándo") en todo el sistema, y gestión de sesiones activas con capacidad de cierre remoto por seguridad.
+**Depends on**: Phase 23, Phase 29
+
+**Tasks**:
+- [ ] TBD (run /plan 50 to create)
+
+**Verification**:
+- TBD
+
