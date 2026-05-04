@@ -25,7 +25,26 @@ const TerrainSchema = z.object({
   totalPrice: z.number().min(0, "El precio total debe ser mayor a 0"),
   notes: z.string().max(1000).optional(),
   status: z.enum(["presentacion", "negociacion", "aprobado", "descartado"]).default("presentacion"),
-  buyerId: z.string().optional()
+  buyerId: z.string().optional(),
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number()
+  }).optional(),
+  presentations: z.array(z.object({
+    id: z.string(),
+    buyerId: z.string(),
+    buyerName: z.string().optional(),
+    status: z.enum(['interes', 'visita', 'propuesta', 'rechazado']),
+    notes: z.string().optional(),
+    date: z.string()
+  })).default([]),
+  documents: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    type: z.string(),
+    url: z.string(),
+    uploadedAt: z.string()
+  })).default([])
 });
 
 export const useRealEstate = (orgId = "default_org") => {
