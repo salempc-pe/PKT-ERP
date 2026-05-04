@@ -20,6 +20,7 @@ import { useRealEstate } from './useRealEstate';
 import { useCrm } from '../crm/useCrm';
 import { useAuth } from '../../../context/AuthContext';
 import TerrainModal from './TerrainModal';
+import TerrainDetailsModal from './TerrainDetailsModal';
 import LoadingScreen from '../../../components/LoadingScreen';
 
 import MapViewer from './MapViewer';
@@ -33,6 +34,7 @@ export default function RealEstateModule() {
   const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map
   const [showModal, setShowModal] = useState(false);
   const [editingTerrain, setEditingTerrain] = useState(null);
+  const [selectedTerrainForDetails, setSelectedTerrainForDetails] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCity, setFilterCity] = useState('');
 
@@ -147,7 +149,7 @@ export default function RealEstateModule() {
               </thead>
               <tbody className="divide-y divide-[#40485d]/10 text-sm">
                 {filteredTerrains.length > 0 ? filteredTerrains.map((t) => (
-                  <tr key={t.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer" onClick={() => handleOpenEdit(t)}>
+                  <tr key={t.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer" onClick={() => setSelectedTerrainForDetails(t)}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)]">
@@ -191,9 +193,18 @@ export default function RealEstateModule() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
-                        <MoreVertical size={16} />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleOpenEdit(t); }}
+                          className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-lg transition-all"
+                          title="Editar"
+                        >
+                          <Maximize2 size={16} />
+                        </button>
+                        <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
+                          <MoreVertical size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )) : (
@@ -226,7 +237,7 @@ export default function RealEstateModule() {
                   <div 
                     key={terrain.id} 
                     className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
-                    onClick={() => handleOpenEdit(terrain)}
+                    onClick={() => setSelectedTerrainForDetails(terrain)}
                   >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
@@ -317,7 +328,17 @@ export default function RealEstateModule() {
           orgId={orgId}
           onSave={editingTerrain ? updateTerrain : addTerrain}
           contacts={contacts}
-          terrains={terrains} // Para sacar las listas de ciudades/distritos existentes
+          terrains={terrains}
+        />
+      )}
+
+      {selectedTerrainForDetails && (
+        <TerrainDetailsModal
+          isOpen={!!selectedTerrainForDetails}
+          onClose={() => setSelectedTerrainForDetails(null)}
+          terrain={selectedTerrainForDetails}
+          onUpdate={updateTerrain}
+          contacts={contacts}
         />
       )}
     </div>
