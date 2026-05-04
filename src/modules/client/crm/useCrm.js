@@ -19,7 +19,9 @@ const ContactSchema = z.object({
   email: z.string().email("Email inválido").or(z.literal("")),
   phone: z.string().max(20).optional(),
   source: z.string().max(50).optional(),
-  creditDays: z.number().int().min(0).default(0)
+  creditDays: z.number().int().min(0).default(0),
+  tags: z.array(z.string()).default([]),
+  score: z.number().int().min(0).default(0)
 });
 
 const LeadSchema = z.object({
@@ -27,15 +29,40 @@ const LeadSchema = z.object({
   company: z.string().max(100).optional(),
   status: z.enum(["prospect", "negotiating", "won", "lost"]).default("prospect"),
   value: z.number().min(0).optional(),
-  notes: z.string().max(500).optional()
+  notes: z.string().max(500).optional(),
+  tags: z.array(z.string()).default([]),
+  score: z.number().int().min(0).default(0)
+});
+
+const InteractionSchema = z.object({
+  type: z.enum(["Llamada", "Correo", "Reunión", "Nota"]),
+  notes: z.string().min(1, "Notas requeridas").max(500),
+  contactId: z.string().optional(),
+  leadId: z.string().optional()
 });
 
 // Constante para verificar si Firebase está configurado
 export const useCrm = (orgId = "default_org") => {
   const [contacts, setContacts] = useState([]);
   const [leads, setLeads] = useState([]);
+  const [interactions, setInteractions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // -- Suscripción a INTERACCIONES --
+  useEffect(() => {
+    const interactionsRef = collection(db, `organizations/${orgId}/interactions`);
+    const q = query(interactionsRef, orderBy("createdAt", "desc"));
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setInteractions(data);
+    }, (err) => {
+      console.error("[useCrm] Error en suscripción de interacciones:", err);
+    });
+
+    return () => unsub();
+  }, [orgId]);
 
   // -- Suscripción a CONTACTOS --
   useEffect(() => {
@@ -156,15 +183,55 @@ export const useCrm = (orgId = "default_org") => {
     }
   };
 
+  const addInteraction = async (interactionData) => {
+    try {
+      const validatedData = InteractionSchema.parse(interactionData);
+
+      const interactionsRef = collection(db, `organizations/${orgId}/interactions`);
+      await addDoc(interactionsRef, {
+        ...validatedData,
+        createdAt: serverTimestamp()
+      });
+
+      if (validatedData.contactId) {
+        const contact = contacts.find(c => c.id === validatedData.contactId);
+        if (contact) {
+          const contactRef = doc(db, `organizations/${orgId}/contacts`, validatedData.contactId);
+          await updateDoc(contactRef, {
+            score: (contact.score || 0) + 10,
+            updatedAt: serverTimestamp()
+          });
+        }
+      }
+
+      if (validatedData.leadId) {
+        const lead = leads.find(l => l.id === validatedData.leadId);
+        if (lead) {
+          const leadRef = doc(db, `organizations/${orgId}/leads`, validatedData.leadId);
+          await updateDoc(leadRef, {
+            score: (lead.score || 0) + 10,
+            updatedAt: serverTimestamp()
+          });
+        }
+      }
+
+    } catch (err) {
+      console.error("Validation/Firestore Error in addInteraction:", err);
+      throw err;
+    }
+  };
+
   return {
     contacts,
     leads,
+    interactions,
     loading,
     error,
     addContact,
     updateContact,
     addLead,
     updateLeadStatus,
-    updateLead
+    updateLead,
+    addInteraction
   };
 };
