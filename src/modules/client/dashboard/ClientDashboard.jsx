@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
+import { Settings } from 'lucide-react';
+import DashboardSettingsModal from './DashboardSettingsModal';
 
 // Import Cards directly from their respective modules
 import CrmDashboardCard from '../crm/CrmDashboardCard';
@@ -15,12 +17,12 @@ import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
 import WarehouseDashboardCard from '../warehouse/WarehouseDashboardCard';
 import PayrollDashboardCard from '../payroll/PayrollDashboardCard';
 
-
 export default function ClientDashboard() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const activeModules = user?.subscription?.activeModules || [];
   const [logoUrl, setLogoUrl] = useState(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (!orgId || orgId === "default_org") return;
@@ -46,6 +48,11 @@ export default function ClientDashboard() {
     payroll: PayrollDashboardCard
   };
 
+  // Filter modules based on user preferences
+  const visibleModules = user?.dashboardPreferences && Array.isArray(user.dashboardPreferences)
+    ? activeModules.filter(m => user.dashboardPreferences.includes(m))
+    : activeModules;
+
   return (
     <div className="animate-in fade-in duration-500 space-y-6 md:space-y-10">
       {/* Welcome Header */}
@@ -60,13 +67,23 @@ export default function ClientDashboard() {
             </p>
           </div>
 
-          {logoUrl && (
-            <div className="hidden md:block shrink-0">
-              <div className="w-24 h-24 rounded-2xl border border-[#6B4FD8]/10 bg-[var(--color-surface-container)] overflow-hidden">
-                <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain p-2" />
+          <div className="flex items-center gap-4">
+            {logoUrl && (
+              <div className="hidden md:block shrink-0">
+                <div className="w-20 h-20 rounded-2xl border border-[#6B4FD8]/10 bg-[var(--color-surface-container)] overflow-hidden">
+                  <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain p-2" />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+            
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-2xl transition-all hover:scale-105 active:scale-95 group"
+              title="Personalizar widgets"
+            >
+              <Settings size={20} className="group-hover:rotate-45 transition-transform" />
+            </button>
+          </div>
         </div>
         
         <div className="absolute right-0 top-0 h-full w-1/3 opacity-20 pointer-events-none hidden md:block">
@@ -77,15 +94,23 @@ export default function ClientDashboard() {
 
       {/* Main Modules Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-        {activeModules.map((modKey) => {
+        {visibleModules.map((modKey) => {
           const CardComponent = moduleCards[modKey];
           if (!CardComponent) return null;
 
           return <CardComponent key={modKey} orgId={orgId} />;
         })}
-        {activeModules.includes('inventory') && <WarehouseDashboardCard orgId={orgId} />}
-        {(user?.role === 'admin' && !activeModules.includes('payroll')) && <PayrollDashboardCard orgId={orgId} />}
+        {visibleModules.includes('inventory') && <WarehouseDashboardCard orgId={orgId} />}
+        {(user?.role === 'admin' && visibleModules.includes('payroll')) && <PayrollDashboardCard orgId={orgId} />}
       </section>
+
+      {/* MODALS */}
+      <DashboardSettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        user={user}
+        activeModules={activeModules}
+      />
     </div>
   );
 }
