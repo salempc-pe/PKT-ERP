@@ -13,7 +13,7 @@ export default function CRMModule() {
   const [modalType, setModalType] = useState('lead');
   const [editingLead, setEditingLead] = useState(null);
   const [editingContact, setEditingContact] = useState(null);
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
+  const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0, tags: '', score: 0 });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
@@ -34,7 +34,9 @@ export default function CRMModule() {
       phone: lead.phone || '',
       source: lead.source || 'Manual',
       description: lead.description || '',
-      creditDays: lead.creditDays || 0
+      creditDays: lead.creditDays || 0,
+      tags: lead.tags ? lead.tags.join(', ') : '',
+      score: lead.score || 0
     });
     setSaveError(null);
     setShowModal(true);
@@ -50,7 +52,9 @@ export default function CRMModule() {
       phone: contact.phone || '',
       source: contact.source || 'Manual',
       description: contact.description || '',
-      creditDays: contact.creditDays || 0
+      creditDays: contact.creditDays || 0,
+      tags: contact.tags ? contact.tags.join(', ') : '',
+      score: contact.score || 0
     });
     setSaveError(null);
     setShowModal(true);
@@ -59,7 +63,7 @@ export default function CRMModule() {
   const handleSelectExistingContact = (e) => {
     const contactId = e.target.value;
     if (!contactId) {
-      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
+      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0, tags: '', score: 0 });
       return;
     }
     const contact = contacts.find(c => c.id === contactId);
@@ -70,7 +74,9 @@ export default function CRMModule() {
         company: contact.company || '',
         email: contact.email || '',
         phone: contact.phone || '',
-        source: contact.source || 'Manual'
+        source: contact.source || 'Manual',
+        tags: contact.tags ? contact.tags.join(', ') : '',
+        score: contact.score || 0
       });
     }
   };
@@ -80,23 +86,39 @@ export default function CRMModule() {
     setIsSaving(true);
     setSaveError(null);
     try {
+      const parsedTags = formData.tags
+        ? formData.tags.split(',').map(t => t.trim()).filter(Boolean)
+        : [];
+      
+      const payload = {
+        name: formData.name,
+        company: formData.company,
+        email: formData.email,
+        phone: formData.phone,
+        source: formData.source,
+        description: formData.description,
+        creditDays: formData.creditDays,
+        tags: parsedTags,
+        score: Number(formData.score) || 0
+      };
+
       if (modalType === 'lead') {
         if (editingLead) {
-          await updateLead(editingLead.id, formData);
+          await updateLead(editingLead.id, payload);
         } else {
-          await addLead(formData);
+          await addLead(payload);
         }
       } else {
         if (editingContact) {
-          await updateContact(editingContact.id, formData);
+          await updateContact(editingContact.id, payload);
         } else {
-          await addContact(formData);
+          await addContact(payload);
         }
       }
       setShowModal(false);
       setEditingLead(null);
       setEditingContact(null);
-      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 });
+      setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0, tags: '', score: 0 });
     } catch (err) {
       console.error("Error al guardar en el CRM:", err);
       setSaveError("Falla crítica: No se pudo registrar. Verifica tu conexión o permisos de base de datos.");
@@ -164,7 +186,14 @@ export default function CRMModule() {
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
                     <div className="flex justify-between items-start mb-1">
-                      <p className="font-extrabold text-[var(--color-on-surface)] text-sm group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">{lead.name}</p>
+                      <p className="font-extrabold text-[var(--color-on-surface)] text-sm group-hover:text-[var(--color-primary)] transition-colors line-clamp-1 flex items-center gap-2">
+                        {lead.name}
+                        {lead.score > 0 && (
+                          <span className="bg-orange-500/10 text-orange-400 text-[10px] font-black px-1.5 py-0.5 rounded border border-orange-500/20 flex items-center gap-0.5" title="Lead Score">
+                            🔥 {lead.score}
+                          </span>
+                        )}
+                      </p>
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
                         className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
@@ -173,7 +202,17 @@ export default function CRMModule() {
                       </button>
                     </div>
                     
-                    <p className="text-[10px] text-[var(--color-primary)] font-black uppercase tracking-tight mb-2">{lead.company}</p>
+                    <p className="text-[10px] text-[var(--color-primary)] font-black uppercase tracking-tight mb-1">{lead.company}</p>
+
+                    {lead.tags && lead.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {lead.tags.map((tag, idx) => (
+                          <span key={idx} className="bg-[var(--color-primary-container)]/30 text-[var(--color-primary)] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[var(--color-primary-container)]/40 select-none">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     
                     {lead.description && (
                       <p className="text-[11px] text-[var(--color-on-surface-variant)] line-clamp-2 leading-tight mb-4 opacity-70 italic">{lead.description}</p>
@@ -229,6 +268,7 @@ export default function CRMModule() {
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                   <th className="px-6 py-5">Identidad</th>
                   <th className="px-6 py-5">Contacto Directo</th>
+                  <th className="px-6 py-5">Etiquetas/Puntaje</th>
                   <th className="px-6 py-5 text-center">Crédito</th>
                   <th className="px-6 py-5">Origen / Fuente</th>
                   <th className="px-6 py-5 text-right">Acciones</th>
@@ -258,6 +298,26 @@ export default function CRMModule() {
                         </p>
                       </div>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-1">
+                        {contact.tags && contact.tags.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {contact.tags.map((tag, idx) => (
+                              <span key={idx} className="bg-[var(--color-primary-container)]/30 text-[var(--color-primary)] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[var(--color-primary-container)]/40 select-none">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-[var(--color-on-surface-variant)] italic opacity-50">-</span>
+                        )}
+                        {contact.score > 0 && (
+                          <span className="bg-orange-500/10 text-orange-400 text-[10px] font-black px-1.5 py-0.5 rounded border border-orange-500/20 w-fit flex items-center gap-0.5" title="Score">
+                            🔥 {contact.score} pts
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)]'}`}>
                         {contact.creditDays || 0} días
@@ -279,7 +339,7 @@ export default function CRMModule() {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay clientes registrados en la base de datos.</td>
+                    <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay clientes registrados en la base de datos.</td>
                   </tr>
                 )}
               </tbody>
@@ -376,6 +436,30 @@ export default function CRMModule() {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Etiquetas (Sep. por comas)</label>
+                  <input 
+                    type="text" 
+                    placeholder="VIP, Proveedor"
+                    disabled={isSaving}
+                    value={formData.tags}
+                    onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Puntaje (Lead Score)</label>
+                  <input 
+                    type="number" 
+                    disabled={isSaving}
+                    value={formData.score}
+                    onChange={(e) => setFormData({...formData, score: e.target.value})}
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-xs"
                   />
                 </div>
               </div>
