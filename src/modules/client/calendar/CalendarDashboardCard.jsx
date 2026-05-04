@@ -1,9 +1,9 @@
 import { Calendar } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
-import { useAppointments } from './useAppointments';
+import { useCalendar } from './useCalendar';
 
 export default function CalendarDashboardCard({ orgId }) {
-  const { appointments, loading } = useAppointments(orgId);
+  const { appointments, loading } = useCalendar(orgId);
 
   const todayStr = new Date().toISOString().split('T')[0];
   const appsToday = appointments.filter(a => a.date === todayStr && a.status === 'PENDING').length;

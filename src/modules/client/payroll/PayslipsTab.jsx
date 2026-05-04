@@ -84,7 +84,7 @@ export default function PayslipsTab({ orgId }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center md:hidden">
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-on-surface)]">Planilla Mensual Consolida</h3>
           <p className="text-xs text-[var(--color-on-surface-variant)]">Resumen de pagos, bonos y descuentos</p>

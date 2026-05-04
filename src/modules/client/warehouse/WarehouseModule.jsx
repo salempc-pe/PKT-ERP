@@ -106,7 +106,7 @@ export default function WarehouseModule() {
     <div className="animate-in fade-in duration-500 space-y-6">
       {/* Header & Actions */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+        <div className="lg:hidden">
           <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight flex items-center gap-2">
             <Package className="text-[var(--color-primary)]" /> Inventario de Bodega
           </h2>

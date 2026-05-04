@@ -12,7 +12,7 @@ import CalendarDashboardCard from '../calendar/CalendarDashboardCard';
 import FinanceDashboardCard from '../finance/FinanceDashboardCard';
 import PurchasesDashboardCard from '../purchases/PurchasesDashboardCard';
 import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
-import WarehouseDashboardCard from '../inventory/WarehouseDashboardCard';
+import WarehouseDashboardCard from '../warehouse/WarehouseDashboardCard';
 import PayrollDashboardCard from '../payroll/PayrollDashboardCard';
 
 

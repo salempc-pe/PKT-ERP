@@ -41,11 +41,23 @@ export default function AttendanceTab({ orgId }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:hidden bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)]">
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-on-surface)]">Control de Asistencia</h3>
           <p className="text-xs text-[var(--color-on-surface-variant)]">Registro diario de ingresos, salidas y faltas</p>
         </div>
+        <div className="flex items-center gap-2 bg-[var(--color-surface-container)] px-3 py-2 rounded-xl border border-[var(--color-outline-variant)]">
+          <CalendarIcon size={16} className="text-[#6B4FD8]" />
+          <input 
+            type="date" 
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="bg-transparent text-xs font-bold outline-none text-[var(--color-on-surface)]"
+          />
+        </div>
+      </div>
+
+      <div className="hidden md:flex justify-end">
         <div className="flex items-center gap-2 bg-[var(--color-surface-container)] px-3 py-2 rounded-xl border border-[var(--color-outline-variant)]">
           <CalendarIcon size={16} className="text-[#6B4FD8]" />
           <input 

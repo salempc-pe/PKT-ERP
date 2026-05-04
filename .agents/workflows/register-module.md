@@ -1,5 +1,6 @@
-# Workflow: Register Module
-Este workflow automatiza la integración de un nuevo módulo en la estructura de PKT ERP.
+---
+description: Este workflow automatiza la integración de un nuevo módulo en la estructura de PKT ERP.
+---
 
 ## Parámetros Requeridos
 - **Folder**: Nombre de la carpeta en `src/modules/client/` (ej: `billing`).

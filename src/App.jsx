@@ -19,7 +19,7 @@ import AdminRoute from './components/AdminRoute';
 import TeamModule from './modules/client/team/TeamModule';
 import PurchasesModule from './modules/client/purchases/PurchasesModule';
 import RealEstateModule from './modules/client/realestate/RealEstateModule';
-import WarehouseModule from './modules/client/inventory/WarehouseModule';
+import WarehouseModule from './modules/client/warehouse/WarehouseModule';
 import PayrollModule from './modules/client/payroll/PayrollModule';
 
 
@@ -28,6 +28,7 @@ import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
 import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
 import FeedbackButton from './components/FeedbackButton';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   useEffect(() => {
@@ -46,64 +47,66 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/setup-password" element={<SetupPassword />} />
-          
-          {/* Client Routes */}
-          <Route path="/client" element={<ClientLayout />}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<ClientDashboard />} />
-
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/setup-password" element={<SetupPassword />} />
             
-            {/* Protected Modules */}
-            <Route element={<ModuleRoute module="crm" />}>
-              <Route path="crm" element={<CRMModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="inventory" />}>
-              <Route path="inventory" element={<InventoryModule />} />
-              <Route path="warehouse" element={<WarehouseModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="sales" />}>
-              <Route path="sales" element={<SalesModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="finance" />}>
-              <Route path="finance" element={<FinanceModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="calendar" />}>
-              <Route path="calendar" element={<CalendarModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="projects" />}>
-              <Route path="projects" element={<ProjectModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="purchases" />}>
-              <Route path="purchases" element={<PurchasesModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="realestate" />}>
-              <Route path="realestate" element={<RealEstateModule />} />
-            </Route>
-            <Route element={<ModuleRoute module="payroll" />}>
-              <Route path="payroll" element={<PayrollModule />} />
-            </Route>
+            {/* Client Routes */}
+            <Route path="/client" element={<ClientLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<ClientDashboard />} />
 
-            <Route path="settings" element={<SettingsModule />} />
-            <Route element={<AdminRoute />}>
-              <Route path="team" element={<TeamModule />} />
+              
+              {/* Protected Modules */}
+              <Route element={<ModuleRoute module="crm" />}>
+                <Route path="crm" element={<CRMModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="inventory" />}>
+                <Route path="inventory" element={<InventoryModule />} />
+                <Route path="warehouse" element={<WarehouseModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="sales" />}>
+                <Route path="sales" element={<SalesModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="finance" />}>
+                <Route path="finance" element={<FinanceModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="calendar" />}>
+                <Route path="calendar" element={<CalendarModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="projects" />}>
+                <Route path="projects" element={<ProjectModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="purchases" />}>
+                <Route path="purchases" element={<PurchasesModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="realestate" />}>
+                <Route path="realestate" element={<RealEstateModule />} />
+              </Route>
+              <Route element={<ModuleRoute module="payroll" />}>
+                <Route path="payroll" element={<PayrollModule />} />
+              </Route>
+
+              <Route path="settings" element={<SettingsModule />} />
+              <Route element={<AdminRoute />}>
+                <Route path="team" element={<TeamModule />} />
+              </Route>
             </Route>
-          </Route>
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="clients" element={<AdminClients />} />
-            <Route path="sales" element={<AdminBillingModule />} />
-            <Route path="logs" element={<ActivityLogs />} />
-          </Route>
-          <Route path="/login" element={<Navigate to="/" replace />} />
-          
-          {/* Fallback for undefined routes */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="clients" element={<AdminClients />} />
+              <Route path="sales" element={<AdminBillingModule />} />
+              <Route path="logs" element={<ActivityLogs />} />
+            </Route>
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            
+            {/* Fallback for undefined routes */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
         <FeedbackButton />
       </AuthProvider>
       </ThemeProvider>

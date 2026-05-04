@@ -41,9 +41,16 @@ export default function LoansTab({ orgId }) {
     }
   };
 
+  // Cálculo seguro del progreso
+  const getProgress = (loan) => {
+    if (!loan.amount || loan.amount === 0) return 0;
+    const progress = ((loan.amount - loan.remainingBalance) / loan.amount) * 100;
+    return isNaN(progress) ? 0 : Math.min(100, Math.max(0, progress));
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:hidden">
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-on-surface)]">Gestión de Préstamos y Adelantos</h3>
           <p className="text-xs text-[var(--color-on-surface-variant)]">Control de saldos pendientes y cuotas mensuales</p>
@@ -62,10 +69,10 @@ export default function LoansTab({ orgId }) {
             <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
               <th className="px-6 py-4">Colaborador</th>
               <th className="px-6 py-4">Tipo</th>
-              <th className="px-6 py-4">Monto Total</th>
-              <th className="px-6 py-4">Cuotas</th>
-              <th className="px-6 py-4">Cuota Mensual</th>
-              <th className="px-6 py-4">Saldo Pendiente</th>
+              <th className="px-6 py-4 text-right">Monto Total</th>
+              <th className="px-6 py-4 text-center">Cuotas</th>
+              <th className="px-6 py-4 text-right">Cuota Mensual</th>
+              <th className="px-6 py-4 text-right">Saldo Pendiente</th>
               <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
           </thead>
@@ -79,6 +86,7 @@ export default function LoansTab({ orgId }) {
             ) : (
               loans.map(loan => {
                 const emp = employees.find(e => e.id === loan.employeeId);
+                const progress = getProgress(loan);
                 return (
                   <tr key={loan.id} className="hover:bg-[var(--color-surface-container)]/50 transition-colors">
                     <td className="px-6 py-4">
@@ -96,16 +104,16 @@ export default function LoansTab({ orgId }) {
                         {loan.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-xs text-[var(--color-on-surface)]">{formatPrice(loan.amount)}</td>
-                    <td className="px-6 py-4 font-bold text-xs text-[var(--color-on-surface-variant)]">{loan.installments}</td>
-                    <td className="px-6 py-4 font-bold text-xs text-[#2E8B57]">{formatPrice(loan.monthlyInstallment)}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
+                    <td className="px-6 py-4 font-bold text-xs text-[var(--color-on-surface)] text-right">{formatPrice(loan.amount)}</td>
+                    <td className="px-6 py-4 font-bold text-xs text-[var(--color-on-surface-variant)] text-center">{loan.installments}</td>
+                    <td className="px-6 py-4 font-bold text-xs text-[#2E8B57] text-right">{formatPrice(loan.monthlyInstallment)}</td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex flex-col items-end gap-1">
                         <span className="font-black text-xs text-[var(--color-on-surface)]">{formatPrice(loan.remainingBalance)}</span>
-                        <div className="w-full bg-[var(--color-surface-container-high)] h-1 rounded-full overflow-hidden">
+                        <div className="w-20 bg-[var(--color-surface-container-high)] h-1 rounded-full overflow-hidden">
                           <div 
-                            className="bg-[#2E8B57] h-full" 
-                            style={{ width: `${((loan.amount - loan.remainingBalance) / loan.amount) * 100}%` }}
+                            className="bg-[#2E8B57] h-full transition-all duration-500" 
+                            style={{ width: `${progress}%` }}
                           />
                         </div>
                       </div>

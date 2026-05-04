@@ -3,6 +3,7 @@ import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, L
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import VeloLogo from '../../components/VeloLogo';
+import ErrorBoundary from '../../components/ErrorBoundary';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -107,7 +108,9 @@ export default function AdminLayout() {
       {/* Main Content Canvas */}
       <main className="flex-1 p-6 lg:p-10 w-full max-h-screen overflow-y-auto" style={{ backgroundColor: 'var(--color-background)' }}>
         <div className="max-w-7xl mx-auto">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
     </div>

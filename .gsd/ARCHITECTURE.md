@@ -86,3 +86,5 @@ PKT ERP is a multi-tenant enterprise resource planning solution designed for sma
 **Structure:** Feature-based organization under `src/modules/`. Each feature contains its own hooks and components.
 **Testing:** No automated testing patterns established yet.
 **Styling:** Tailwind CSS with extensive use of CSS variables (design tokens) for theming.
+**Títulos de Módulos (Desktop):** Los títulos y subtítulos de los módulos NO deben mostrarse en la versión de escritorio de la aplicación. Cualquier contenedor de títulos debe incluir la clase `lg:hidden` de Tailwind.
+

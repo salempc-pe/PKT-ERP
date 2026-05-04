@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // Configuración de Firebase
 // Nota: Las variables deben empezar con VITE_ para que sean accesibles en el cliente
@@ -29,6 +30,21 @@ try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   auth = getAuth(app);
+
+  // Inicializar App Check
+  if (typeof window !== 'undefined') {
+    // En desarrollo, permitimos el uso de tokens de depuración
+    if (import.meta.env.DEV) {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
+
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY || 'TU_SITE_KEY_AQUÍ'),
+      isTokenAutoRefreshEnabled: true
+    });
+    console.log("🛡️ App Check inicializado");
+  }
+
   console.log("✅ Firebase inicializado correctamente");
 } catch (error) {
   console.error("❌ Error al inicializar Firebase:", error.message);

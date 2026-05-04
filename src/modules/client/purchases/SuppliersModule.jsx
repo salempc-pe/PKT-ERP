@@ -67,7 +67,7 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
     <div className={`animate-in fade-in duration-500 space-y-8 ${embedded ? '' : 'pb-10'}`}>
       {!embedded && (
         <div className="flex justify-between items-center">
-          <div>
+          <div className="lg:hidden">
             <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Proveedores</h2>
             <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona tus fuentes de abastecimiento y materia prima.</p>
           </div>

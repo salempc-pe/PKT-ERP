@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import VeloLogo from '../../components/VeloLogo';
+import ErrorBoundary from '../../components/ErrorBoundary';
 
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -293,7 +294,9 @@ export default function ClientLayout() {
             </div>
           )}
           
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
     </div>

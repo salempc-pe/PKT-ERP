@@ -61,7 +61,7 @@ export default function MarketplaceModule() {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header Section */}
-      <div className="relative overflow-hidden rounded-[2.5rem] p-12 text-white">
+      <div className="relative overflow-hidden rounded-[2.5rem] p-12 text-white lg:hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 z-0"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-10"></div>
 
