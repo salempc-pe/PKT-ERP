@@ -705,19 +705,19 @@
 ---
 
 ### Phase 41: Dashboard Central — KPIs Configurables y Drill-down (dashboard)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Permitir que los usuarios configuren qué métricas ver en el dashboard mediante widgets personalizables, e implementar drill-down para navegar del gráfico al listado filtrado de datos.
 **Depends on**: Phase 18
 
 **Tasks**:
-- [ ] Plan 41.1: Personalización de Widgets del Dashboard (Modal de preferencias de usuario).
-- [ ] Plan 41.2: Drill-down y Navegación de KPIs (CRM e Inventario como patrón base).
+- [x] Plan 41.1: Personalización de Widgets del Dashboard (Modal de preferencias de usuario).
+- [x] Plan 41.2: Drill-down y Navegación de KPIs (CRM e Inventario como patrón base).
 
 **Verification**:
-- [ ] El usuario puede elegir qué módulos mostrar/ocultar en su dashboard.
-- [ ] Las preferencias del dashboard se guardan y mantienen entre sesiones.
-- [ ] Al hacer clic en la tarjeta de CRM en el dashboard, se navega al módulo de CRM en la pestaña correcta.
-- [ ] Al hacer clic en un KPI de Inventario, se navega al inventario con el filtro apropiado.
+- [x] El usuario puede elegir qué módulos mostrar/ocultar en su dashboard.
+- [x] Las preferencias del dashboard se guardan y mantienen entre sesiones.
+- [x] Al hacer clic en la tarjeta de CRM en el dashboard, se navega al módulo de CRM en la pestaña correcta.
+- [x] Al hacer clic en un KPI de Inventario, se navega al inventario con el filtro apropiado.
 
 ---
 
