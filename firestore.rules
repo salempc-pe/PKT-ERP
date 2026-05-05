@@ -10,7 +10,7 @@ service cloud.firestore {
 
     // Función auxiliar para obtener el organizationId del usuario actual
     function getUserOrg() {
-      return userExists() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.organizationId : null;
+      return userExists() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('organizationId', null) : null;
     }
 
     // Función para verificar si el usuario es Super Admin del SaaS (Gestiona todo)
@@ -18,8 +18,8 @@ service cloud.firestore {
     function isSuperAdmin() {
       let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
       return userExists() && (
-        userData.role == 'superadmin' ||
-        (userData.role == 'admin' && !('organizationId' in userData))
+        userData.get('role', 'user') == 'superadmin' ||
+        (userData.get('role', 'user') == 'admin' && !('organizationId' in userData))
       );
     }
 
@@ -27,7 +27,7 @@ service cloud.firestore {
     // Solo aplica a admins QUE sí tienen organizationId (admins de empresa cliente)
     function isOrgAdmin() {
       let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-      return userExists() && userData.role == 'admin' && 'organizationId' in userData;
+      return userExists() && userData.get('role', 'user') == 'admin' && 'organizationId' in userData;
     }
 
     // --- Colección de Usuarios ---
@@ -80,8 +80,14 @@ service cloud.firestore {
 
       // --- Subcolecciones de la Organización ---
       
-      // CRM: Contactos y Leads
+      // CRM: Contactos, Leads e Interacciones
       match /contacts/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /leads/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /interactions/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       
@@ -117,7 +123,7 @@ service cloud.firestore {
       match /suppliers/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
-      match /purchase_orders/{docId} {
+      match /purchases/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       
@@ -134,10 +140,10 @@ service cloud.firestore {
       }
       
       // Bodega / Warehouse
-      match /warehouse/{docId} {
+      match /warehouse_stock/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
-      match /warehouse_movements/{docId} {
+      match /warehouse_history/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       
