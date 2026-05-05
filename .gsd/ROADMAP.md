@@ -847,3 +847,16 @@
 - [x] Existe una pestaña de "Registro de Actividad" visible para administradores.
 - [x] Forzar el cierre de sesión remotamente desloguea al usuario en tiempo real.
 
+---
+
+### Phase 51: Estabilización de Plataforma y Corrección de Permisos
+**Status**: ⬜ Not Started
+**Objective**: Corregir errores críticos de hooks, sincronizar nombres de colecciones en reglas de Firestore y resolver advertencias de seguridad y acceso a módulos.
+**Depends on**: Phase 50
+
+**Tasks**:
+- [ ] TBD (run /plan 51 to create)
+
+**Verification**:
+- TBD
+
