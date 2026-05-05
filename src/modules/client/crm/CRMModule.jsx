@@ -13,7 +13,7 @@ export default function CRMModule() {
   const { contacts, leads, interactions, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead, addInteraction } = useCrm(orgId);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'pipeline');
   const [showModal, setShowModal] = useState(false);
-  
+
   // Sincronizar pestaña activa con query param de forma reactiva
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -54,7 +54,7 @@ export default function CRMModule() {
     setSaveError(null);
     setShowModal(true);
   };
-  
+
   const handleOpenEditContact = (contact) => {
     setModalType('contact');
     setEditingContact(contact);
@@ -102,7 +102,7 @@ export default function CRMModule() {
       const parsedTags = formData.tags
         ? formData.tags.split(',').map(t => t.trim()).filter(Boolean)
         : [];
-      
+
       const payload = {
         name: formData.name,
         company: formData.company,
@@ -148,13 +148,13 @@ export default function CRMModule() {
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
-          <button 
+          <button
             onClick={() => setActiveTab('pipeline')}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
             <Kanban size={16} /> Pipeline
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('contacts')}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
@@ -163,14 +163,14 @@ export default function CRMModule() {
         </div>
 
         {activeTab === 'pipeline' ? (
-          <button 
+          <button
             onClick={() => { setModalType('lead'); setEditingLead(null); setShowModal(true); setSaveError(null); }}
             className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Kanban size={18} /> Iniciar Lead
           </button>
         ) : (
-          <button 
+          <button
             onClick={() => { setModalType('contact'); setEditingContact(null); setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 }); setShowModal(true); setSaveError(null); }}
             className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
@@ -192,16 +192,16 @@ export default function CRMModule() {
                   {leads.filter(l => l.status === stage.id).length}
                 </span>
               </div>
-              
+
               <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-variant)]/40 border border-[var(--color-outline-variant)] rounded-2xl h-full min-h-[300px]">
                 {leads.filter(l => l.status === stage.id).map(lead => (
-                  <div 
-                    key={lead.id} 
+                  <div
+                    key={lead.id}
                     onClick={() => { setHistoryEntity(lead); setHistoryEntityType('lead'); }}
                     className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
                   >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
-                    
+
                     <div className="flex justify-between items-start mb-1">
                       <p className="font-extrabold text-[var(--color-on-surface)] text-sm group-hover:text-[var(--color-primary)] transition-colors line-clamp-1 flex items-center gap-2">
                         {lead.name}
@@ -211,14 +211,14 @@ export default function CRMModule() {
                           </span>
                         )}
                       </p>
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
                         className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
                       >
-                        <MoreVertical size={14}/>
+                        <MoreVertical size={14} />
                       </button>
                     </div>
-                    
+
                     <p className="text-[10px] text-[var(--color-primary)] font-black uppercase tracking-tight mb-1">{lead.company}</p>
 
                     {lead.tags && lead.tags.length > 0 && (
@@ -230,7 +230,7 @@ export default function CRMModule() {
                         ))}
                       </div>
                     )}
-                    
+
                     {lead.description && (
                       <p className="text-[11px] text-[var(--color-on-surface-variant)] line-clamp-2 leading-tight mb-4 opacity-70 italic">{lead.description}</p>
                     )}
@@ -238,7 +238,7 @@ export default function CRMModule() {
                     <div className="flex justify-between items-center mt-2 pt-3 border-t border-[var(--color-outline-variant)]">
                       <div className="flex gap-1.5 w-full">
                         {stage.prev && (
-                          <button 
+                          <button
                             onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.prev); }}
                             className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] bg-[var(--color-primary-container)]/50 hover:bg-[var(--color-primary-container)] rounded-lg border border-[var(--color-outline-variant)] transition-all flex-1 flex justify-center"
                             title="Retroceder etapa"
@@ -246,16 +246,16 @@ export default function CRMModule() {
                             <Kanban size={12} className="rotate-180" />
                           </button>
                         )}
-                        
+
                         {stage.id === 'negotiating' ? (
                           <div className="flex gap-1 flex-[3]">
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'won'); }}
                               className="text-[9px] font-black uppercase bg-green-500/10 text-green-400 px-2 py-1 rounded border border-green-500/20 hover:bg-green-500 hover:text-white transition-all flex-1"
                             >
                               Ganado
                             </button>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'lost'); }}
                               className="text-[9px] font-black uppercase bg-red-500/10 text-red-300 px-2 py-1 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex-1"
                             >
@@ -263,7 +263,7 @@ export default function CRMModule() {
                             </button>
                           </div>
                         ) : stage.next && (
-                          <button 
+                          <button
                             onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.next); }}
                             className="p-1.5 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all flex-[2] flex items-center justify-center gap-2 text-[10px] font-bold uppercase"
                           >
@@ -280,98 +280,98 @@ export default function CRMModule() {
         </div>
       ) : (
         <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                  <th className="px-6 py-5">Identidad</th>
-                  <th className="px-6 py-5">Contacto Directo</th>
-                  <th className="px-6 py-5">Etiquetas/Puntaje</th>
-                  <th className="px-6 py-5 text-center">Crédito</th>
-                  <th className="px-6 py-5">Origen / Fuente</th>
-                  <th className="px-6 py-5 text-right">Acciones</th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
+                <th className="px-6 py-5">Identidad</th>
+                <th className="px-6 py-5">Contacto Directo</th>
+                <th className="px-6 py-5">Etiquetas/Puntaje</th>
+                <th className="px-6 py-5 text-center">Crédito</th>
+                <th className="px-6 py-5">Origen / Fuente</th>
+                <th className="px-6 py-5 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#40485d]/10 text-sm">
+              {contacts.length > 0 ? contacts.map((contact) => (
+                <tr
+                  key={contact.id}
+                  onClick={() => { setHistoryEntity(contact); setHistoryEntityType('contact'); }}
+                  className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs">
+                        {contact.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-[var(--color-on-surface)]">{contact.name}</p>
+                        <p className="text-[11px] text-[var(--color-on-surface-variant)]">{contact.company}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-[var(--color-on-surface)] font-medium text-xs flex items-center gap-1.5">
+                        <Mail size={12} className="text-[var(--color-on-surface-variant)]" /> {contact.email}
+                      </p>
+                      <p className="text-[var(--color-on-surface-variant)] text-xs flex items-center gap-1.5">
+                        <Phone size={12} /> {contact.phone}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col gap-1">
+                      {contact.tags && contact.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {contact.tags.map((tag, idx) => (
+                            <span key={idx} className="bg-[var(--color-primary-container)]/30 text-[var(--color-primary)] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[var(--color-primary-container)]/40 select-none">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-[var(--color-on-surface-variant)] italic opacity-50">-</span>
+                      )}
+                      {contact.score > 0 && (
+                        <span className="bg-orange-500/10 text-orange-400 text-[10px] font-black px-1.5 py-0.5 rounded border border-orange-500/20 w-fit flex items-center gap-0.5" title="Score">
+                          🔥 {contact.score} pts
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)]'}`}>
+                      {contact.creditDays || 0} días
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[10px] font-black bg-[var(--color-surface-container)] text-[var(--color-primary)] px-2 py-1 rounded border border-[#6B4FD8]/10 uppercase">
+                      {contact.source}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}
+                      className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
+                    >
+                      <MoreVertical size={16} />
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-[#40485d]/10 text-sm">
-                {contacts.length > 0 ? contacts.map((contact) => (
-                  <tr 
-                    key={contact.id} 
-                    onClick={() => { setHistoryEntity(contact); setHistoryEntityType('contact'); }}
-                    className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs">
-                          {contact.name.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-bold text-[var(--color-on-surface)]">{contact.name}</p>
-                          <p className="text-[11px] text-[var(--color-on-surface-variant)]">{contact.company}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-0.5">
-                        <p className="text-[var(--color-on-surface)] font-medium text-xs flex items-center gap-1.5">
-                          <Mail size={12} className="text-[var(--color-on-surface-variant)]"/> {contact.email}
-                        </p>
-                        <p className="text-[var(--color-on-surface-variant)] text-xs flex items-center gap-1.5">
-                          <Phone size={12}/> {contact.phone}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        {contact.tags && contact.tags.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {contact.tags.map((tag, idx) => (
-                              <span key={idx} className="bg-[var(--color-primary-container)]/30 text-[var(--color-primary)] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[var(--color-primary-container)]/40 select-none">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-[10px] text-[var(--color-on-surface-variant)] italic opacity-50">-</span>
-                        )}
-                        {contact.score > 0 && (
-                          <span className="bg-orange-500/10 text-orange-400 text-[10px] font-black px-1.5 py-0.5 rounded border border-orange-500/20 w-fit flex items-center gap-0.5" title="Score">
-                            🔥 {contact.score} pts
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)]'}`}>
-                        {contact.creditDays || 0} días
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-[10px] font-black bg-[var(--color-surface-container)] text-[var(--color-primary)] px-2 py-1 rounded border border-[#6B4FD8]/10 uppercase">
-                        {contact.source}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}
-                        className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                )) : (
-                  <tr>
-                    <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay clientes registrados en la base de datos.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              )) : (
+                <tr>
+                  <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay clientes registrados en la base de datos.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
-          <form 
+          <form
             onSubmit={handleAddSubmit}
             className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
@@ -379,16 +379,16 @@ export default function CRMModule() {
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">
                 {editingLead || editingContact ? 'Editar' : 'Añadir'} {modalType === 'lead' ? 'Lead' : 'Contacto'}
               </h3>
-              <button 
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  disabled={isSaving}
-                  className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors disabled:opacity-50"
-                >
-                <X size={20}/>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                disabled={isSaving}
+                className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors disabled:opacity-50"
+              >
+                <X size={20} />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-4">
               {saveError && (
                 <div className="bg-red-500/20 border border-red-500/50 p-3 rounded-xl flex items-center gap-3 text-red-300 text-xs animate-pulse">
@@ -402,7 +402,7 @@ export default function CRMModule() {
                   <label className="text-[9px] font-black text-[var(--color-primary)] uppercase flex items-center gap-2">
                     <Users size={12} /> Vincular Contacto Existente
                   </label>
-                  <select 
+                  <select
                     onChange={handleSelectExistingContact}
                     className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8]"
                   >
@@ -416,24 +416,24 @@ export default function CRMModule() {
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Nombre Completo</label>
-                <input 
+                <input
                   required
-                  type="text" 
+                  type="text"
                   autoFocus
                   disabled={isSaving}
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Empresa</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   disabled={isSaving}
                   value={formData.company}
-                  onChange={(e) => setFormData({...formData, company: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-sm font-bold"
                 />
               </div>
@@ -441,21 +441,21 @@ export default function CRMModule() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Correo</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     disabled={isSaving}
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Teléfono</label>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     disabled={isSaving}
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50"
                   />
                 </div>
@@ -464,22 +464,22 @@ export default function CRMModule() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Etiquetas (Sep. por comas)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="VIP, Proveedor"
                     disabled={isSaving}
                     value={formData.tags}
-                    onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-xs"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase">Puntaje (Lead Score)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     disabled={isSaving}
                     value={formData.score}
-                    onChange={(e) => setFormData({...formData, score: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, score: e.target.value })}
                     className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none disabled:opacity-50 text-xs"
                   />
                 </div>
@@ -487,7 +487,7 @@ export default function CRMModule() {
             </div>
 
             <div className="p-6 bg-[var(--color-surface-container)] flex gap-3">
-              <button 
+              <button
                 type="button"
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
@@ -495,7 +495,7 @@ export default function CRMModule() {
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2"
@@ -508,7 +508,7 @@ export default function CRMModule() {
       )}
 
       {historyEntity && (
-        <InteractionHistory 
+        <InteractionHistory
           entity={historyEntity}
           entityType={historyEntityType}
           interactions={interactions}

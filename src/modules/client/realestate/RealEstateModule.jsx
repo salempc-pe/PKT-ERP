@@ -31,7 +31,7 @@ export default function RealEstateModule() {
   const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const { terrains, loading, addTerrain, updateTerrain, deleteTerrain } = useRealEstate(orgId);
-  const { investors, loading: loadingInv, addInvestor, updateInvestor, deleteInvestor } = useInvestors(orgId);
+  const { investors, loading: loadingInv, error: investorsError, addInvestor, updateInvestor, deleteInvestor } = useInvestors(orgId);
   const { contacts } = useCrm(orgId);
   
   const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map | buyers
@@ -58,6 +58,20 @@ export default function RealEstateModule() {
 
   const uniqueCities = [...new Set(terrains.map(t => t.city))];
 
+  // Generar instancias para el Pipeline basadas en presentaciones
+  const pipelineInstances = terrains.flatMap(terrain => 
+    (terrain.presentations || []).map(pres => ({
+      ...pres,
+      terrainId: terrain.id,
+      address: terrain.address,
+      city: terrain.city,
+      district: terrain.district,
+      totalPrice: terrain.totalPrice,
+      area: terrain.area,
+      originalTerrain: terrain
+    }))
+  );
+
   const handleOpenEdit = (terrain) => {
     setEditingTerrain(terrain);
     setShowModal(true);
@@ -68,6 +82,29 @@ export default function RealEstateModule() {
       await updateTerrain(terrainId, { status: newStatus });
     } catch (err) {
       console.error("Error al actualizar estado:", err);
+    }
+  };
+
+  const handleSaveTerrain = async (id, data) => {
+    if (id) {
+      return await updateTerrain(id, data);
+    } else {
+      return await addTerrain(data);
+    }
+  };
+
+  const handlePresentationStatusChange = async (terrainId, presId, newStatus) => {
+    try {
+      const terrain = terrains.find(t => t.id === terrainId);
+      if (!terrain) return;
+      
+      const newPresentations = terrain.presentations.map(p => 
+        p.id === presId ? { ...p, status: newStatus } : p
+      );
+      
+      await updateTerrain(terrainId, { presentations: newPresentations });
+    } catch (err) {
+      console.error("Error al actualizar estado de presentación:", err);
     }
   };
 
@@ -153,7 +190,6 @@ export default function RealEstateModule() {
                   <th className="px-6 py-5">Propietario</th>
                   <th className="px-6 py-5">Corredores</th>
                   <th className="px-6 py-5">Área / Precio</th>
-                  <th className="px-6 py-5">Estado</th>
                   <th className="px-6 py-5 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -203,16 +239,6 @@ export default function RealEstateModule() {
                         </p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-lg border ${
-                        t.status === 'aprobado' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                        t.status === 'negociacion' ? 'bg-[#6B4FD8]/10 text-[var(--color-primary)] border-[#6B4FD8]/20' :
-                        t.status === 'descartado' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                        'bg-[#a3aac4]/10 text-[var(--color-on-surface-variant)] border-[#a3aac4]/20'
-                      }`}>
-                        {t.status}
-                      </span>
-                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
@@ -245,53 +271,50 @@ export default function RealEstateModule() {
             <div key={stage.id} className="flex flex-col gap-4">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[var(--color-on-surface-variant)]">
-                  <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>
-                  {stage.title}
+                   <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>
+                   {stage.title}
                 </div>
                 <span className="text-[var(--color-on-surface-variant)] font-bold text-xs">
-                  {terrains.filter(t => t.status === stage.id).length}
+                  {pipelineInstances.filter(p => p.status === stage.id).length}
                 </span>
               </div>
               
               <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-variant)]/40 border border-[var(--color-outline-variant)] rounded-2xl h-full min-h-[300px]">
-                {terrains.filter(t => t.status === stage.id).map(terrain => (
+                {pipelineInstances.filter(p => p.status === stage.id).map(instance => (
                   <div 
-                    key={terrain.id} 
-                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
-                    onClick={() => setSelectedTerrainForDetails(terrain)}
+                    key={`${instance.terrainId}-${instance.id}`} 
+                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all group relative overflow-hidden"
                   >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
                     <div className="flex justify-between items-start mb-2">
-                      <p className="font-extrabold text-[var(--color-on-surface)] text-xs group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">{terrain.address}</p>
-                      <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)]">
-                        <Maximize2 size={12}/>
-                      </button>
+                      <p className="font-extrabold text-[var(--color-on-surface)] text-xs group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">{instance.address}</p>
                     </div>
                     
                     <div className="flex items-center gap-1.5 mb-3">
                       <MapPin size={10} className="text-[var(--color-primary)]" />
-                      <p className="text-[10px] text-[var(--color-on-surface-variant)] font-bold uppercase tracking-tight">{terrain.district}, {terrain.city}</p>
+                      <p className="text-[10px] text-[var(--color-on-surface-variant)] font-bold uppercase tracking-tight">{instance.district}, {instance.city}</p>
                     </div>
                     
                     <div className="flex justify-between items-center mb-3">
-                      <p className="text-[11px] font-black text-[var(--color-on-surface)]">{formatPrice(terrain.totalPrice)}</p>
-                      <p className="text-[10px] text-[var(--color-on-surface-variant)]">{terrain.area} m²</p>
+                      <p className="text-[11px] font-black text-[var(--color-on-surface)]">{formatPrice(instance.totalPrice)}</p>
+                      <p className="text-[10px] text-[var(--color-on-surface-variant)]">{instance.area} m²</p>
                     </div>
 
-                    {terrain.buyerId && (
-                      <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-container-low)] rounded-lg mb-3 border border-[#6B4FD8]/10">
-                        <div className="w-5 h-5 rounded-full bg-[#6B4FD8] flex items-center justify-center text-[8px] font-black text-[#002150]">
-                          {contacts.find(c => c.id === terrain.buyerId)?.name.charAt(0)}
-                        </div>
-                        <p className="text-[9px] text-[var(--color-primary)] font-bold truncate">Comprador: {contacts.find(c => c.id === terrain.buyerId)?.name}</p>
+                    <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-container-low)] rounded-lg mb-3 border border-[#6B4FD8]/10">
+                      <div className="w-5 h-5 rounded-full bg-[#6B4FD8] flex items-center justify-center text-[8px] font-black text-[#002150]">
+                        {instance.buyerName?.charAt(0) || <User size={8}/>}
                       </div>
-                    )}
+                      <div>
+                        <p className="text-[8px] text-[var(--color-on-surface-variant)] uppercase font-black tracking-tighter">Interesado</p>
+                        <p className="text-[10px] text-[var(--color-primary)] font-bold truncate">{instance.buyerName || 'Sin nombre'}</p>
+                      </div>
+                    </div>
 
                     <div className="flex gap-1 pt-3 border-t border-[var(--color-outline-variant)]">
                       {stage.id === 'presentacion' && (
                         <button 
-                          onClick={(e) => { e.stopPropagation(); handleStatusChange(terrain.id, 'negociacion'); }}
+                          onClick={(e) => { e.stopPropagation(); handlePresentationStatusChange(instance.terrainId, instance.id, 'negociacion'); }}
                           className="w-full text-[9px] font-black uppercase bg-[#6B4FD8]/10 text-[var(--color-primary)] px-2 py-1.5 rounded border border-[#6B4FD8]/20 hover:bg-[#6B4FD8] hover:text-[#002150] transition-all flex items-center justify-center gap-1"
                         >
                           Negociación <ArrowRight size={10} />
@@ -300,13 +323,13 @@ export default function RealEstateModule() {
                       {stage.id === 'negociacion' && (
                         <>
                           <button 
-                            onClick={(e) => { e.stopPropagation(); handleStatusChange(terrain.id, 'aprobado'); }}
+                            onClick={(e) => { e.stopPropagation(); handlePresentationStatusChange(instance.terrainId, instance.id, 'aprobado'); }}
                             className="flex-1 text-[9px] font-black uppercase bg-green-500/10 text-green-400 px-2 py-1.5 rounded border border-green-500/20 hover:bg-green-500 hover:text-white transition-all"
                           >
                             Aprobar
                           </button>
                           <button 
-                            onClick={(e) => { e.stopPropagation(); handleStatusChange(terrain.id, 'descartado'); }}
+                            onClick={(e) => { e.stopPropagation(); handlePresentationStatusChange(instance.terrainId, instance.id, 'descartado'); }}
                             className="flex-1 text-[9px] font-black uppercase bg-red-500/10 text-red-300 px-2 py-1.5 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition-all"
                           >
                             Descartar
@@ -315,7 +338,7 @@ export default function RealEstateModule() {
                       )}
                       {(stage.id === 'aprobado' || stage.id === 'descartado') && (
                         <button 
-                          onClick={(e) => { e.stopPropagation(); handleStatusChange(terrain.id, 'negociacion'); }}
+                          onClick={(e) => { e.stopPropagation(); handlePresentationStatusChange(instance.terrainId, instance.id, 'negociacion'); }}
                           className="w-full text-[9px] font-black uppercase bg-[#40485d]/10 text-[var(--color-on-surface-variant)] px-2 py-1.5 rounded border border-[#40485d]/20 hover:bg-[#40485d] hover:text-white transition-all flex items-center justify-center gap-1"
                         >
                           <ChevronLeft size={10} /> Volver a Negoc.
@@ -325,7 +348,7 @@ export default function RealEstateModule() {
                   </div>
                 ))}
 
-                {terrains.filter(t => t.status === stage.id).length === 0 && (
+                {pipelineInstances.filter(p => p.status === stage.id).length === 0 && (
                   <div className="flex-1 flex items-center justify-center text-[var(--color-on-surface-variant)] opacity-20 text-[10px] italic py-10">
                     Vacío
                   </div>
@@ -348,6 +371,7 @@ export default function RealEstateModule() {
             onUpdate={updateInvestor}
             onDelete={deleteInvestor}
             loading={loadingInv}
+            error={investorsError}
           />
         </div>
       )}
@@ -358,7 +382,7 @@ export default function RealEstateModule() {
           onClose={() => setShowModal(false)}
           terrain={editingTerrain}
           orgId={orgId}
-          onSave={editingTerrain ? updateTerrain : addTerrain}
+          onSave={handleSaveTerrain}
           contacts={contacts}
           investors={investors}
           terrains={terrains}
@@ -369,7 +393,7 @@ export default function RealEstateModule() {
         <TerrainDetailsModal
           isOpen={!!selectedTerrainForDetails}
           onClose={() => setSelectedTerrainForDetails(null)}
-          terrain={selectedTerrainForDetails}
+          terrain={terrains.find(t => t.id === selectedTerrainForDetails.id) || selectedTerrainForDetails}
           onUpdate={updateTerrain}
           contacts={contacts}
           investors={investors}

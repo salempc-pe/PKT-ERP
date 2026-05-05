@@ -16,7 +16,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
   // State for new presentation
   const [newPresentation, setNewPresentation] = useState({
     buyerId: '',
-    status: 'interes',
+    status: 'presentacion',
     notes: '',
     date: new Date().toISOString().split('T')[0]
   });
@@ -37,7 +37,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
       await onUpdate(terrain.id, { presentations: updatedPresentations });
       setNewPresentation({
         buyerId: '',
-        status: 'interes',
+        status: 'presentacion',
         notes: '',
         date: new Date().toISOString().split('T')[0]
       });
@@ -247,10 +247,10 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
                       onChange={(e) => setNewPresentation({...newPresentation, status: e.target.value})}
                       className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                     >
-                      <option value="interes">Interés</option>
-                      <option value="visita">Visita</option>
-                      <option value="propuesta">Propuesta</option>
-                      <option value="rechazado">Rechazado</option>
+                      <option value="presentacion">Presentación</option>
+                      <option value="negociacion">Negociación</option>
+                      <option value="aprobado">Aprobado</option>
+                      <option value="descartado">Descartado</option>
                     </select>
                   </div>
                   <div className="space-y-1.5">
@@ -292,15 +292,15 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
                     <div key={p.id} className="bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)] flex justify-between items-center group">
                       <div className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          p.status === 'propuesta' ? 'bg-green-500/10 text-green-500' :
-                          p.status === 'rechazado' ? 'bg-red-500/10 text-red-500' :
-                          p.status === 'visita' ? 'bg-blue-500/10 text-blue-500' :
-                          'bg-amber-500/10 text-amber-500'
+                          p.status === 'aprobado' ? 'bg-green-500/10 text-green-500' :
+                          p.status === 'descartado' ? 'bg-red-500/10 text-red-500' :
+                          p.status === 'negociacion' ? 'bg-amber-500/10 text-amber-500' :
+                          'bg-blue-500/10 text-blue-500'
                         }`}>
-                          {p.status === 'propuesta' ? <CheckCircle2 size={20} /> :
-                           p.status === 'rechazado' ? <X size={20} /> :
-                           p.status === 'visita' ? <Eye size={20} /> :
-                           <Clock size={20} />}
+                          {p.status === 'aprobado' ? <CheckCircle2 size={20} /> :
+                           p.status === 'descartado' ? <X size={20} /> :
+                           p.status === 'negociacion' ? <Clock size={20} /> :
+                           <Send size={20} />}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">

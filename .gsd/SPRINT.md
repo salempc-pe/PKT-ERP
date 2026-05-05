@@ -1,33 +1,36 @@
-# Sprint: realestate-refinement
+# Sprint 48.1 — realestate-geocoding-validation
 
 > **Duration**: 2026-05-04 to 2026-05-05
 > **Status**: In Progress
 
 ## Goal
-Refinar el módulo de Inmobiliaria permitiendo la gestión de múltiples corredores por terreno y la separación de Compradores (Inversionistas/Constructoras) de la lista general de Clientes.
+Implementar búsqueda automática de ubicación por dirección (Geocoding) y flexibilizar la validación de campos obligatorios en el registro de terrenos.
 
 ## Scope
 
 ### Included
-- Modificar el listado principal de Terrenos para mostrar múltiples corredores.
-- Implementar un sistema de gestión de "Constructoras e Inversionistas" (Compradores Potenciales).
-- Actualizar los formularios de Terrenos para asignar Compradores desde esta nueva lista específica.
-- Mejorar el UI del multi-select de corredores.
+- Geocoding con Nominatim (OSM) en TerrainModal.
+- Actualización de TerrainSchema para hacer el precio opcional.
+- Verificación de campos obligatorios (dirección, ciudad, distrito, propietario, área).
 
 ### Explicitly Excluded
-- Integración con facturación electrónica (Fase 49).
-- Automatización de correos a inversionistas.
+- Integración con Google Maps API (se usará OSM/Nominatim).
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Implementar esquema y UI para Múltiples Corredores | Claude | ⬜ Todo | 1 |
-| Crear hook y vista para Gestión de Inversionistas/Constructoras | Claude | ⬜ Todo | 2 |
-| Vincular Terrenos con la nueva lista de Compradores | Claude | ⬜ Todo | 1 |
-| Actualizar Vista de Datos y Kanban con nueva información | Claude | ⬜ Todo | 1 |
+| Flexibilizar TerrainSchema | Claude | ✅ Done | 0.2 |
+| Implementar búsqueda por dirección en TerrainModal | Claude | ✅ Done | 1.0 |
+| Validar campos obligatorios en UI | Claude | ✅ Done | 0.3 |
+| Sincronizar estados de presentación con Pipeline | Claude | ✅ Done | 0.5 |
 
 ## Daily Log
 
 ### 2026-05-04
-- Sprint iniciado: refinamiento de Inmobiliaria.
+- Sprint iniciado.
+- Precio hecho opcional en el esquema de validación.
+- Implementado Geocoding en TerrainModal.
+- Rediseñado Pipeline para trabajar por instancias de presentación.
+- Sincronizados estados de presentación con Pipeline.
+- Sprint cerrado con éxito.

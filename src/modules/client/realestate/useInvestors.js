@@ -16,11 +16,11 @@ import { z } from "zod";
 const InvestorSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
   type: z.enum(["inversionista", "constructora"]),
-  contactName: z.string().optional(),
-  email: z.string().email().optional().or(z.literal('')),
-  phone: z.string().optional(),
-  notes: z.string().optional(),
-  budget: z.number().optional(), // Presupuesto total o estimado
+  contactName: z.string().optional().nullable(),
+  email: z.string().email().optional().or(z.literal('')).nullable(),
+  phone: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  budget: z.number().optional().default(0),
   minInvestment: z.number().optional().default(0),
   maxInvestment: z.number().optional().default(0),
   minArea: z.number().optional().default(0),
@@ -37,7 +37,7 @@ export const useInvestors = (orgId = "default_org") => {
     if (!orgId) return;
 
     const ref = collection(db, `organizations/${orgId}/realEstateInvestors`);
-    const q = query(ref, orderBy("createdAt", "desc"));
+    const q = query(ref); // Eliminamos orderBy temporalmente para evitar error de índices
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -53,22 +53,48 @@ export const useInvestors = (orgId = "default_org") => {
   }, [orgId]);
 
   const addInvestor = async (data) => {
-    const validated = InvestorSchema.parse(data);
-    const ref = collection(db, `organizations/${orgId}/realEstateInvestors`);
-    return await addDoc(ref, {
-      ...validated,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
+    try {
+      // Pre-procesar: Convertir campos vacíos a valores seguros
+      const cleanData = {
+        ...data,
+        budget: Number(data.budget) || 0,
+        minInvestment: Number(data.minInvestment) || 0,
+        maxInvestment: Number(data.maxInvestment) || 0,
+        minArea: Number(data.minArea) || 0,
+        maxArea: Number(data.maxArea) || 0,
+        email: data.email || ''
+      };
+
+      const validated = InvestorSchema.parse(cleanData);
+      const ref = collection(db, `organizations/${orgId}/realEstateInvestors`);
+      return await addDoc(ref, {
+        ...validated,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("[useInvestors] addInvestor error:", err);
+      throw err;
+    }
   };
 
   const updateInvestor = async (id, data) => {
-    const validated = InvestorSchema.partial().parse(data);
-    const ref = doc(db, `organizations/${orgId}/realEstateInvestors`, id);
-    return await updateDoc(ref, {
-      ...validated,
-      updatedAt: serverTimestamp()
-    });
+    try {
+      const cleanData = { ...data };
+      ['budget', 'minInvestment', 'maxInvestment', 'minArea', 'maxArea'].forEach(key => {
+        if (key in cleanData) cleanData[key] = Number(cleanData[key]) || 0;
+      });
+
+      const validated = InvestorSchema.partial().parse(cleanData);
+      const ref = doc(db, `organizations/${orgId}/realEstateInvestors`, id);
+      return await updateDoc(ref, {
+        ...validated,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("[useInvestors] updateInvestor error:", err);
+      throw err;
+    }
   };
 
   const deleteInvestor = async (id) => {

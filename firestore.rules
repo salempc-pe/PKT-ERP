@@ -122,10 +122,14 @@ service cloud.firestore {
       }
       
       // Real Estate: Terrenos y Pipeline
-      match /terrains/{docId} {
+      match /realEstateTerrains/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       match /pipeline/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      
+      match /realEstateInvestors/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       

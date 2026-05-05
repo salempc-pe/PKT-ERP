@@ -4,11 +4,14 @@ import {
   Trash2, Edit2, Building2, User,
   CheckCircle2, XCircle, Loader2, AlertCircle
 } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
-export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, loading }) {
+export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, loading, error }) {
+  const { currencySymbol, formatPrice } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [saveError, setSaveError] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     type: 'inversionista',
@@ -25,19 +28,29 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
   });
 
   const [filterMinInv, setFilterMinInv] = useState(0);
-  const [filterMaxArea, setFilterMaxArea] = useState(0);
+  const [filterMinArea, setFilterMinArea] = useState(0);
 
   const filtered = investors.filter(i => {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         i.contactName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesInvestment = filterMinInv === 0 || (i.maxInvestment >= filterMinInv);
-    const matchesArea = filterMaxArea === 0 || (i.minArea <= filterMaxArea);
+    
+    // Lógica de rangos: 0 significa no configurado (infinito/cualquiera)
+    // Inversión Mínima: Mostrar inversionistas cuya capacidad MAX sea >= al filtro (o si su MAX es 0)
+    const matchesInvestment = filterMinInv === 0 || 
+                             (i.maxInvestment >= filterMinInv) || 
+                             (i.maxInvestment === 0);
+    
+    // Área Mínima: Mostrar inversionistas cuyo MAX de interés sea >= al filtro (o si su MAX es 0)
+    const matchesArea = filterMinArea === 0 || 
+                       (i.maxArea >= filterMinArea) || 
+                       (i.maxArea === 0);
     
     return matchesSearch && matchesInvestment && matchesArea;
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaveError(null);
     try {
       if (editingId) {
         await onUpdate(editingId, formData);
@@ -47,6 +60,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
       resetForm();
     } catch (err) {
       console.error("Error al guardar:", err);
+      setSaveError(err.message || "Error al conectar con la base de datos");
     }
   };
 
@@ -66,6 +80,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
       status: 'activo'
     });
     setEditingId(null);
+    setSaveError(null);
     setShowForm(false);
   };
 
@@ -77,47 +92,61 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+      <div className="bg-[var(--color-surface-container-low)]/50 p-3 rounded-2xl border border-[var(--color-outline-variant)] flex flex-wrap items-center gap-4 shadow-sm">
+        {/* Búsqueda Compacta */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
           <input 
             type="text" 
-            placeholder="Buscar constructoras o inversionistas..."
+            placeholder="Buscar comprador..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-10 pr-4 py-2.5 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-sm"
+            className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-[#6B4FD8] transition-all"
           />
         </div>
 
-        <div className="flex gap-4 w-full md:w-auto">
-          <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] ml-1">Inversión Mín.</label>
+        {/* Filtros de Rango Integrados */}
+        <div className="flex items-center gap-4 border-l border-[var(--color-outline-variant)] pl-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-60">Inversión {'>'}</span>
             <input 
               type="number"
-              value={filterMinInv}
+              value={filterMinInv || ''}
               onChange={(e) => setFilterMinInv(Number(e.target.value))}
-              placeholder="Min Inversión"
-              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-1.5 text-xs font-bold outline-none focus:border-[#6B4FD8] w-28"
+              placeholder="0"
+              className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1.5 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] ml-1">Área Máx. m²</label>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-60">Área {'>'}</span>
             <input 
               type="number"
-              value={filterMaxArea}
-              onChange={(e) => setFilterMaxArea(Number(e.target.value))}
-              placeholder="Max Área"
-              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-1.5 text-xs font-bold outline-none focus:border-[#6B4FD8] w-28"
+              value={filterMinArea || ''}
+              onChange={(e) => setFilterMinArea(Number(e.target.value))}
+              placeholder="0"
+              className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1.5 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
             />
           </div>
+          {(filterMinInv > 0 || filterMinArea > 0) && (
+            <button 
+              onClick={() => { setFilterMinInv(0); setFilterMinArea(0); }}
+              className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+              title="Limpiar filtros"
+            >
+              <XCircle size={14} />
+            </button>
+          )}
         </div>
 
-        <button 
-          onClick={() => setShowForm(true)}
-          className="w-full md:w-auto bg-[#6B4FD8] text-white font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all"
-        >
-          <Plus size={18} /> Nuevo Comprador
-        </button>
+        {/* Botón de Acción */}
+        <div className="border-l border-[var(--color-outline-variant)] pl-4">
+          <button 
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="bg-[#6B4FD8] text-white font-black px-5 py-2 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
+          >
+            <Plus size={14} /> Nuevo Comprador
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -226,6 +255,12 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               />
             </div>
 
+            {saveError && (
+              <div className="col-span-full flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] font-black uppercase">
+                <AlertCircle size={14} /> {saveError}
+              </div>
+            )}
+
             <div className="flex gap-3 items-end">
               <button 
                 type="button" 
@@ -250,6 +285,13 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
           <div className="col-span-full py-10 flex flex-col items-center gap-3 text-[#6B4FD8]">
             <Loader2 className="animate-spin" size={32} />
             <p className="text-xs font-black uppercase tracking-widest">Cargando inversionistas...</p>
+          </div>
+        ) : error ? (
+          <div className="col-span-full py-10 flex flex-col items-center gap-3 text-red-500 bg-red-500/5 border border-red-500/20 rounded-3xl">
+            <AlertCircle size={32} />
+            <p className="text-xs font-black uppercase tracking-widest text-center px-6">
+              Error al cargar inversionistas: {error}
+            </p>
           </div>
         ) : filtered.length > 0 ? filtered.map(investor => (
           <div key={investor.id} className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-[2rem] p-6 hover:border-[#6B4FD8]/40 transition-all group relative overflow-hidden shadow-sm">
@@ -287,13 +329,19 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
                 <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
                   <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Inversión</p>
                   <p className="text-[10px] font-black text-[var(--color-on-surface)]">
-                    ${investor.minInvestment?.toLocaleString()} - ${investor.maxInvestment?.toLocaleString()}
+                    {investor.minInvestment === 0 && investor.maxInvestment === 0 ? 'Cualquiera' :
+                     investor.minInvestment > 0 && investor.maxInvestment === 0 ? `> ${formatPrice(investor.minInvestment)}` :
+                     investor.minInvestment === 0 && investor.maxInvestment > 0 ? `< ${formatPrice(investor.maxInvestment)}` :
+                     `${formatPrice(investor.minInvestment)} - ${formatPrice(investor.maxInvestment)}`}
                   </p>
                 </div>
                 <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
                   <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Área m²</p>
                   <p className="text-[10px] font-black text-[var(--color-on-surface)]">
-                    {investor.minArea?.toLocaleString()} - {investor.maxArea?.toLocaleString()}
+                    {investor.minArea === 0 && investor.maxArea === 0 ? 'Cualquiera' :
+                     investor.minArea > 0 && investor.maxArea === 0 ? `> ${investor.minArea.toLocaleString()} m²` :
+                     investor.minArea === 0 && investor.maxArea > 0 ? `< ${investor.maxArea.toLocaleString()} m²` :
+                     `${investor.minArea.toLocaleString()} - ${investor.maxArea.toLocaleString()} m²`}
                   </p>
                 </div>
               </div>

@@ -58,33 +58,40 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
   const availableModules = MODULES_CONFIG.filter(m => activeModules.includes(m.key));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
-        <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[#0a0a0a]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#6B4FD8]/10 rounded-xl flex items-center justify-center text-[var(--color-primary)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => !loading && onClose()}></div>
+      
+      <div className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-[2rem] w-full max-w-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
+        <div className="p-5 border-b border-[var(--color-outline-variant)] bg-[var(--color-surface-container-high)] flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-[#6B4FD8] rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
               <Shield size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-[var(--color-on-surface)]">Permisos de Acceso</h2>
-              <p className="text-[10px] text-[var(--color-on-surface-variant)] uppercase font-bold tracking-widest">
-                Configurando a: {targetUser.name}
+              <h2 className="text-sm font-black text-[var(--color-on-surface)] uppercase tracking-widest">Permisos de Acceso</h2>
+              <p className="text-[9px] text-[#6B4FD8] font-bold uppercase tracking-wider">
+                Usuario: {targetUser.name}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-[var(--color-on-surface-variant)] hover:text-white rounded-xl transition-colors">
-            <X size={20} />
+          <button 
+            onClick={onClose} 
+            className="w-8 h-8 rounded-full bg-[var(--color-surface-container-highest)] text-[var(--color-on-surface-variant)] flex items-center justify-center hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all border border-[var(--color-outline-variant)]"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
-          <div className="overflow-hidden border border-[var(--color-outline-variant)] rounded-2xl bg-[#0a0a0a]/30">
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+          <div className="overflow-hidden border border-[var(--color-outline-variant)] rounded-2xl bg-[var(--color-surface-container-low)]">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#0a0a0a]/50 border-b border-[var(--color-outline-variant)]">
-                  <th className="px-6 py-4 text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider">Módulo</th>
+                <tr className="bg-[var(--color-surface-variant)] border-b border-[var(--color-outline-variant)]">
+                  <th className="px-6 py-4 text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Módulo</th>
                   {ACTIONS.map(action => (
-                    <th key={action.key} className="px-4 py-4 text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider text-center">
+                    <th key={action.key} className="px-4 py-4 text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest text-center">
                       {action.name}
                     </th>
                   ))}
@@ -92,9 +99,9 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
               </thead>
               <tbody className="divide-y divide-[var(--color-outline-variant)]">
                 {availableModules.map(module => (
-                  <tr key={module.key} className="hover:bg-[var(--color-surface-container)]/30 transition-colors">
+                  <tr key={module.key} className="hover:bg-[var(--color-surface-container-high)]/50 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-[var(--color-on-surface)]">{module.name}</span>
+                      <span className="text-xs font-bold text-[var(--color-on-surface)] uppercase tracking-tight">{module.name}</span>
                     </td>
                     {ACTIONS.map(action => {
                       const isActive = permissions[module.key]?.[action.key];
@@ -102,10 +109,10 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
                         <td key={action.key} className="px-4 py-4 text-center">
                           <button
                             onClick={() => togglePermission(module.key, action.key)}
-                            className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all ${
+                            className={`w-6 h-6 mx-auto rounded-md border flex items-center justify-center transition-all ${
                               isActive 
-                                ? 'bg-[#6B4FD8] border-[#6B4FD8] text-[#0a0a0a]' 
-                                : 'border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50 text-transparent'
+                                ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white shadow-sm' 
+                                : 'bg-white border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50 text-transparent'
                             }`}
                           >
                             <Check size={14} strokeWidth={4} />
@@ -120,20 +127,22 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
           </div>
         </div>
 
-        <div className="p-6 bg-[#0a0a0a]/50 border-t border-[var(--color-outline-variant)] flex justify-end gap-3">
+        {/* Footer */}
+        <div className="p-5 bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)] flex gap-4">
           <button
             onClick={onClose}
-            className="px-6 py-3 rounded-xl font-bold text-sm text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container)] transition-all"
+            disabled={loading}
+            className="flex-1 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all"
           >
-            Cancelar
+            Descartar
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-8 py-3 rounded-xl font-black text-sm bg-[#6B4FD8] text-[#0a0a0a] hover:bg-[#a6c3ff] transition-all flex items-center gap-2 shadow-lg shadow-[#6B4FD8]/10"
+            className="flex-[2] bg-[#6B4FD8] text-white font-black px-6 py-3 rounded-xl hover:shadow-[0_10px_20px_rgba(107,79,216,0.2)] transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest disabled:opacity-50"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
-            <span>GUARDAR PERMISOS</span>
+            <span>Guardar Permisos</span>
           </button>
         </div>
       </div>

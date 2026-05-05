@@ -194,10 +194,10 @@ export function AuthProvider({ children }) {
 
             const { password, ...userWithoutPassword } = userData;
             const isSuperAdmin = userData.role === 'superadmin' || 
-                               (userData.role === 'admin' && !userData.organizationId);
+                               (!userData.organizationId && (userData.role === 'admin' || userData.role === 'superadmin'));
 
             const role = isSuperAdmin ? 'superadmin' : (userData.role || 'user');
-            const isAdmin = role === 'admin' || role === 'superadmin';
+            const isAdmin = role === 'admin' || role === 'superadmin' || role === 'client';
 
               const userWithSub = {
                 ...userWithoutPassword,
@@ -284,7 +284,7 @@ export function AuthProvider({ children }) {
         
         // SuperAdmin = rol admin/superadmin sin organizaciónId
         const isSuperAdmin = foundUser.role === 'superadmin' || 
-          (foundUser.role === 'admin' && !foundUser.organizationId);
+                           (!foundUser.organizationId && (foundUser.role === 'admin' || foundUser.role === 'superadmin'));
         
         const role = isSuperAdmin ? 'superadmin' : (foundUser.role || 'user');
         const isAdmin = isSuperAdmin || role === 'admin' || role === 'client';
@@ -415,7 +415,7 @@ export function AuthProvider({ children }) {
 
   // Listener reactivo para ACL y Sesiones
   useEffect(() => {
-    if (!user?.uid || !user?.loginAt) return;
+    if (!user?.uid || !user?.loginAt || isImpersonating) return;
 
     const userDocRef = doc(db, 'users', user.uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
@@ -434,16 +434,27 @@ export function AuthProvider({ children }) {
         }
 
         // 2. Actualizar permisos/roles si cambiaron (evita loops si no hay cambios reales)
+        // Recalcular rol virtual de superadmin para evitar que se sobrescriba con 'admin'
+        const isSuperAdmin = newData.role === 'superadmin' || 
+                           (!newData.organizationId && (newData.role === 'admin' || newData.role === 'superadmin'));
+        const calculatedRole = isSuperAdmin ? 'superadmin' : (newData.role || 'user');
+
         const currentPerms = JSON.stringify(user.permissions || {});
         const newPerms = JSON.stringify(newData.permissions || {});
-        if (currentPerms !== newPerms || newData.role !== user.role) {
-          setUser(prev => ({ ...prev, ...newData }));
+        
+        if (currentPerms !== newPerms || calculatedRole !== user.role) {
+          setUser(prev => ({ 
+            ...prev, 
+            ...newData, 
+            role: calculatedRole,
+            isAdmin: calculatedRole === 'admin' || calculatedRole === 'superadmin'
+          }));
         }
       }
     });
 
     return () => unsubscribe();
-  }, [user?.uid, user?.loginAt]);
+  }, [user?.uid, user?.loginAt, isImpersonating]);
 
   // Crear Organización COMPLETA en Firestore (con opción de primer admin)
   const adminCreateOrg = async (orgData) => {

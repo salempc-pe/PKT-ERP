@@ -21,20 +21,19 @@ const TerrainSchema = z.object({
   ownerId: z.string().min(1, "Propietario requerido"),
   brokers: z.array(z.string()).default([]),
   area: z.number().min(0, "El área debe ser mayor a 0"),
-  pricePerM2: z.number().min(0, "El precio por m2 debe ser mayor a 0"),
-  totalPrice: z.number().min(0, "El precio total debe ser mayor a 0"),
-  notes: z.string().max(1000).optional(),
+  pricePerM2: z.number().min(0).optional().default(0),
+  totalPrice: z.number().min(0).optional().default(0),
+  notes: z.string().max(1000).optional().nullable().or(z.literal('')),
   status: z.enum(["presentacion", "negociacion", "aprobado", "descartado"]).default("presentacion"),
-  buyerId: z.string().optional(),
   coordinates: z.object({
     lat: z.number(),
     lng: z.number()
-  }).optional(),
+  }).optional().nullable(),
   presentations: z.array(z.object({
     id: z.string(),
     buyerId: z.string(),
     buyerName: z.string().optional(),
-    status: z.enum(['interes', 'visita', 'propuesta', 'rechazado']),
+    status: z.enum(['presentacion', 'negociacion', 'aprobado', 'descartado']),
     notes: z.string().optional(),
     date: z.string()
   })).default([]),

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle, Map as MapIcon } from 'lucide-react';
+import { X, Building2, MapPin, User, Calculator, Plus, Loader2, AlertCircle, Search, Map as MapIcon } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import MapViewer from './MapViewer';
 
@@ -16,11 +16,13 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
     totalPrice: 0,
     notes: '',
     status: 'presentacion',
-    buyerId: '',
+    presentations: [],
+    documents: [],
     coordinates: null
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
   const [newBroker, setNewBroker] = useState('');
 
@@ -29,11 +31,38 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
   const districts = [...new Set(terrains.map(t => t.district))].filter(Boolean);
   const existingBrokers = [...new Set(terrains.flatMap(t => t.brokers || []))].filter(Boolean);
 
+  const handleSearchAddress = async () => {
+    if (!formData.address) return;
+    setIsSearching(true);
+    setError(null);
+    try {
+      const query = `${formData.address}, ${formData.district}, ${formData.city}`;
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        setFormData(prev => ({
+          ...prev,
+          coordinates: { lat: parseFloat(lat), lng: parseFloat(lon) }
+        }));
+      } else {
+        setError("No se pudo encontrar la ubicación exacta. Por favor, marca el mapa manualmente.");
+      }
+    } catch (err) {
+      console.error("Error geocoding:", err);
+      setError("Error al buscar la dirección.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   useEffect(() => {
     if (terrain) {
       setFormData({
         ...terrain,
-        buyerId: terrain.buyerId || ''
+        presentations: terrain.presentations || [],
+        documents: terrain.documents || []
       });
     } else {
       setFormData({
@@ -47,7 +76,9 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
         totalPrice: 0,
         notes: '',
         status: 'presentacion',
-        buyerId: ''
+        presentations: [],
+        documents: [],
+        coordinates: null
       });
     }
     setError(null);
@@ -91,7 +122,12 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
       onClose();
     } catch (err) {
       console.error("Error al guardar terreno:", err);
-      setError("Error al guardar la propiedad. Verifica los campos.");
+      if (err.name === 'ZodError') {
+        const issues = err.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ');
+        setError(`Error de validación: ${issues}`);
+      } else {
+        setError(err.message || "Error al guardar la propiedad. Verifica los campos.");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -141,7 +177,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           {/* Ubicación */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Ciudad</label>
+              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Ciudad *</label>
               <div className="relative">
                 <input 
                   list="cities-list"
@@ -157,7 +193,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Distrito</label>
+              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Distrito *</label>
               <div className="relative">
                 <input 
                   list="districts-list"
@@ -198,16 +234,28 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Dirección Exacta</label>
+            <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1 flex justify-between">
+              <span>Dirección Exacta *</span>
+              <span className="text-[9px] lowercase font-medium opacity-50 italic">Presiona la lupa para ubicar en mapa</span>
+            </label>
             <div className="relative">
               <MapPin size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" />
               <input 
                 required
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl pl-12 pr-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all text-sm"
+                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl pl-12 pr-14 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all text-sm font-bold"
                 placeholder="Av. Principal 123..."
               />
+              <button 
+                type="button"
+                onClick={handleSearchAddress}
+                disabled={isSearching || !formData.address}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg hover:bg-[#6B4FD8] hover:text-white transition-all disabled:opacity-50"
+                title="Buscar en mapa"
+              >
+                {isSearching ? <Loader2 className="animate-spin" size={18} /> : <Search size={18} />}
+              </button>
             </div>
           </div>
 
@@ -216,7 +264,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           {/* Personas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Propietario / Cliente</label>
+              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Propietario / Cliente *</label>
               <select 
                 required
                 value={formData.ownerId}
@@ -229,19 +277,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 ))}
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-wider ml-1">Posible Comprador (Inversionista/Constructora)</label>
-              <select 
-                value={formData.buyerId}
-                onChange={(e) => setFormData({...formData, buyerId: e.target.value})}
-                className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-xl px-5 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] focus:ring-4 focus:ring-[#6B4FD8]/10 outline-none transition-all font-bold text-sm appearance-none"
-              >
-                <option value="">Ninguno asignado...</option>
-                {investors.map(inv => (
-                  <option key={inv.id} value={inv.id}>{inv.name} ({inv.type})</option>
-                ))}
-              </select>
-            </div>
+            {/* Campo de Comprador eliminado por solicitud del usuario */}
           </div>
 
           <div className="space-y-3">
@@ -289,7 +325,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Área (m²)</label>
+                <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Área (m²) *</label>
                 <input 
                   type="number"
                   required
@@ -302,7 +338,6 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Precio x m² ({currencySymbol})</label>
                 <input 
                   type="number"
-                  required
                   value={formData.pricePerM2}
                   onChange={(e) => handlePriceChange('pricePerM2', e.target.value)}
                   className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black text-purple-400"
@@ -312,7 +347,6 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                 <label className="text-[9px] font-black text-[#2E8B57] uppercase ml-1">Precio Total ({currencySymbol})</label>
                 <input 
                   type="number"
-                  required
                   value={formData.totalPrice}
                   onChange={(e) => handlePriceChange('totalPrice', e.target.value)}
                   className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black shadow-[0_0_10px_rgba(46,139,87,0.05)]"
