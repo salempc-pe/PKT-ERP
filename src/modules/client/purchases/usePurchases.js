@@ -34,7 +34,10 @@ export const usePurchases = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const purchasesRef = collection(db, `organizations/${orgId}/purchases`);
     const q = query(purchasesRef, orderBy("createdAt", "desc"));

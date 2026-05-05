@@ -20,6 +20,11 @@ export const useWarehouse = (orgId = "default_org") => {
 
   // -- Suscripción a STOCK (Lotes) --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const stockRef = collection(db, `organizations/${orgId}/warehouse_stock`);
     const q = query(stockRef, orderBy("createdAt", "desc"));
 
@@ -37,6 +42,8 @@ export const useWarehouse = (orgId = "default_org") => {
 
   // -- Suscripción a HISTORIAL --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") return;
+
     const historyRef = collection(db, `organizations/${orgId}/warehouse_history`);
     const q = query(historyRef, orderBy("timestamp", "desc"));
 

@@ -1,36 +1,36 @@
-# Sprint 48.1 — realestate-geocoding-validation
+# Sprint 51.1 — fix-permissions-normal-client
 
 > **Duration**: 2026-05-04 to 2026-05-05
 > **Status**: In Progress
 
 ## Goal
-Implementar búsqueda automática de ubicación por dirección (Geocoding) y flexibilizar la validación de campos obligatorios en el registro de terrenos.
+Resolver errores de "Missing or insufficient permissions" en Firebase para usuarios con rol 'cliente' en los módulos de CRM, Almacén y Compras.
 
 ## Scope
 
 ### Included
-- Geocoding con Nominatim (OSM) en TerrainModal.
-- Actualización de TerrainSchema para hacer el precio opcional.
-- Verificación de campos obligatorios (dirección, ciudad, distrito, propietario, área).
+- Investigar y corregir `useCrm.js` (interacciones y leads).
+- Investigar y corregir `useWarehouse.js` (history stream).
+- Investigar y corregir `PurchasesDashboardCard.jsx` (purchase stats).
+- Auditoría y ajuste de `firestore.rules`.
 
 ### Explicitly Excluded
-- Integración con Google Maps API (se usará OSM/Nominatim).
+- Creación de nuevos módulos.
+- Cambios en la lógica de negocio no relacionados con permisos.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Flexibilizar TerrainSchema | Claude | ✅ Done | 0.2 |
-| Implementar búsqueda por dirección en TerrainModal | Claude | ✅ Done | 1.0 |
-| Validar campos obligatorios en UI | Claude | ✅ Done | 0.3 |
-| Sincronizar estados de presentación con Pipeline | Claude | ✅ Done | 0.5 |
+| Analizar `firestore.rules` y comparar con consultas fallidas | Claude | ✅ Done | 0.5 |
+| Corregir permisos en CRM (`useCrm.js`) | Claude | ✅ Done | 0.5 |
+| Corregir permisos en Almacén (`useWarehouse.js`) | Claude | ✅ Done | 0.5 |
+| Corregir permisos en Compras (`PurchasesDashboardCard.jsx`) | Claude | ✅ Done | 0.5 |
 
 ## Daily Log
 
 ### 2026-05-04
-- Sprint iniciado.
-- Precio hecho opcional en el esquema de validación.
-- Implementado Geocoding en TerrainModal.
-- Rediseñado Pipeline para trabajar por instancias de presentación.
-- Sincronizados estados de presentación con Pipeline.
-- Sprint cerrado con éxito.
+- Sprint creado para atender errores de permisos reportados por el usuario cliente.
+- Refactorizadas funciones `isSuperAdmin`, `isOrgAdmin` y `getUserOrg` en `firestore.rules` para evitar errores de ejecución cuando el documento de usuario no está disponible.
+- Implementada lógica defensiva en `useCrm.js`, `useWarehouse.js` y `PurchasesDashboardCard.jsx` para evitar suscripciones a la organización por defecto (`default_org`).
+- Sincronizados componentes de UI (`CRMModule`, `WarehouseModule`) para manejar estados de carga y IDs de organización de forma más robusta.

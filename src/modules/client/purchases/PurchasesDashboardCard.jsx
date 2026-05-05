@@ -9,7 +9,7 @@ export default function PurchasesDashboardCard({ orgId }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") return;
 
     const fetchStats = async () => {
       try {

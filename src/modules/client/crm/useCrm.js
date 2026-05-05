@@ -51,6 +51,8 @@ export const useCrm = (orgId = "default_org") => {
 
   // -- Suscripción a INTERACCIONES --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") return;
+
     const interactionsRef = collection(db, `organizations/${orgId}/interactions`);
     const q = query(interactionsRef, orderBy("createdAt", "desc"));
 
@@ -66,6 +68,11 @@ export const useCrm = (orgId = "default_org") => {
 
   // -- Suscripción a CONTACTOS --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const contactsRef = collection(db, `organizations/${orgId}/contacts`);
     const q = query(contactsRef, orderBy("createdAt", "desc"));
 
@@ -83,6 +90,8 @@ export const useCrm = (orgId = "default_org") => {
 
   // -- Suscripción a LEADS (Prospectos) --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") return;
+
     const leadsRef = collection(db, `organizations/${orgId}/leads`);
     // Usamos una query simple para evitar problemas de índices y manejamos el ordenamiento localmente
     const q = query(leadsRef);

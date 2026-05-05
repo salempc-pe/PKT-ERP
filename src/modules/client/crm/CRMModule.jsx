@@ -8,9 +8,15 @@ import { InteractionHistory } from './InteractionHistory';
 
 export default function CRMModule() {
   const { user } = useAuth();
-  const orgId = user?.organizationId || "default_org";
   const [searchParams, setSearchParams] = useSearchParams();
-  const { contacts, leads, interactions, loading, addContact, updateContact, addLead, updateLeadStatus, updateLead, addInteraction } = useCrm(orgId);
+  const orgId = user?.organizationId;
+  const isReady = orgId && orgId !== "default_org";
+  
+  const { 
+    contacts, leads, interactions, loading, 
+    addContact, updateContact, addLead, 
+    updateLeadStatus, updateLead, addInteraction 
+  } = useCrm(isReady ? orgId : null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'pipeline');
   const [showModal, setShowModal] = useState(false);
 
