@@ -7,12 +7,13 @@ import {
   doc, 
   query, 
   orderBy,
+  where,
   serverTimestamp,
   increment
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
 
-export const useWarehouse = (orgId = "default_org") => {
+export const useWarehouse = (orgId = "default_org", selectedWarehouseId = null) => {
   const [stock, setStock] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,11 @@ export const useWarehouse = (orgId = "default_org") => {
     }
 
     const stockRef = collection(db, `organizations/${orgId}/warehouse_stock`);
-    const q = query(stockRef, orderBy("createdAt", "desc"));
+    let q = query(stockRef, orderBy("createdAt", "desc"));
+    
+    if (selectedWarehouseId) {
+      q = query(stockRef, where("warehouseId", "==", selectedWarehouseId), orderBy("createdAt", "desc"));
+    }
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -38,14 +43,18 @@ export const useWarehouse = (orgId = "default_org") => {
     });
 
     return () => unsub();
-  }, [orgId]);
+  }, [orgId, selectedWarehouseId]);
 
   // -- Suscripción a HISTORIAL --
   useEffect(() => {
     if (!orgId || orgId === "default_org") return;
 
     const historyRef = collection(db, `organizations/${orgId}/warehouse_history`);
-    const q = query(historyRef, orderBy("timestamp", "desc"));
+    let q = query(historyRef, orderBy("timestamp", "desc"));
+
+    if (selectedWarehouseId) {
+      q = query(historyRef, where("warehouseId", "==", selectedWarehouseId), orderBy("timestamp", "desc"));
+    }
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -55,25 +64,30 @@ export const useWarehouse = (orgId = "default_org") => {
     });
 
     return () => unsub();
-  }, [orgId]);
+  }, [orgId, selectedWarehouseId]);
 
   // -- Métodos MUTADORES --
 
   const addMovement = async (movementData) => {
-    const { type, materialName, quantity, unit, price, destination, loteId } = movementData;
+    const { type, materialName, quantity, unit, price, destination, loteId, warehouseId } = movementData;
     
     try {
       const historyRef = collection(db, `organizations/${orgId}/warehouse_history`);
       const stockRef = collection(db, `organizations/${orgId}/warehouse_stock`);
 
+      const qty = Number(quantity);
+      const prc = price ? Number(price) : 0;
+
       // 1. Registrar en Historial
       await addDoc(historyRef, {
         type,
         materialName,
-        quantity: Number(quantity),
+        quantity: qty,
         unit,
-        price: price ? Number(price) : null,
+        price: prc,
+        movementValue: qty * prc,
         destination: destination || null,
+        warehouseId: warehouseId || null,
         timestamp: serverTimestamp()
       });
 
@@ -83,15 +97,16 @@ export const useWarehouse = (orgId = "default_org") => {
         await addDoc(stockRef, {
           materialName,
           unit,
-          quantity: Number(quantity),
-          purchasePrice: Number(price),
+          quantity: qty,
+          purchasePrice: prc,
+          warehouseId: warehouseId || null,
           createdAt: serverTimestamp()
         });
       } else if (type === 'OUT' && loteId) {
         // Egreso: Descontar de lote específico
         const loteRef = doc(db, `organizations/${orgId}/warehouse_stock`, loteId);
         await updateDoc(loteRef, {
-          quantity: increment(-Number(quantity)),
+          quantity: increment(-qty),
           updatedAt: serverTimestamp()
         });
       }
