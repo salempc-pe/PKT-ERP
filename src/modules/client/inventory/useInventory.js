@@ -20,7 +20,9 @@ const ProductSchema = z.object({
   price: z.number().min(0, "Precio no puede ser negativo").optional(),
   stock: z.number().int().min(0, "Stock no puede ser negativo").default(0),
   lowStockThreshold: z.number().int().min(0).default(5),
-  status: z.enum(["Normal", "Bajo Stock", "Agotado"]).optional()
+  status: z.enum(["Normal", "Bajo Stock", "Agotado"]).optional(),
+  averageCost: z.number().min(0).default(0),
+  stockByWarehouse: z.record(z.string(), z.number()).optional().default({})
 });
 
 export const useInventory = (orgId = "default_org") => {
@@ -62,7 +64,9 @@ export const useInventory = (orgId = "default_org") => {
         price,
         stock,
         lowStockThreshold,
-        status 
+        status,
+        averageCost: Number(productData.averageCost) || 0,
+        stockByWarehouse: productData.stockByWarehouse || {}
       });
 
       const productsRef = collection(db, `organizations/${orgId}/products`);
@@ -91,7 +95,9 @@ export const useInventory = (orgId = "default_org") => {
         price,
         stock,
         lowStockThreshold,
-        status
+        status,
+        averageCost: productData.averageCost !== undefined ? Number(productData.averageCost) : undefined,
+        stockByWarehouse: productData.stockByWarehouse
       });
 
       const productRef = doc(db, `organizations/${orgId}/products`, productId);
