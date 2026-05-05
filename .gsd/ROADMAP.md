@@ -735,7 +735,7 @@
 ---
 
 ### Phase 43: Inventario — Valorización, Transferencias y QR/Barras (inventory)
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Agregar valorización automática de inventario (FIFO/Promedio Ponderado), transferencias entre almacenes con estado "en tránsito" y soporte para lectura de códigos QR/barras desde cámara o lector.
 **Depends on**: Phase 3, Phase 35
 
