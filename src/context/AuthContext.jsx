@@ -45,8 +45,14 @@ const SUBSCRIPTION_PLANS = {
 import LoadingScreen from '../components/LoadingScreen';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const cached = sessionStorage.getItem('pkt_user');
+    return cached ? JSON.parse(cached) : null;
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = sessionStorage.getItem('pkt_user');
+    return cached ? false : true;
+  });
   const navigate = useNavigate();
 
   const [allUsers, setAllUsers] = useState([]);
@@ -75,12 +81,14 @@ export function AuthProvider({ children }) {
           
           let logsData = [];
           try {
-            const logsSnap = await getDocs(collection(db, 'audit_logs'));
+            // Cargamos solo los últimos 50 logs inicialmente para no saturar la memoria
+            const logsQ = query(collection(db, 'audit_logs'), orderBy('timestamp', 'desc'), limit(50));
+            const logsSnap = await getDocs(logsQ);
             logsData = logsSnap.docs.map(d => ({ 
               id: d.id, 
               ...d.data(),
               timestamp: d.data().timestamp?.toDate().toISOString() || new Date().toISOString()
-            })).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }));
           } catch (logError) {
             console.warn("Could not load audit logs (permissions?):", logError);
           }
@@ -124,7 +132,8 @@ export function AuthProvider({ children }) {
       orgId: orgId || user?.organizationId || null,
       action,
       details,
-      type
+      type,
+      expireAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // Expira en 90 días
     };
 
     try {
@@ -213,11 +222,31 @@ export function AuthProvider({ children }) {
               setUser(userWithSub);
             sessionStorage.setItem('pkt_user', JSON.stringify(userWithSub));
           } else {
-            setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+            const cachedUserStr = sessionStorage.getItem('pkt_user');
+            if (cachedUserStr) {
+              const cachedUser = JSON.parse(cachedUserStr);
+              if (cachedUser.uid === firebaseUser.uid) {
+                setUser(cachedUser);
+              } else {
+                setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+              }
+            } else {
+              setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+            }
           }
         } catch (error) {
           console.error('Error cargando sesión desde Firestore:', error);
-          setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+          const cachedUserStr = sessionStorage.getItem('pkt_user');
+          if (cachedUserStr) {
+            const cachedUser = JSON.parse(cachedUserStr);
+            if (cachedUser.uid === firebaseUser.uid) {
+              setUser(cachedUser);
+            } else {
+              setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+            }
+          } else {
+            setUser({ email: firebaseUser.email, uid: firebaseUser.uid, role: 'user', status: 'pending', isAdmin: false });
+          }
         }
       } else {
         setUser(null);

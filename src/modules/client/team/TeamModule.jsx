@@ -186,7 +186,7 @@ export default function TeamModule() {
             onClick={() => setActiveTab('members')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
               activeTab === 'members' 
-                ? 'bg-[#6B4FD8] text-[#0a0a0a] shadow-lg shadow-[#6B4FD8]/20' 
+                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-[#6B4FD8]/20' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
@@ -197,7 +197,7 @@ export default function TeamModule() {
             onClick={() => setActiveTab('audit')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
               activeTab === 'audit' 
-                ? 'bg-[#6B4FD8] text-[#0a0a0a] shadow-lg shadow-[#6B4FD8]/20' 
+                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-[#6B4FD8]/20' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
@@ -211,7 +211,7 @@ export default function TeamModule() {
           disabled={isLimitReached}
           className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all ${isLimitReached
               ? 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)] cursor-not-allowed border border-[var(--color-outline-variant)]'
-              : 'bg-[#6B4FD8] hover:bg-[#a6c3ff] text-[#0a0a0a] shadow-lg shadow-[#6B4FD8]/10'
+              : 'bg-[#6B4FD8] hover:bg-[#7c7cf5] text-white shadow-lg shadow-[#6B4FD8]/10'
             }`}
         >
           <UserPlus size={18} />
@@ -292,7 +292,7 @@ export default function TeamModule() {
           <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#0a0a0a]/50 border-b border-[var(--color-outline-variant)]">
+                <tr className="bg-[var(--color-surface-container-high)] border-b border-[var(--color-outline-variant)]">
                   <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Colaborador</th>
                   <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Rol</th>
                   <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Estado</th>
@@ -397,7 +397,7 @@ export default function TeamModule() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[var(--color-surface-container-low)] border border-[#40485d]/50 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden relative">
             {loading && (
-              <div className="absolute inset-0 z-[60] bg-[#0a0a0a]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+              <div className="absolute inset-0 z-[60] bg-[var(--color-background)]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
                 <div className="relative">
                   <div className="w-12 h-12 border-4 border-[#6B4FD8]/20 border-t-[#6B4FD8] rounded-full animate-spin"></div>
                   <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--color-primary)] animate-pulse" size={20} />
@@ -407,7 +407,7 @@ export default function TeamModule() {
                 </p>
               </div>
             )}
-            <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[#0a0a0a] rounded-t-3xl">
+            <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center rounded-t-3xl">
               <h2 className="text-xl font-black text-[var(--color-on-surface)]">Invitar Miembro</h2>
               <button
                 onClick={() => {
@@ -415,7 +415,7 @@ export default function TeamModule() {
                   setGeneratedInviteLink(null);
                   setNewUser({ name: '', email: '', role: 'user' });
                 }}
-                className="p-2 text-[var(--color-on-surface-variant)] hover:text-white rounded-xl"
+                className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-xl transition-colors"
               >
                 <X size={20} />
               </button>
@@ -433,7 +433,7 @@ export default function TeamModule() {
                   </p>
                 </div>
 
-                <div className="bg-[#0a0a0a] border border-[var(--color-outline-variant)] rounded-2xl p-4 flex items-center gap-3 group">
+                <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl p-4 flex items-center gap-3 group">
                   <input 
                     readOnly 
                     value={generatedInviteLink}
@@ -456,7 +456,7 @@ export default function TeamModule() {
                     setGeneratedInviteLink(null);
                     setNewUser({ name: '', email: '', role: 'user' });
                   }}
-                  className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-[#0a0a0a] hover:bg-[#a6c3ff] transition-all"
+                  className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-white hover:bg-[#7c7cf5] transition-all"
                 >
                   ENTENDIDO
                 </button>
@@ -509,7 +509,7 @@ export default function TeamModule() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-[#0a0a0a] hover:bg-[#a6c3ff] transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-white hover:bg-[#7c7cf5] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? 'Procesando...' : 'Generar Invitación'}
               </button>

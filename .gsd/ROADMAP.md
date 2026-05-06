@@ -633,12 +633,13 @@
 ---
 
 ### Phase 37: Módulo de Nóminas y Recursos Humanos
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar la gestión de colaboradores con registro detallado (DNI, sueldos fijos/variables, métodos de pago) y seguimiento de remuneraciones adicionales (Gratificaciones, CTS, Utilidades), con vista a su futura integración contable como gasto.
 **Depends on**: Phase 36
 
 **Tasks**:
-- [ ] TBD (run /plan 37 to create)
+- [x] Plan 37.1 - GestiÃ³n de Colaboradores (CRUD y Persistencia)
+- [x] Plan 37.2 - Seguimiento de Remuneraciones y MÃ©todos de Pago
 
 **Verification**:
 - TBD
@@ -740,20 +741,26 @@
 **Depends on**: Phase 3, Phase 35
 
 **Tasks**:
-- [ ] TBD (run /plan 43 to create)
+- [x] Plan 43.1 - Valorización de Inventario (FIFO/Promedio)
+- [x] Plan 43.2 - Transferencias entre Almacenes
+- [x] Plan 43.3 - Soporte QR/Barras Híbrido
 
 **Verification**:
 - TBD
 
 ---
 
-### Phase 44: Marketplace — Add-ons y Portal de Facturación (marketplace)
-**Status**: ⬜ Not Started
-**Objective**: Implementar gestión de add-ons activables sin cambio de plan y un portal donde el tenant descargue sus facturas de uso del software y gestione su método de pago (Stripe/PayPal).
-**Depends on**: Phase 9, Phase 11
+### Phase 44: Bodega — Control de Insumos y Materias Primas (warehouse)
+**Status**: ✅ Complete
+**Objective**: Mejorar el módulo de bodega para una gestión eficiente de insumos y materias primas, optimizando el control de stock por lotes, trazabilidad de movimientos y diferenciación clara del inventario de productos terminados.
+**Depends on**: Phase 3, Phase 43
 
 **Tasks**:
-- [ ] TBD (run /plan 44 to create)
+- [x] Refactorizar `useWarehouse.js` para soportar `warehouseId` en stock y movimientos.
+- [x] Implementar hook `useMaterialSettings` para gestión de umbrales por almacén.
+- [x] Actualizar UI de `WarehouseModule.jsx` con selector de almacén y filtros.
+- [x] Desarrollar lógica de valorización de inventario actual y costos de salida.
+- [x] Crear panel de alertas visuales para stock bajo por ubicación.
 
 **Verification**:
 - TBD
@@ -766,23 +773,30 @@
 **Depends on**: Phase 37
 
 **Tasks**:
-- [ ] TBD (run /plan 45 to create)
+- [x] Plan 45.1 - Payroll Data Layer (Asistencia y Préstamos)
+- [x] Plan 45.2 - UI - Asistencia y Préstamos
+- [x] Plan 45.3 - Procesamiento de Planilla y Boletas PDF
 
 **Verification**:
-- TBD
+- [x] Control de asistencias integrado.
+- [x] Generación de PDF de boletas operativa.
 
 ---
 
-### Phase 46: Proyectos — Gantt, Gestión Documental y Timesheet (projects)
-**Status**: ⬜ Not Started
+### Phase 46: Proyectos — Gantt, Horas y Gestión Documental (projects_plus)
+**Status**: ✅ Complete
 **Objective**: Agregar diagrama de Gantt con dependencias entre tareas, espacio de gestión documental (planos, contratos, archivos técnicos) por proyecto/tarea, y control de horas (timesheet) por colaborador para cálculo de costos operativos.
 **Depends on**: Phase 8, Phase 22
 
 **Tasks**:
-- [ ] TBD (run /plan 46 to create)
+- [x] Plan 46.1 - Project Data Layer (Gantt, Timesheet & Docs Schema)
+- [x] Plan 46.2 - UI - Gantt y Timesheet
+- [x] Plan 46.3 - Gestión Documental de Proyectos
 
 **Verification**:
-- TBD
+- [x] El hook `useProjects` exporta funciones de tiempos y documentos.
+- [x] El proyecto tiene pestañas de Gantt, Horas y Documentos.
+- [x] Se pueden registrar tiempos y simular subida de documentos.
 
 ---
 
@@ -855,7 +869,9 @@
 **Depends on**: Phase 50
 
 **Tasks**:
-- [ ] TBD (run /plan 51 to create)
+- [x] Corrección de hooks y permisos de Firestore
+- [x] Sincronización de nombres de colecciones en reglas
+- [x] Resolución de advertencias de seguridad y acceso
 
 **Verification**:
 - TBD

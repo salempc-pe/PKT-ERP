@@ -32,6 +32,11 @@ export const useInventory = (orgId = "default_org") => {
 
   // -- Suscripción a PRODUCTOS --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const productsRef = collection(db, `organizations/${orgId}/products`);
     const q = query(productsRef, orderBy("createdAt", "desc"));
 

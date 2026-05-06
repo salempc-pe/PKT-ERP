@@ -8,7 +8,12 @@ import LoadingScreen from '../../../components/LoadingScreen';
 export default function ProjectModule() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { projects, tasks, loading, addProject, updateProject, updateProjectStatus, deleteProject, setActiveProjectId, addTask, updateTaskStatus, updateTask } = useProjects(orgId);
+  const { 
+    projects, tasks, timesheets, projectDocuments, loading, 
+    addProject, updateProject, deleteProject, setActiveProjectId, 
+    addTask, updateTaskStatus, updateTask,
+    addTimesheetEntry, deleteTimesheetEntry, addProjectDocument, deleteProjectDocument 
+  } = useProjects(orgId);
   
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -71,9 +76,15 @@ export default function ProjectModule() {
         <ProjectKanban 
             project={selectedProject} 
             tasks={tasks} 
+            timesheets={timesheets}
+            projectDocuments={projectDocuments}
             addTask={addTask} 
             updateTaskStatus={updateTaskStatus} 
             updateTask={updateTask}
+            addTimesheetEntry={addTimesheetEntry}
+            deleteTimesheetEntry={deleteTimesheetEntry}
+            addProjectDocument={addProjectDocument}
+            deleteProjectDocument={deleteProjectDocument}
             onBack={handleBackToList}
         />
     );

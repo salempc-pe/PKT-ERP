@@ -83,18 +83,18 @@ export default function MarketplaceModule() {
             <div
               key={planId}
               className={`relative flex flex-col p-8 rounded-[2.5rem] transition-all duration-500 hover:scale-[1.03] border-2 ${isCurrent
-                  ? 'bg-[var(--color-surface-container-high)] border-[#6B4FD8] shadow-[0_20px_50px_rgba(133,173,255,0.15)]'
+                  ? 'bg-[var(--color-surface-container-high)] border-[#6B4FD8] shadow-[0_20px_50px_rgba(107,79,216,0.15)]'
                   : 'bg-[var(--color-surface-container)] border-[var(--color-outline-variant)]'
                 }`}
             >
               {isCurrent && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#6B4FD8] text-[#0a0a0a] text-[10px] font-black uppercase tracking-widest shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
                   Tu Plan Actual
                 </div>
               )}
 
               <div className="mb-8">
-                <h3 className="text-2xl font-black text-white mb-2">{plan.name}</h3>
+                <h3 className="text-2xl font-black text-[var(--color-on-surface)] mb-2">{plan.name}</h3>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black text-[var(--color-primary)]">
                     {planId === 'startup' ? 'S/ 0' : planId === 'business' ? 'S/ 199' : 'Tarifa'}
@@ -126,8 +126,8 @@ export default function MarketplaceModule() {
                 className={`w-full py-4 rounded-2xl font-black text-xs transition-all ${isCurrent
                     ? 'bg-transparent border border-[#6B4FD8] text-[var(--color-primary)] cursor-default'
                     : isEnterprise
-                      ? 'bg-[#2E8B57] text-[#0a0a0a] hover:shadow-lg'
-                      : 'bg-[#6B4FD8] text-[#0a0a0a] hover:shadow-lg active:scale-95'
+                      ? 'bg-[#2E8B57] text-white hover:shadow-lg'
+                      : 'bg-[#6B4FD8] text-white hover:shadow-lg active:scale-95'
                   }`}
               >
                 {isCurrent ? 'Plan Activo' : isEnterprise ? 'Contactar' : 'Mejorar Plan'}
@@ -138,17 +138,17 @@ export default function MarketplaceModule() {
       </div>
 
       {/* Footer Info */}
-      <div className="p-8 rounded-[2rem] bg-[var(--color-surface-container)] flex items-center justify-between gap-6 border border-[var(--color-outline-variant)]">
+      <div className="p-8 rounded-[2rem] bg-[var(--color-surface-container)] flex items-center justify-between gap-6 border border-[var(--color-outline-variant)] shadow-xl shadow-black/5">
         <div className="flex gap-4 items-center">
           <div className="w-12 h-12 rounded-full bg-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] shrink-0">
             <Plus size={24} />
           </div>
           <div>
-            <p className="font-black text-white">¿Necesitas un plan a medida?</p>
+            <p className="font-black text-[var(--color-on-surface)]">¿Necesitas un plan a medida?</p>
             <p className="text-xs text-[var(--color-on-surface-variant)]">Podemos ajustar los límites y módulos según la escala de tu empresa.</p>
           </div>
         </div>
-        <button className="px-6 py-3 rounded-xl border border-[#6B4FD8] text-[var(--color-primary)] font-black text-xs hover:bg-[#6B4FD8] hover:text-[#0a0a0a] transition-all">
+        <button className="px-6 py-3 rounded-xl border border-[#6B4FD8] text-[var(--color-primary)] font-black text-xs hover:bg-[#6B4FD8] hover:text-white transition-all">
           Hablar con Consultor
         </button>
       </div>

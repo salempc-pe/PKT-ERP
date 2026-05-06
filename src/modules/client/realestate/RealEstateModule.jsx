@@ -14,7 +14,8 @@ import {
   ChevronRight,
   ChevronLeft,
   ArrowRight,
-  Maximize2
+  Maximize2,
+  Download
 } from 'lucide-react';
 import { useRealEstate } from './useRealEstate';
 import { useInvestors } from './useInvestors';
@@ -108,6 +109,64 @@ export default function RealEstateModule() {
     }
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      'Propiedad / Dirección',
+      'Distrito',
+      'Ciudad',
+      'Propietario',
+      'Corredores',
+      'Área (m²)',
+      'Precio por m²',
+      'Precio Total',
+      'Estado',
+      'Notas'
+    ];
+
+    const rows = filteredTerrains.map(t => {
+      const ownerName = contacts.find(c => c.id === t.ownerId)?.name || 'Desconocido';
+      const brokersStr = (t.brokers || []).join(', ');
+      const statusStr = {
+        presentacion: 'Presentación',
+        negociacion: 'Negociación',
+        aprobado: 'Aprobado',
+        descartado: 'Descartado'
+      }[t.status] || t.status;
+
+      return [
+        t.address,
+        t.district,
+        t.city,
+        ownerName,
+        brokersStr,
+        t.area,
+        t.pricePerM2,
+        t.totalPrice,
+        statusStr,
+        t.notes || ''
+      ];
+    });
+
+    const csvContent = [
+      'sep=;',
+      headers.join(';'),
+      ...rows.map(row => row.map(val => {
+        const strVal = val === null || val === undefined ? '' : String(val);
+        const escaped = strVal.replace(/"/g, '""');
+        return `"${escaped}"`;
+      }).join(';'))
+    ].join('\n');
+
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `terrenos_filtrados_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return <LoadingScreen fullScreen={false} message="Cargando Base de Terrenos..." />;
   }
@@ -177,6 +236,14 @@ export default function RealEstateModule() {
               ))}
             </select>
           </div>
+
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 bg-[#6B4FD8]/10 text-[#6B4FD8] border border-[#6B4FD8]/20 hover:bg-[#6B4FD8] hover:text-[#002150] px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all active:scale-95 ml-auto"
+            title="Exportar base de terrenos filtrada"
+          >
+            <Download size={16} /> Exportar CSV
+          </button>
         </div>
       )}
 

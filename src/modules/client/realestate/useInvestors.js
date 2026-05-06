@@ -34,7 +34,10 @@ export const useInvestors = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const ref = collection(db, `organizations/${orgId}/realEstateInvestors`);
     const q = query(ref); // Eliminamos orderBy temporalmente para evitar error de índices

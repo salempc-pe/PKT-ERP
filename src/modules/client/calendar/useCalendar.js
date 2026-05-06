@@ -20,7 +20,10 @@ export const useCalendar = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const apptsRef = collection(db, `organizations/${orgId}/appointments`);
     const qAppts = query(apptsRef, orderBy("date", "asc"));

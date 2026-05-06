@@ -3,7 +3,7 @@ import { Clock, User, Box, Activity, Search } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AuditLogsTab({ orgId }) {
-  const { logs, loading } = useGetAuditLogs(orgId);
+  const { logs, loading, hasMore, loadMore } = useGetAuditLogs(orgId);
   const [filter, setFilter] = useState('');
 
   const filteredLogs = logs.filter(log => 
@@ -71,7 +71,7 @@ export default function AuditLogsTab({ orgId }) {
             </div>
           ))}
 
-          {filteredLogs.length === 0 && (
+          {filteredLogs.length === 0 && !loading && (
             <div className="text-center py-20 bg-[var(--color-surface-container-low)]/40 border border-dashed border-[var(--color-outline-variant)] rounded-3xl">
               <Box size={40} className="mx-auto text-[var(--color-on-surface-variant)]/20 mb-4" />
               <p className="text-[var(--color-on-surface-variant)] font-bold">No se encontraron registros de auditoría.</p>
@@ -79,6 +79,18 @@ export default function AuditLogsTab({ orgId }) {
           )}
         </div>
       </div>
+
+      {hasMore && (
+        <div className="flex justify-center pt-4">
+          <button 
+            onClick={loadMore}
+            className="px-6 py-2 bg-[var(--color-surface-container-high)] hover:bg-[var(--color-surface-container-highest)] text-[var(--color-primary)] text-xs font-bold uppercase tracking-widest rounded-xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-2 group"
+          >
+            <Activity size={14} className="group-hover:animate-pulse" />
+            Cargar más registros
+          </button>
+        </div>
+      )}
     </div>
   );
 }

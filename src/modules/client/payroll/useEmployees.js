@@ -47,7 +47,10 @@ export const useEmployees = (orgId) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const employeesRef = collection(db, `organizations/${orgId}/employees`);
     const q = query(employeesRef, orderBy("createdAt", "desc"));

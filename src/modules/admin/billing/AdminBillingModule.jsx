@@ -102,7 +102,7 @@ export default function AdminBillingModule() {
       <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[#40485d]/30 md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 backdrop-blur-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0a0a0a] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
+              <tr className="bg-[var(--color-surface-container-high)] border-b border-[var(--color-outline-variant)] text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
                 <th className="px-6 py-4">Organización</th>
                 <th className="px-6 py-4">Plan Actual</th>
                 <th className="px-6 py-4">MRR</th>

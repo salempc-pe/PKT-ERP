@@ -20,7 +20,10 @@ export const useWarehouses = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const warehousesRef = collection(db, `organizations/${orgId}/warehouses`);
     const q = query(warehousesRef, orderBy("createdAt", "asc"));

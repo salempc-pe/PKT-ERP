@@ -18,6 +18,11 @@ export const useFinance = (orgId = "default_org") => {
 
   // -- Suscripción a TRANSACCIONES --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const txRef = collection(db, `organizations/${orgId}/transactions`);
     const q = query(txRef, orderBy("createdAt", "desc"));
 

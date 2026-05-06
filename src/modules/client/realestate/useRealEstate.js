@@ -52,7 +52,10 @@ export const useRealEstate = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
 
     const terrainsRef = collection(db, `organizations/${orgId}/realEstateTerrains`);
     const q = query(terrainsRef, orderBy("createdAt", "desc"));

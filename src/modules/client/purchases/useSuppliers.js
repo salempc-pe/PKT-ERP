@@ -29,6 +29,11 @@ export const useSuppliers = (orgId = "default_org") => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const suppliersRef = collection(db, `organizations/${orgId}/suppliers`);
     const q = query(suppliersRef, orderBy("createdAt", "desc"));
 

@@ -44,7 +44,10 @@ export const usePayroll = (orgId) => {
 
   // Suscripción a Asistencias
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(prev => ({ ...prev, attendances: false }));
+      return;
+    }
 
     const attendancesRef = collection(db, `organizations/${orgId}/attendances`);
     const q = query(attendancesRef, orderBy("date", "desc"));
@@ -60,7 +63,10 @@ export const usePayroll = (orgId) => {
 
   // Suscripción a Préstamos
   useEffect(() => {
-    if (!orgId) return;
+    if (!orgId || orgId === "default_org") {
+      setLoading(prev => ({ ...prev, loans: false }));
+      return;
+    }
 
     const loansRef = collection(db, `organizations/${orgId}/loans`);
     const q = query(loansRef, orderBy("createdAt", "desc"));

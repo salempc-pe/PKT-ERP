@@ -1,16 +1,18 @@
 import { useAuth } from '../../context/AuthContext';
-import { Clock, User, Info, AlertTriangle, CheckCircle, Search } from 'lucide-react';
+import { useGetAllAuditLogs } from '../../hooks/useAuditLog';
+import { Clock, User, Info, AlertTriangle, CheckCircle, Search, Activity } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ActivityLogs() {
-  const { allActivityLogs, allOrganizations } = useAuth();
+  const { allOrganizations } = useAuth();
+  const { logs, loading, hasMore, loadMore } = useGetAllAuditLogs(50);
   const [searchTerm, setSearchTerm] = useState('');
   const [orgFilter, setOrgFilter] = useState('all');
   const [actorFilter, setActorFilter] = useState('all');
 
-  const filteredLogs = allActivityLogs.filter(log => 
+  const filteredLogs = logs.filter(log => 
     (log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    log.user?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.details.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (orgFilter === 'all' || log.orgId === orgFilter) &&
     (actorFilter === 'all' || (actorFilter === 'superadmin' ? !log.orgId : log.orgId))
@@ -74,7 +76,7 @@ export default function ActivityLogs() {
       <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[#40485d]/30 md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 backdrop-blur-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0a0a0a] border-b border-[#40485d]/30 text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
+              <tr className="bg-[var(--color-surface-container-high)] border-b border-[var(--color-outline-variant)] text-[10px] uppercase font-bold tracking-widest text-[var(--color-on-surface-variant)]">
                 <th className="px-6 py-4">Timestamp</th>
                 <th className="px-6 py-4">Usuario</th>
                 <th className="px-6 py-4">Organización</th>
@@ -127,6 +129,19 @@ export default function ActivityLogs() {
             </tbody>
       </table>
     </div>
+    
+    {hasMore && (
+      <div className="flex justify-center pt-8">
+        <button 
+          onClick={loadMore}
+          disabled={loading}
+          className="px-8 py-3 bg-[var(--color-surface-container-high)] hover:bg-[#6B4FD8] text-[var(--color-on-surface)] hover:text-white text-xs font-black uppercase tracking-widest rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-3 shadow-xl hover:shadow-[#6B4FD8]/20 disabled:opacity-50"
+        >
+          <Activity size={16} className={loading ? 'animate-spin' : ''} />
+          {loading ? 'Cargando...' : 'Cargar más actividad'}
+        </button>
+      </div>
+    )}
   </div>
   );
 }

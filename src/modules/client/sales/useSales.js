@@ -29,6 +29,11 @@ export const useSales = (orgId = "default_org") => {
 
   // -- Suscripción a VENTAS / FACTURAS --
   useEffect(() => {
+    if (!orgId || orgId === "default_org") {
+      setLoading(false);
+      return;
+    }
+
     const salesRef = collection(db, `organizations/${orgId}/invoices`);
     const q = query(salesRef, orderBy("createdAt", "desc"));
 
