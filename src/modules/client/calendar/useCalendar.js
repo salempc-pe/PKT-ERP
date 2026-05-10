@@ -8,8 +8,7 @@ import {
   query, 
   orderBy,
   serverTimestamp,
-  deleteDoc,
-  getDoc
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
 
@@ -65,7 +64,7 @@ export const useCalendar = (orgId = "default_org") => {
     return appointments.some(existing => {
       if (existing.id === apptId) return false; // Ignorar el mismo evento en caso de edición
       if (existing.resourceId !== apptData.resourceId) return false;
-      if (existing.status === 'CANCELLED') return false;
+      if (existing.status === 'CANCELLED' || existing.status === 'DONE') return false;
 
       const eStart = new Date(`${existing.date}T${existing.time}`);
       const eDuration = parseInt(existing.duration || 60);
@@ -75,24 +74,7 @@ export const useCalendar = (orgId = "default_org") => {
     });
   };
 
-  const notifyWebhook = async (action, payload) => {
-    try {
-      const orgDoc = await getDoc(doc(db, "organizations", orgId));
-      const webhooks = orgDoc.data()?.settings?.calendarWebhooks;
-      
-      const url = action === 'CREATE' ? webhooks?.webhookUrlCreation : webhooks?.webhookUrlUpdate;
-      
-      if (url) {
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, ...payload, timestamp: new Date().toISOString() })
-        }).catch(err => console.warn("Webhook failed:", err));
-      }
-    } catch (e) {
-      console.warn("Could not notify webhook:", e);
-    }
-  };
+
 
   const addAppointment = async (apptData) => {
     if (checkConflict(apptData)) {
@@ -107,7 +89,6 @@ export const useCalendar = (orgId = "default_org") => {
       createdAt: serverTimestamp()
     });
 
-    notifyWebhook('CREATE', { id: docRef.id, ...apptData });
     return docRef;
   };
 
@@ -126,7 +107,7 @@ export const useCalendar = (orgId = "default_org") => {
       updatedAt: serverTimestamp()
     });
 
-    notifyWebhook('UPDATE', { id: apptId, ...newData });
+
   };
 
   const deleteAppointment = async (apptId) => {

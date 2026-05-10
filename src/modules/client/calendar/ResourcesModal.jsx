@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { X, Blocks, Plus, Trash2, Loader2 } from 'lucide-react';
+import { X, Blocks, Plus, Trash2, Loader2, Edit2, Check, XCircle } from 'lucide-react';
 
 export default function ResourcesModal({ 
   isOpen, 
   onClose, 
   resources, 
   onAdd, 
+  onUpdate,
   onDelete 
 }) {
   const [newName, setNewName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   if (!isOpen) return null;
 
@@ -22,6 +27,27 @@ export default function ResourcesModal({
       setNewName('');
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const startEdit = (res) => {
+    setEditingId(res.id);
+    setEditValue(res.name);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditValue('');
+  };
+
+  const handleSaveEdit = async (id) => {
+    if (!editValue.trim()) return;
+    setIsUpdating(true);
+    try {
+      await onUpdate(id, { name: editValue.trim() });
+      setEditingId(null);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -63,13 +89,41 @@ export default function ResourcesModal({
             ) : (
               resources.map(r => (
                 <div key={r.id} className="flex items-center justify-between p-3 bg-[var(--color-surface-container)] rounded-xl border border-[var(--color-outline-variant)]">
-                  <span className="text-sm font-semibold text-[var(--color-on-surface)]">{r.name}</span>
-                  <button 
-                    onClick={() => onDelete(r.id)}
-                    className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  {editingId === r.id ? (
+                    <div className="flex-1 flex gap-2 items-center">
+                      <input 
+                        type="text"
+                        autoFocus
+                        value={editValue}
+                        onChange={e => setEditValue(e.target.value)}
+                        className="flex-1 bg-[var(--color-surface-variant)] text-[var(--color-on-surface)] text-sm rounded-lg px-2 py-1 outline-none border border-[#6B4FD8]"
+                      />
+                      <button onClick={() => handleSaveEdit(r.id)} disabled={isUpdating} className="text-green-500 hover:text-green-400">
+                        {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Check size={16} />}
+                      </button>
+                      <button onClick={cancelEdit} className="text-red-500 hover:text-red-400">
+                        <XCircle size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-sm font-semibold text-[var(--color-on-surface)]">{r.name}</span>
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={() => startEdit(r)}
+                          className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-all"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button 
+                          onClick={() => onDelete(r.id)}
+                          className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))
             )}

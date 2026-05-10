@@ -159,13 +159,7 @@ export default function WarehouseModule() {
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
       {/* Stats & Title */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight flex items-center gap-2">
-            <Package className="text-[var(--color-primary)]" /> Inventario de Bodega
-          </h2>
-          <p className="text-[var(--color-on-surface-variant)] text-sm">Control de materias primas por lotes y almacenes.</p>
-        </div>
+      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
 
         <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] px-6 py-3 rounded-2xl flex items-center gap-4">
           <div className="flex flex-col">

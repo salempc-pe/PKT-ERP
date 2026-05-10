@@ -143,7 +143,7 @@ export default function InventoryModule() {
     <div className="animate-in fade-in duration-500 space-y-6 relative">
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+        <div className="flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm">
           {[
             { id: 'products', label: 'Productos', icon: Box },
             { id: 'warehouses', label: 'Almacenes', icon: Warehouse },
@@ -152,10 +152,10 @@ export default function InventoryModule() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
                 activeTab === tab.id 
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-200' 
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                ? 'bg-[#6B4FD8] text-[#002150]' 
+                : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
               }`}
             >
               <tab.icon size={16} />
@@ -166,7 +166,7 @@ export default function InventoryModule() {
 
         <button 
           onClick={() => handleOpenModal(activeTab === 'warehouses' ? 'warehouse' : 'product')}
-          className="bg-purple-600 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-200 transition-all active:scale-95"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
         >
           <Plus size={18} /> {activeTab === 'warehouses' ? 'Nuevo Almacén' : 'Nuevo Producto'}
         </button>
@@ -200,7 +200,7 @@ export default function InventoryModule() {
               key={cat}
               onClick={() => setActiveFilter(cat)}
               className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                activeFilter === cat ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-white border-gray-200 text-gray-500 hover:border-purple-300'
+                activeFilter === cat ? 'bg-[#6B4FD8]/10 border-[#6B4FD8]/30 text-[#6B4FD8]' : 'bg-[var(--color-surface-container)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:border-[#6B4FD8]/50'
               }`}
             >
               {cat}
@@ -292,7 +292,7 @@ export default function InventoryModule() {
              </p>
              <button 
                onClick={() => handleOpenModal('transfer')}
-               className="bg-gray-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-600 transition-all"
+               className="bg-[#6B4FD8] text-[#002150] px-8 py-3 rounded-xl font-black hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] transition-all"
              >
                Nueva Transferencia
              </button>
@@ -356,7 +356,7 @@ export default function InventoryModule() {
               <div className="pt-4">
                 <button 
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-purple-600 text-white font-black rounded-2xl hover:bg-purple-700 shadow-xl shadow-purple-100 transition-all flex justify-center items-center gap-2"
+                  className="w-full py-4 bg-[#6B4FD8] text-[#002150] font-black rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:grayscale"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" /> : editingId ? 'GUARDAR CAMBIOS' : 'CREAR REGISTRO'}
                 </button>
