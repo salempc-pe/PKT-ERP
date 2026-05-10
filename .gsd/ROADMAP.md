@@ -880,13 +880,15 @@
 ---
 
 ### Phase 52: Personalización de Dashboard y Perfil de Usuario
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Corregir la persistencia de la configuración de módulos visibles en el Dashboard. Trasladar el toggle de Modo Oscuro del Sidebar al Modal de Personalización. Implementar campos de perfil de usuario básico (Foto, Nombre, Documentos, Puesto).
 **Depends on**: Phase 51
 
 **Tasks**:
-- [ ] TBD (run /plan 52 to create)
+- [x] Plan 52.1: Mejorar Reactividad y Persistencia del Listener de Usuario en AuthContext.
+- [x] Plan 52.2: Rediseño de DashboardSettingsModal y eliminación del toggle en Sidebar.
 
 **Verification**:
-- TBD
+- [x] Las preferencias de dashboard y perfil se guardan en Firestore y se reflejan sin recargar la página.
+- [x] El botón de tema ha sido trasladado correctamente al modal.
 
