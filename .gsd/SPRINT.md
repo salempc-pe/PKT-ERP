@@ -1,31 +1,28 @@
-# Sprint 23 — fix-auth-persistence
+# Sprint 24 — standardize-inventory-ui
 
 > **Duration**: 2026-05-10 to 2026-05-10
 > **Status**: In Progress
 
 ## Goal
-Arreglar el error que impide mantener la sesión del usuario y muestra datos por defecto al recargar.
+Estandarizar la interfaz visual de los módulos de inventario de bodega e inventario, alineando cabeceras y botones con el estándar establecido en CRM y Ventas.
 
 ## Scope
 
 ### Included
-- Diagnosticar la pérdida del estado del usuario.
-- Revisar almacenamiento local/cookies de autenticación.
-- Corregir la visualización del saludo con nombre por defecto.
+- Remover el título estático del módulo de Inventario de Bodega (`WarehouseModule.jsx`).
+- Actualizar colores y tamaños de botones del módulo de Inventario (`InventoryModule.jsx`) usando como referencia CRM y Ventas.
 
 ### Explicitly Excluded
-- Nuevas funcionalidades de autenticación.
-- Rediseño de la pantalla de login.
+- Rediseño completo del layout de tablas de Inventario (fuera del alcance de botones).
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Investigar el flujo de carga inicial del usuario | Antigravity | ⬜ Todo | 0.5 |
-| Corregir el mecanismo de persistencia de sesión | Antigravity | ⬜ Todo | 1 |
-| Verificar que el saludo sea dinámico y correcto | Antigravity | ⬜ Todo | 0.5 |
+| Remover título en WarehouseModule.jsx | Antigravity | ⬜ Todo | 0.2 |
+| Estandarizar botones en InventoryModule.jsx | Antigravity | ⬜ Todo | 0.3 |
 
 ## Daily Log
 
 ### 2026-05-10
-- Sprint creado para corregir la persistencia del usuario.
+- Sprint creado.
