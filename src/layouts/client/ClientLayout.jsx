@@ -237,13 +237,17 @@ export default function ClientLayout() {
 
           {/* User Profile Card */}
           <div className="flex items-center gap-3 p-3 rounded-2xl" style={{ backgroundColor: 'var(--color-surface-container)' }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs shrink-0" 
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs shrink-0 overflow-hidden" 
               style={{ 
                 backgroundColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', 
                 color: 'var(--color-primary)',
                 border: '1px solid color-mix(in srgb, var(--color-primary) 30%, transparent)'
               }}>
-              {user?.name?.substring(0, 2).toUpperCase() || 'JU'}
+              {user?.photoUrl ? (
+                <img src={user.photoUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.substring(0, 2).toUpperCase() || 'US'
+              )}
             </div>
             <div className="flex-1 min-w-0 pr-1">
               <p className="text-xs font-black truncate" style={{ color: 'var(--color-on-surface)' }}>{user?.name || 'Usuario'}</p>
