@@ -94,12 +94,7 @@ export default function PayrollModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-8 relative">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="md:hidden">
-          <h2 className="text-2xl font-black text-[var(--color-on-surface)] uppercase tracking-tight">Recursos Humanos</h2>
-          <p className="text-sm text-[var(--color-on-surface-variant)] font-medium">Gestión integral de personal y nóminas</p>
-        </div>
-        <div className="hidden md:block flex-1" /> {/* Spacer for desktop to keep button on right */}
+      <div className="flex flex-col md:flex-row justify-end items-center gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
           className="w-full md:w-auto bg-[#6B4FD8] text-[#001b5c] font-black px-8 py-3.5 rounded-2xl flex items-center justify-center gap-3 hover:shadow-[0_10px_25px_rgba(107,79,216,0.4)] transition-all active:scale-95"

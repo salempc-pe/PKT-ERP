@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../../../services/firebase';
 import { Settings } from 'lucide-react';
 import DashboardSettingsModal from './DashboardSettingsModal';
 
@@ -21,18 +19,7 @@ export default function ClientDashboard() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
   const activeModules = user?.subscription?.activeModules || [];
-  const [logoUrl, setLogoUrl] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  useEffect(() => {
-    if (!orgId || orgId === "default_org") return;
-    const unsub = onSnapshot(doc(db, 'organizations', orgId), (docSnap) => {
-      if (docSnap.exists() && docSnap.data().logoUrl) {
-        setLogoUrl(docSnap.data().logoUrl);
-      }
-    });
-    return () => unsub();
-  }, [orgId]);
 
   // Mapping active module keys to their respective Card Component
   const moduleCards = {
@@ -57,9 +44,9 @@ export default function ClientDashboard() {
     <div className="animate-in fade-in duration-500 space-y-6 md:space-y-10">
       {/* Welcome Header */}
       <section className="relative rounded-3xl overflow-hidden p-5 md:p-8 bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/10">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-          <div className="max-w-xl">
-            <h2 className="text-2xl lg:text-3xl font-black tracking-tighter text-[var(--color-on-surface)] mb-1 md:mb-2 leading-tight">
+        <div className="relative z-10 flex flex-row items-center justify-between gap-4 md:gap-8">
+          <div className="min-w-0 flex-1 max-w-xl">
+            <h2 className="text-xl lg:text-3xl font-black tracking-tighter text-[var(--color-on-surface)] mb-1 leading-tight truncate">
               Hola, <span className="text-[var(--color-primary)]">{user?.name?.split(' ')[0] || 'Usuario'}</span>.
             </h2>
             <p className="text-[var(--color-on-surface-variant)] text-[10px] md:text-sm leading-relaxed max-w-sm">
@@ -67,22 +54,27 @@ export default function ClientDashboard() {
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            {logoUrl && (
-              <div className="hidden md:block shrink-0">
-                <div className="w-20 h-20 rounded-2xl border border-[#6B4FD8]/10 bg-[var(--color-surface-container)] overflow-hidden">
-                  <img src={logoUrl} alt="Logo Empresa" className="w-full h-full object-contain p-2" />
-                </div>
-              </div>
-            )}
-            
+          <div className="flex items-center gap-3 md:gap-4 shrink-0">
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-2xl transition-all hover:scale-105 active:scale-95 group"
+              className="p-2.5 md:p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-2xl transition-all hover:scale-105 active:scale-95 group"
               title="Personalizar widgets"
             >
-              <Settings size={20} className="group-hover:rotate-45 transition-transform" />
+              <Settings size={18} className="group-hover:rotate-45 transition-transform md:w-5 md:h-5" />
             </button>
+            
+            <div className="w-12 h-12 md:w-20 md:h-20 rounded-2xl border border-[#6B4FD8]/20 bg-[var(--color-surface-container)] overflow-hidden flex items-center justify-center font-black text-lg md:text-2xl shrink-0 shadow-sm"
+              style={{ 
+                color: 'var(--color-primary)',
+                backgroundColor: user?.photoUrl ? 'var(--color-surface-container)' : 'color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-container))'
+              }}
+            >
+              {user?.photoUrl ? (
+                <img src={user.photoUrl} alt="Avatar de Usuario" className="w-full h-full object-cover" />
+              ) : (
+                <span>{user?.name?.substring(0, 2).toUpperCase() || 'US'}</span>
+              )}
+            </div>
           </div>
         </div>
         

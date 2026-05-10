@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['pwa-192x192.png', 'pwa-512x512.png', 'favicon.svg'],
+      includeAssets: ['icon-192-v1.png', 'icon-512-v1.png', 'maskable-192-v1.png', 'maskable-512-v1.png', 'favicon.svg'],
       manifest: {
         name: 'Veló ERP',
         short_name: 'Veló',
@@ -20,25 +20,25 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'icon-192-v1.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icon-512-v1.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'pwa-192x192.png',
+            src: 'maskable-192-v1.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'maskable-512-v1.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
