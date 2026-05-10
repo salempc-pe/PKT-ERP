@@ -892,3 +892,15 @@
 - [x] Las preferencias de dashboard y perfil se guardan en Firestore y se reflejan sin recargar la página.
 - [x] El botón de tema ha sido trasladado correctamente al modal.
 
+---
+
+### Phase 53: Módulo Salud - Gestión de Pacientes
+**Status**: ⬜ Not Started
+**Objective**: Construir un nuevo módulo llamado Salud dentro del ERP para gestión de pacientes (médicos, psicólogos, etc.), con Dashboard, Agenda, Lista de Pacientes y Expedientes vinculados a Clientes.
+**Depends on**: Phase 52
+
+**Tasks**:
+- [ ] TBD (run /plan 53 to create)
+
+**Verification**:
+- TBD
