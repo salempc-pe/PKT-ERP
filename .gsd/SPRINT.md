@@ -1,29 +1,28 @@
-# Sprint 27 — disable-text-selection
+# Sprint 1 — hr-title-aesthetic
 
 > **Duration**: 2026-05-10 to 2026-05-10
 > **Status**: In Progress
 
 ## Goal
-Bloquear la selección de texto a nivel global en la aplicación para que se comporte como una aplicación móvil nativa, exceptuando campos de entrada de texto.
+Eliminar el título del módulo de RRHH en la versión web y mantenerlo solo en móvil, estableciendo esta regla estética globalmente.
 
 ## Scope
 
 ### Included
-- Deshabilitar `user-select` y `-webkit-user-select` en el selector universal `*`.
-- Deshabilitar `-webkit-touch-callout` para evitar menús contextuales de imágenes/enlaces.
-- Permitir explícitamente la selección en `input`, `textarea` y elementos `contenteditable`.
+- Modificar la visibilidad del título en `PayrollModule.jsx`
+- Actualizar reglas globales en `.agents/rules/app.md`
 
 ### Explicitly Excluded
-- Ninguno.
+- Otros cambios estéticos del módulo de RRHH
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Agregar reglas CSS globales en index.css | Antigravity | ⬜ Todo | 0.5 |
-| Verificar que los inputs sigan funcionando | Antigravity | ⬜ Todo | 0.5 |
+| Ocultar título RRHH en desktop, mostrar en móvil | Antigravity | ⬜ Todo | 0.5 |
+| Definir regla general estética en .agents/rules/app.md | Antigravity | ⬜ Todo | 0.1 |
 
 ## Daily Log
 
 ### 2026-05-10
-- Sprint creado para abordar la experiencia nativa de la PWA.
+- Sprint creado e iniciado.
