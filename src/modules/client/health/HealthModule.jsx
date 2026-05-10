@@ -3,7 +3,7 @@ import { Activity, Users, Calendar, LayoutGrid, HeartPulse } from "lucide-react"
 import HealthDashboard from "./HealthDashboard";
 import HealthPatientList from "./HealthPatientList";
 // Temporary placeholders until next tasks
-const HealthCalendar = () => <div className="p-6 text-gray-400">Calendario en Construcción</div>;
+import HealthAgenda from "./HealthAgenda";
 const HealthPatientProfile = () => <div className="p-6 text-gray-400">Ficha Paciente en Construcción</div>;
 
 export default function HealthModule() {
@@ -64,7 +64,7 @@ export default function HealthModule() {
           <Route index element={<HealthDashboard />} />
           <Route path="pacientes" element={<HealthPatientList />} />
           <Route path="pacientes/:clientId" element={<HealthPatientProfile />} />
-          <Route path="agenda" element={<HealthCalendar />} />
+          <Route path="agenda" element={<HealthAgenda />} />
         </Routes>
       </div>
     </div>
