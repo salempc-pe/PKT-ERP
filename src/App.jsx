@@ -21,6 +21,7 @@ import PurchasesModule from './modules/client/purchases/PurchasesModule';
 import RealEstateModule from './modules/client/realestate/RealEstateModule';
 import WarehouseModule from './modules/client/warehouse/WarehouseModule';
 import PayrollModule from './modules/client/payroll/PayrollModule';
+import HealthDashboard from './modules/client/health/HealthDashboard';
 
 
 import SetupPassword from './modules/SetupPassword';
@@ -88,6 +89,7 @@ function App() {
                 <Route path="payroll" element={<PayrollModule />} />
               </Route>
 
+              <Route path="salud" element={<HealthDashboard />} />
               <Route path="settings" element={<SettingsModule />} />
               <Route element={<AdminRoute />}>
                 <Route path="team" element={<TeamModule />} />

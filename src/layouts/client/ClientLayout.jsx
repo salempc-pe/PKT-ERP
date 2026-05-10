@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Building, Shield, ShoppingCart, Package, Wallet } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Building, Shield, ShoppingCart, Package, Wallet, Activity } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -56,6 +56,7 @@ export default function ClientLayout() {
     '/client/purchases': 'Compras',
     '/client/calendar': 'Agenda',
     '/client/payroll': 'Nóminas y RRHH',
+    '/client/salud': 'Gestión de Salud',
     '/client/team': 'Mi Equipo',
     '/client/settings': 'Configuración'
   };
@@ -212,6 +213,14 @@ export default function ClientLayout() {
             <Link to="/client/payroll" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/payroll') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
               <Wallet size={20} />
               <span>Nóminas</span>
+            </Link>
+          )}
+
+          {/* Módulo Salud siempre visible para admins o suscritos */}
+          {(user?.subscription?.activeModules?.includes('health') || user?.role === 'admin') && (
+            <Link to="/client/salud" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/salud') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
+              <Activity size={20} />
+              <span>Salud</span>
             </Link>
           )}
 
