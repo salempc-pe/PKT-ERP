@@ -4,7 +4,7 @@ import HealthDashboard from "./HealthDashboard";
 import HealthPatientList from "./HealthPatientList";
 // Temporary placeholders until next tasks
 import HealthAgenda from "./HealthAgenda";
-const HealthPatientProfile = () => <div className="p-6 text-gray-400">Ficha Paciente en Construcción</div>;
+import HealthPatientRecord from "./HealthPatientRecord";
 
 export default function HealthModule() {
   const location = useLocation();
@@ -63,7 +63,7 @@ export default function HealthModule() {
         <Routes>
           <Route index element={<HealthDashboard />} />
           <Route path="pacientes" element={<HealthPatientList />} />
-          <Route path="pacientes/:clientId" element={<HealthPatientProfile />} />
+          <Route path="pacientes/:clientId" element={<HealthPatientRecord />} />
           <Route path="agenda" element={<HealthAgenda />} />
         </Routes>
       </div>
