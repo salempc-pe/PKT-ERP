@@ -16,7 +16,8 @@ import {
   Box,
   MapPin,
   AlertTriangle,
-  Settings
+  Settings,
+  ChevronDown
 } from 'lucide-react';
 import { useWarehouse } from './useWarehouse';
 import { useMaterialSettings } from './useMaterialSettings';
@@ -161,7 +162,7 @@ export default function WarehouseModule() {
       {/* Stats & Title */}
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
 
-        <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] px-6 py-3 rounded-2xl flex items-center gap-4">
+        <div className="hidden md:flex bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] px-6 py-3 rounded-2xl items-center gap-4">
           <div className="flex flex-col">
             <span className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Inversión Actual</span>
             <span className="text-xl font-black text-[var(--color-primary)] font-mono">{formatPrice(totalInvestment)}</span>
@@ -178,7 +179,8 @@ export default function WarehouseModule() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Tabs & Warehouse Filter */}
         <div className="lg:col-span-8 flex flex-col sm:flex-row gap-4">
-          <div className="flex bg-[var(--color-surface-container)] p-1 rounded-xl shadow-inner">
+          {/* Desktop Tabs */}
+          <div className="hidden sm:flex bg-[var(--color-surface-container)] p-1 rounded-xl shadow-inner">
             <button 
               onClick={() => setActiveTab('stock')}
               className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${activeTab === 'stock' ? 'bg-[var(--color-surface-variant)] text-[var(--color-primary)] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
@@ -191,6 +193,21 @@ export default function WarehouseModule() {
             >
               Historial
             </button>
+          </div>
+
+          {/* Mobile Tabs Selector */}
+          <div className="sm:hidden relative w-full">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm font-black uppercase tracking-widest rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+            >
+              <option value="stock">Stock Actual</option>
+              <option value="history">Historial</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+              <ChevronDown size={18} />
+            </div>
           </div>
 
           <div className="relative flex-1 min-w-[200px]">

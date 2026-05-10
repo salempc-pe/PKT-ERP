@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   Users, Search, Filter, Plus, Edit2, 
   Trash2, CreditCard, Banknote, 
-  Calendar, TrendingUp, Wallet, Clock, ReceiptText
+  Calendar, TrendingUp, Wallet, Clock, ReceiptText, ChevronDown
 } from 'lucide-react';
 import { useEmployees } from './useEmployees';
 import { useAuth } from '../../../context/AuthContext';
@@ -108,8 +108,8 @@ export default function PayrollModule() {
         </button>
       </div>
 
-      {/* Stats Indicators */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Indicators - Oculto en móvil */}
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {payrollStats.map((stat, idx) => (
           <div key={idx} className="bg-[var(--color-surface-container)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] hover:bg-[var(--color-surface-container-high)] transition-colors">
             <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container-low)] flex items-center justify-center shadow-sm">
@@ -123,8 +123,8 @@ export default function PayrollModule() {
         ))}
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-[var(--color-outline-variant)] pb-4 overflow-x-auto no-scrollbar">
+      {/* Tabs Navigation - Desktop */}
+      <div className="hidden md:flex items-center gap-2 border-b border-[var(--color-outline-variant)] pb-4 overflow-x-auto no-scrollbar">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -139,6 +139,23 @@ export default function PayrollModule() {
             {tab.label}
           </button>
         ))}
+      </div>
+
+      {/* Tabs Navigation - Mobile */}
+      <div className="md:hidden relative w-full">
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-black uppercase text-xs tracking-widest rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+        >
+          <option value="colaboradores">Colaboradores</option>
+          <option value="asistencia">Asistencia</option>
+          <option value="prestamos">Préstamos</option>
+          <option value="boletas">Boletas</option>
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+          <ChevronDown size={18} />
+        </div>
       </div>
 
       {/* Tab Content */}

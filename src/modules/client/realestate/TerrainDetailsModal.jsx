@@ -3,7 +3,7 @@ import {
   X, Building2, MapPin, Users, Calendar, 
   Plus, History, FileText, Send, Trash2, 
   ExternalLink, FileUp, Download, Eye,
-  AlertCircle, CheckCircle2, Clock
+  AlertCircle, CheckCircle2, Clock, ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import MapViewer from './MapViewer';
@@ -125,7 +125,8 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
         </div>
 
         {/* Tabs */}
-        <div className="flex px-6 bg-[var(--color-surface-container)] border-b border-[var(--color-outline-variant)]">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex px-6 bg-[var(--color-surface-container)] border-b border-[var(--color-outline-variant)]">
           {[
             { id: 'overview', label: 'Resumen', icon: Building2 },
             { id: 'presentations', label: 'Presentaciones', icon: History },
@@ -143,6 +144,22 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
               {activeTab === tab.id && <div className="absolute bottom-0 left-0 w-full h-1 bg-[#6B4FD8] rounded-t-full"></div>}
             </button>
           ))}
+        </div>
+
+        {/* Mobile Tabs */}
+        <div className="md:hidden p-4 bg-[var(--color-surface-container)] border-b border-[var(--color-outline-variant)] relative">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface)] text-[var(--color-on-surface)] text-xs font-black uppercase tracking-widest rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+          >
+            <option value="overview">Resumen</option>
+            <option value="presentations">Presentaciones</option>
+            <option value="documents">Documentos Legales</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
         </div>
 
         {/* Content */}

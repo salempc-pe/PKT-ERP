@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ShoppingCart, Package, Users, MoreVertical, Plus, Loader2, X, AlertCircle, FileText, CheckCircle2, Factory } from 'lucide-react';
+import { ShoppingCart, Package, Users, MoreVertical, Plus, Loader2, X, AlertCircle, FileText, CheckCircle2, Factory, ChevronDown } from 'lucide-react';
 import { usePurchases } from './usePurchases';
 import { useSuppliers } from './useSuppliers';
 import { useInventory } from '../inventory/useInventory';
@@ -99,7 +99,8 @@ export default function PurchasesModule() {
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
           <button 
             onClick={() => setActiveTab('orders')}
             className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${activeTab === 'orders' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
@@ -112,6 +113,21 @@ export default function PurchasesModule() {
           >
             <Users size={16} /> Proveedores
           </button>
+        </div>
+
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden relative w-full">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+          >
+            <option value="orders">Órdenes</option>
+            <option value="suppliers">Proveedores</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
         </div>
 
         {activeTab === 'orders' ? (

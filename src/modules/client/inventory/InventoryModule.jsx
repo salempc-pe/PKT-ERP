@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Search, Filter, AlertTriangle, Plus, ArrowDown, ArrowUp, Loader2, X, Edit2, Warehouse, ArrowRightLeft, Scan } from 'lucide-react';
+import { Box, Search, Filter, AlertTriangle, Plus, ArrowDown, ArrowUp, Loader2, X, Edit2, Warehouse, ArrowRightLeft, Scan, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useInventory } from './useInventory';
 import { useWarehouses } from './useWarehouses';
@@ -143,7 +143,8 @@ export default function InventoryModule() {
     <div className="animate-in fade-in duration-500 space-y-6 relative">
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm">
           {[
             { id: 'products', label: 'Productos', icon: Box },
             { id: 'warehouses', label: 'Almacenes', icon: Warehouse },
@@ -164,6 +165,22 @@ export default function InventoryModule() {
           ))}
         </div>
 
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden w-full relative">
+          <select
+            value={activeTab}
+            onChange={(e) => handleTabChange(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+          >
+            <option value="products">Productos</option>
+            <option value="warehouses">Almacenes</option>
+            <option value="transfers">Transferencias</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
+        </div>
+
         <button 
           onClick={() => handleOpenModal(activeTab === 'warehouses' ? 'warehouse' : 'product')}
           className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
@@ -172,8 +189,8 @@ export default function InventoryModule() {
         </button>
       </div>
 
-      {/* Stats Indicators */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Indicators - Oculto en móvil */}
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
         {inventoryStats.map((stat, idx) => (
           <div key={idx} className="bg-white p-5 rounded-2xl flex items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-all">
             <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center">

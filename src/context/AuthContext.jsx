@@ -468,17 +468,34 @@ export function AuthProvider({ children }) {
                            (!newData.organizationId && (newData.role === 'admin' || newData.role === 'superadmin'));
         const calculatedRole = isSuperAdmin ? 'superadmin' : (newData.role || 'user');
 
-        const currentPerms = JSON.stringify(user.permissions || {});
-        const newPerms = JSON.stringify(newData.permissions || {});
-        
-        if (currentPerms !== newPerms || calculatedRole !== user.role) {
-          setUser(prev => ({ 
-            ...prev, 
-            ...newData, 
-            role: calculatedRole,
-            isAdmin: calculatedRole === 'admin' || calculatedRole === 'superadmin'
-          }));
-        }
+        setUser(prev => {
+          if (!prev) return prev;
+          
+          const currentPerms = JSON.stringify(prev.permissions || {});
+          const newPerms = JSON.stringify(newData.permissions || {});
+          
+          const currentPrefs = JSON.stringify(prev.dashboardPreferences || []);
+          const newPrefs = JSON.stringify(newData.dashboardPreferences || []);
+
+          const profileChanged = 
+            prev.name !== newData.name || 
+            prev.photoUrl !== newData.photoUrl || 
+            prev.documentId !== newData.documentId || 
+            prev.position !== newData.position;
+
+          if (currentPerms !== newPerms || calculatedRole !== prev.role || currentPrefs !== newPrefs || profileChanged) {
+            const updatedUser = { 
+              ...prev, 
+              ...newData, 
+              role: calculatedRole,
+              isAdmin: calculatedRole === 'admin' || calculatedRole === 'superadmin'
+            };
+            // Actualizar sessionStorage también para persistencia local
+            sessionStorage.setItem('pkt_user', JSON.stringify(updatedUser));
+            return updatedUser;
+          }
+          return prev;
+        });
       }
     });
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, AlertCircle } from 'lucide-react';
+import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, AlertCircle, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
@@ -153,7 +153,8 @@ export default function CRMModule() {
   return (
     <div className="animate-in fade-in duration-500 space-y-8 pb-10">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
           <button
             onClick={() => setActiveTab('pipeline')}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
@@ -166,6 +167,21 @@ export default function CRMModule() {
           >
             <List size={16} /> Base de Contactos
           </button>
+        </div>
+
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden relative w-full">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+          >
+            <option value="pipeline">Pipeline</option>
+            <option value="contacts">Base de Contactos</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
         </div>
 
         {activeTab === 'pipeline' ? (

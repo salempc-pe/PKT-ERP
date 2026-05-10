@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { 
   Users, UserPlus, Mail, Shield, Trash2, Check, X, Copy, 
   Loader2, AlertCircle, Download, ShieldAlert, Database,
-  Lock, Activity, LogOut
+  Lock, Activity, LogOut, ChevronDown
 } from 'lucide-react';
 import { z } from 'zod';
 import { useAuth } from '../../../context/AuthContext';
@@ -181,7 +181,8 @@ export default function TeamModule() {
     <div className="space-y-8 animate-fade-in pb-20">
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center p-1 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl w-fit">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex items-center p-1 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl w-fit">
           <button
             onClick={() => setActiveTab('members')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
@@ -206,6 +207,21 @@ export default function TeamModule() {
           </button>
         </div>
 
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden relative w-full">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+          >
+            <option value="members">Equipo</option>
+            <option value="audit">Auditoría</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
+        </div>
+
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
@@ -221,8 +237,8 @@ export default function TeamModule() {
 
       {activeTab === 'members' ? (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          {/* Stats / Quota */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Stats / Quota - Oculto en móvil */}
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-[var(--color-surface-container-low)]/60 border border-[var(--color-outline-variant)] rounded-3xl p-6">
               <div className="flex items-center gap-4 mb-2">
                 <div className="w-10 h-10 bg-[#6B4FD8]/10 rounded-xl flex items-center justify-center text-[var(--color-primary)]">
