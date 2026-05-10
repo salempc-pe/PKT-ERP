@@ -895,12 +895,17 @@
 ---
 
 ### Phase 53: Módulo Salud - Gestión de Pacientes
-**Status**: ⬜ Not Started
+**Status**: ✅ Completed
 **Objective**: Construir un nuevo módulo llamado Salud dentro del ERP para gestión de pacientes (médicos, psicólogos, etc.), con Dashboard, Agenda, Lista de Pacientes y Expedientes vinculados a Clientes.
 **Depends on**: Phase 52
 
 **Tasks**:
-- [ ] TBD (run /plan 53 to create)
+- [x] Modelado de datos y React Hook `useHealth` con Zod.
+- [x] Implementación de Dashboard, Rutas e Integración de Sidebar.
+- [x] HealthAgenda reactiva e interactiva (Calendario mensual + Citas).
+- [x] Expediente Clínico con bloqueo de 24h, Notas Generales y Archivos.
 
 **Verification**:
-- TBD
+- [x] Módulo Salud visible y navegable.
+- [x] CRUDs de Expediente y Citas funcionando sobre Firestore.
+- [x] Regla de bloqueo de notas validada.
