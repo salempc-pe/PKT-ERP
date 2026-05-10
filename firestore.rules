@@ -96,6 +96,18 @@ service cloud.firestore {
       match /inventory/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
+      match /products/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /warehouses/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /inventory_transfers/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /inventory_transactions/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
       
       // Ventas y Facturación
       match /sales/{docId} {
