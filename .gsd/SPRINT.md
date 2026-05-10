@@ -1,31 +1,34 @@
-# Sprint 25 — mobile-ui-refinements
+# Sprint 26 — settings-modal-refinement
 
 > **Duration**: 2026-05-10 to 2026-05-10
-> **Status**: In Progress
+> **Status**: Complete
 
 ## Goal
-Optimizar la experiencia móvil reemplazando pestañas por Selectores (Dropdowns) y ocultando tarjetas de resumen estadísticas para priorizar el espacio en pantalla.
+Refinar la interfaz del modal de configuración del dashboard para dispositivos móviles, estandarizar el estilo de las pestañas, implementar la subida de foto de perfil local y eliminar el campo de documento.
 
 ## Scope
 
 ### Included
-- Implementar un Selector (Select/Dropdown) para la navegación de pestañas en el modo móvil en módulos que posean pestañas.
-- Ocultar la sección de tarjetas de resumen estadísticas (`stats cards`) en el modo móvil en todos los módulos.
-- Documentar esta regla de diseño móvil para futuras implementaciones.
+- Estandarizar el estilo visual de las pestañas en `DashboardSettingsModal.jsx` (usar el patrón de botones redondeados con fondo púrpura de los módulos).
+- Corregir el overflow/corte visual del pie de página (botones de guardar) en pantallas pequeñas ajustando el contenedor.
+- Reemplazar la entrada de URL por un input de archivo para subir la foto de perfil directamente desde el dispositivo (almacenamiento Base64 optimizado).
+- Eliminar el campo de formulario "Documento / ID".
 
 ### Explicitly Excluded
-- Modificación de layouts de escritorio.
+- Modificar otras configuraciones del servidor o reglas de Firestore.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Ocultar stats cards en móvil (global search & apply hidden class) | Antigravity | ⬜ Todo | 0.5 |
-| Implementar Dropdown para pestañas en InventoryModule | Antigravity | ⬜ Todo | 0.3 |
-| Revisar otros módulos con pestañas y aplicar patrón Dropdown | Antigravity | ⬜ Todo | 0.5 |
-| Registrar regla en `.agents/rules/mobile_ui.md` | Antigravity | ⬜ Todo | 0.1 |
+| Estilo estándar de pestañas (botones redondeados púrpura) | Antigravity | ✅ Done | 0.5 |
+| Ajuste móvil para pie de página del modal | Antigravity | ✅ Done | 0.3 |
+| Implementar subida de imagen local y eliminar input de Documento | Antigravity | ✅ Done | 0.7 |
 
 ## Daily Log
 
 ### 2026-05-10
 - Sprint creado.
+- Refactorización completa aplicada a `DashboardSettingsModal.jsx`.
+- Pestañas actualizadas a estilo redondeado, subida local de foto habilitada (Base64) y footer optimizado para móviles.
+- Sprint cerrado con éxito.

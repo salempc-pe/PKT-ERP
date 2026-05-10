@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, CreditCard, Briefcase } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
@@ -23,13 +23,13 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
   const { updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'dashboard'
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
   
   // Local state for preferences & profile
   const [preferences, setPreferences] = useState(user?.dashboardPreferences || activeModules);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     photoUrl: user?.photoUrl || '',
-    documentId: user?.documentId || '',
     position: user?.position || ''
   });
 
@@ -48,6 +48,56 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Convert local image to optimized base64
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecciona un archivo de imagen válido.');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // Limit to 2MB pre-compression
+      alert('La imagen original debe ser menor a 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 256; // 256px optimization for profile pics
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress image to 0.7 quality jpeg data URL
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setProfileData(prev => ({ ...prev, photoUrl: dataUrl }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -56,7 +106,6 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
         dashboardPreferences: preferences,
         name: profileData.name,
         photoUrl: profileData.photoUrl,
-        documentId: profileData.documentId,
         position: profileData.position
       };
       
@@ -77,14 +126,14 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => !loading && onClose()}></div>
       
       <div className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-[2rem] w-full max-w-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] overflow-hidden relative animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="p-5 pb-0 bg-[var(--color-surface-container-high)] flex flex-col">
-          <div className="flex justify-between items-center mb-4">
+        <div className="p-5 pb-4 bg-[var(--color-surface-container-high)] flex flex-col border-b border-[var(--color-outline-variant)]">
+          <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-gradient-to-br from-[#6B4FD8] to-[#8b74e7] rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
                 <Settings size={20} className="animate-[spin_10s_linear_infinite]" />
@@ -101,40 +150,48 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
               <X size={18} />
             </button>
           </div>
+        </div>
 
-          {/* Tabs Navegation */}
-          <div className="flex gap-1 px-1 bg-[var(--color-surface-container)] rounded-t-xl border-x border-t border-[var(--color-outline-variant)] mt-2">
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex-1 py-3 text-[10px] uppercase font-black tracking-wider rounded-t-lg transition-all flex items-center justify-center gap-2 ${activeTab === 'profile' ? 'bg-[var(--color-surface)] text-[var(--color-primary)] border-t-2 border-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)] opacity-60 hover:opacity-100'}`}
-            >
-              <User size={14} />
-              <span>Mi Perfil</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex-1 py-3 text-[10px] uppercase font-black tracking-wider rounded-t-lg transition-all flex items-center justify-center gap-2 ${activeTab === 'dashboard' ? 'bg-[var(--color-surface)] text-[var(--color-primary)] border-t-2 border-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)] opacity-60 hover:opacity-100'}`}
-            >
-              <Eye size={14} />
-              <span>Dashboard</span>
-            </button>
-          </div>
+        {/* Standard Module-Style Tab Navigation */}
+        <div className="flex items-center gap-2 py-3 px-6 bg-[var(--color-surface-container-high)] border-b border-[var(--color-outline-variant)] overflow-x-auto no-scrollbar shrink-0">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${
+              activeTab === 'profile' 
+                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-purple-500/20' 
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-highest)] border border-transparent hover:border-[var(--color-outline-variant)]'
+            }`}
+          >
+            <User size={13} />
+            <span>Mi Perfil</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${
+              activeTab === 'dashboard' 
+                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-purple-500/20' 
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-highest)] border border-transparent hover:border-[var(--color-outline-variant)]'
+            }`}
+          >
+            <Eye size={13} />
+            <span>Dashboard</span>
+          </button>
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[var(--color-surface)]">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-6 bg-[var(--color-surface)]">
           
           {activeTab === 'profile' && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              {/* Quick Settings: Dark Mode */}
-              <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-4 flex items-center justify-between">
+              {/* Theme Setting */}
+              <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-[var(--color-surface-variant)] flex items-center justify-center text-[var(--color-primary)]">
                     {isDark ? <Moon size={18} /> : <Sun size={18} />}
                   </div>
                   <div>
                     <p className="text-xs font-bold text-[var(--color-on-surface)]">Apariencia Visual</p>
-                    <p className="text-[10px] text-[var(--color-on-surface-variant)] font-medium">Activar modo oscuro / claro</p>
+                    <p className="text-[10px] text-[var(--color-on-surface-variant)] font-medium">Modo oscuro / claro</p>
                   </div>
                 </div>
                 <button
@@ -151,37 +208,50 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
                 </button>
               </div>
 
-              {/* Form Header */}
-              <div>
-                <h4 className="text-[10px] uppercase font-black tracking-widest text-[var(--color-primary)] mb-4 flex items-center gap-2">
+              {/* Basic Information Form */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] uppercase font-black tracking-widest text-[var(--color-primary)] flex items-center gap-2 px-1">
                   <User size={12} /> Información Básica
                 </h4>
                 
                 <div className="grid gap-4">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-16 h-16 rounded-2xl bg-[var(--color-surface-container-highest)] border border-[var(--color-outline-variant)] overflow-hidden flex items-center justify-center shrink-0 relative group">
-                      {profileData.photoUrl ? (
-                        <img src={profileData.photoUrl} alt="Avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <User size={32} className="opacity-20 text-[var(--color-on-surface)]" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] mb-1.5 ml-1">URL de Foto de Perfil</label>
-                      <div className="relative">
-                        <input 
-                          type="text"
-                          name="photoUrl"
-                          value={profileData.photoUrl}
-                          onChange={handleProfileChange}
-                          placeholder="https://ejemplo.com/foto.jpg"
-                          className="w-full px-4 py-2.5 pl-9 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/50 focus:border-[#6B4FD8] outline-none transition-all"
-                        />
-                        <Camera size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
+                  {/* Photo upload UI */}
+                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)]">
+                    <div className="relative group">
+                      <div className="w-20 h-20 rounded-full bg-[var(--color-surface-container-highest)] border-2 border-[var(--color-outline-variant)] overflow-hidden flex items-center justify-center shrink-0 relative transition-all group-hover:border-[#6B4FD8]">
+                        {profileData.photoUrl ? (
+                          <img src={profileData.photoUrl} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <User size={32} className="opacity-30 text-[var(--color-on-surface)]" />
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                          <Camera size={20} className="text-white" />
+                        </div>
                       </div>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef}
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleImageUpload} 
+                      />
+                    </div>
+                    <div className="flex-1 text-center sm:text-left">
+                      <p className="text-xs font-bold text-[var(--color-on-surface)]">Foto de Perfil</p>
+                      <p className="text-[10px] text-[var(--color-on-surface-variant)] mb-3">Sube una imagen desde tu equipo</p>
+                      
+                      <button 
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface)] hover:bg-[var(--color-primary-container)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-all active:scale-95"
+                      >
+                        <UploadCloud size={14} />
+                        Subir Foto
+                      </button>
                     </div>
                   </div>
 
+                  {/* Form inputs */}
                   <div className="space-y-1.5">
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] ml-1">Nombre Completo</label>
                     <div className="relative">
@@ -190,39 +260,25 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
                         name="name"
                         value={profileData.name}
                         onChange={handleProfileChange}
-                        className="w-full px-4 py-2.5 pl-9 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/50 focus:border-[#6B4FD8] outline-none transition-all font-semibold"
+                        placeholder="Tu nombre"
+                        className="w-full px-4 py-3 pl-10 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/30 focus:border-[#6B4FD8] outline-none transition-all font-semibold"
                       />
-                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
+                      <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] ml-1">Documento / ID</label>
-                      <div className="relative">
-                        <input 
-                          type="text"
-                          name="documentId"
-                          value={profileData.documentId}
-                          onChange={handleProfileChange}
-                          className="w-full px-4 py-2.5 pl-9 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/50 focus:border-[#6B4FD8] outline-none transition-all"
-                        />
-                        <CreditCard size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] ml-1">Puesto / Rol Interno</label>
-                      <div className="relative">
-                        <input 
-                          type="text"
-                          name="position"
-                          value={profileData.position}
-                          onChange={handleProfileChange}
-                          placeholder="Ej. Gerente Comercial"
-                          className="w-full px-4 py-2.5 pl-9 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/50 focus:border-[#6B4FD8] outline-none transition-all"
-                        />
-                        <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
-                      </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] ml-1">Puesto / Rol Interno</label>
+                    <div className="relative">
+                      <input 
+                        type="text"
+                        name="position"
+                        value={profileData.position}
+                        onChange={handleProfileChange}
+                        placeholder="Ej. Gerente Comercial, Asesor, etc."
+                        className="w-full px-4 py-3 pl-10 rounded-xl bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] text-xs text-[var(--color-on-surface)] focus:ring-2 focus:ring-[#6B4FD8]/30 focus:border-[#6B4FD8] outline-none transition-all"
+                      />
+                      <Briefcase size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] opacity-50" />
                     </div>
                   </div>
                 </div>
@@ -232,9 +288,12 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
 
           {activeTab === 'dashboard' && (
             <div className="space-y-4 animate-in fade-in duration-300">
-              <p className="text-xs text-[var(--color-on-surface-variant)] font-medium leading-relaxed bg-[var(--color-surface-container-low)] p-3 rounded-xl border border-[var(--color-outline-variant)]/50">
-                Activa o desactiva las tarjetas de vista rápida en tu página de inicio. Esto solo afecta tu visualización personal.
-              </p>
+              <div className="bg-[var(--color-surface-container-low)] p-3 rounded-xl border border-[var(--color-outline-variant)] flex gap-3 items-start">
+                <Eye size={16} className="text-[var(--color-primary)] shrink-0 mt-0.5" />
+                <p className="text-[11px] text-[var(--color-on-surface-variant)] font-medium leading-relaxed">
+                  Activa o desactiva las tarjetas de vista rápida en tu página de inicio. Esto solo afecta tu visualización personal.
+                </p>
+              </div>
               
               <div className="grid grid-cols-1 gap-2.5">
                 {activeModules.map((modKey) => {
@@ -243,17 +302,17 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
                     <button
                       key={modKey}
                       onClick={() => toggleWidget(modKey)}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+                      className={`flex items-center justify-between p-3.5 rounded-xl border transition-all text-left group ${
                         isVisible 
-                          ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)] shadow-sm shadow-purple-500/5' 
-                          : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-60 hover:opacity-80'
+                          ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)]' 
+                          : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-70 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isVisible ? 'bg-[#6B4FD8] text-white' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)]'}`}>
-                          {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm ${isVisible ? 'bg-[#6B4FD8] text-white' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)]'}`}>
+                          {isVisible ? <Eye size={15} /> : <EyeOff size={15} />}
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide">{MODULE_LABELS[modKey] || modKey}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wide">{MODULE_LABELS[modKey] || modKey}</span>
                       </div>
                       <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                         isVisible ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white' : 'border-[var(--color-outline-variant)] group-hover:border-[var(--color-on-surface-variant)]'
@@ -269,22 +328,22 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
 
         </div>
 
-        {/* Footer */}
-        <div className="p-5 border-t border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex gap-4">
+        {/* Footer - Highly optimized for mobile layout */}
+        <div className="p-4 sm:p-5 border-t border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col sm:flex-row gap-3 shrink-0">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all border border-[var(--color-outline-variant)]"
+            className="w-full sm:w-auto sm:flex-1 px-4 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all border border-[var(--color-outline-variant)]"
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="flex-[2] bg-[#6B4FD8] text-white font-black px-6 py-3 rounded-xl hover:shadow-[0_10px_25px_rgba(107,79,216,0.3)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest disabled:opacity-50"
+            className="w-full sm:flex-[1.5] bg-[#6B4FD8] text-white font-black px-6 py-3 rounded-xl hover:shadow-[0_10px_25px_rgba(107,79,216,0.3)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 text-[10px] uppercase tracking-widest disabled:opacity-50 whitespace-nowrap"
           >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
-            <span>Guardar Configuración</span>
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+            <span>Guardar Cambios</span>
           </button>
         </div>
       </div>

@@ -9,4 +9,4 @@ Auditoría completa del Roadmap realizada. Se sincronizaron las fases 37, 43, 44
 - **Status**: Completed - Awaiting Verification
 
 ## Next Steps
-1. Esperar retroalimentación del usuario sobre el rediseño del modal de configuración.
+1. Validar con el usuario el funcionamiento final del modal (pestañas, fotos, responsividad).
