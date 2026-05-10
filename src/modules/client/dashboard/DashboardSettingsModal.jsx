@@ -15,7 +15,8 @@ const MODULE_LABELS = {
   purchases: 'Compras y Gastos',
   realestate: 'Bienes Raíces',
   warehouse: 'Gestión de Almacenes',
-  payroll: 'Planilla y RRHH'
+  payroll: 'Planilla y RRHH',
+  health: 'Salud / Clínicas'
 };
 
 export default function DashboardSettingsModal({ isOpen, onClose, user, activeModules }) {

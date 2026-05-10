@@ -14,6 +14,7 @@ import PurchasesDashboardCard from '../purchases/PurchasesDashboardCard';
 import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
 import WarehouseDashboardCard from '../warehouse/WarehouseDashboardCard';
 import PayrollDashboardCard from '../payroll/PayrollDashboardCard';
+import HealthDashboardCard from '../health/HealthDashboardCard';
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -32,7 +33,8 @@ export default function ClientDashboard() {
     purchases: PurchasesDashboardCard,
     realestate: RealEstateDashboardCard,
     warehouse: WarehouseDashboardCard,
-    payroll: PayrollDashboardCard
+    payroll: PayrollDashboardCard,
+    health: HealthDashboardCard
   };
 
   // Filter modules based on user preferences
@@ -93,7 +95,6 @@ export default function ClientDashboard() {
           return <CardComponent key={modKey} orgId={orgId} />;
         })}
         {visibleModules.includes('inventory') && <WarehouseDashboardCard orgId={orgId} />}
-        {(user?.role === 'admin' && visibleModules.includes('payroll')) && <PayrollDashboardCard orgId={orgId} />}
       </section>
 
       {/* MODALS */}
