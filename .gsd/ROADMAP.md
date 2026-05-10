@@ -876,3 +876,17 @@
 **Verification**:
 - TBD
 
+
+---
+
+### Phase 52: Personalización de Dashboard y Perfil de Usuario
+**Status**: ⬜ Not Started
+**Objective**: Corregir la persistencia de la configuración de módulos visibles en el Dashboard. Trasladar el toggle de Modo Oscuro del Sidebar al Modal de Personalización. Implementar campos de perfil de usuario básico (Foto, Nombre, Documentos, Puesto).
+**Depends on**: Phase 51
+
+**Tasks**:
+- [ ] TBD (run /plan 52 to create)
+
+**Verification**:
+- TBD
+
