@@ -7,5 +7,12 @@ No buscar nada fuera de esa carpeta.
 
 ## Estética y Títulos de Módulos
 - Los módulos NO deben incluir títulos (`<h1>`, `<h2>`, etc.) de forma estática o hardcodeada dentro de sus componentes de vista principal.
-- La versión Web (Desktop) NO lleva título dentro del canvas del módulo (solo en el sidebar/layout si aplica).
-- La versión Móvil autogenera el título a través del `ClientLayout`. Por lo tanto, NUNCA duplicar el título en el código del módulo específico para que no aparezca doble en móvil.
+- La versión Web (Desktop) NO lleva título dentro del canvas del módulo.
+- La versión Móvil autogenera el título. NUNCA duplicar el título en el código del módulo específico.
+
+## Checklist Obligatorio para Nuevos Módulos
+Cada vez que se construya un nuevo módulo, SIEMPRE se debe cumplir con lo siguiente:
+1. **Registro Super Admin**: Añadir la clave del módulo a `AVAILABLE_MODULES` en `AdminClients.jsx` para que pueda activarse/desactivarse por empresa.
+2. **Registro de Permisos**: Añadir a `MODULES_CONFIG` en `PermissionsModal.jsx` para delegación interna.
+3. **Dashboard Widget**: Crear un archivo `{Modulo}DashboardCard.jsx` usando el componente `<DashboardCard />` con métricas vivas, e importarlo en `ClientDashboard.jsx` y `DashboardSettingsModal.jsx`.
+4. **Consistencia Estética**: Usar el sistema de pestañas (tabs) estandarizado con variables de color del tema (`var(--color-*)`) y animaciones de entrada coherentes (`animate-in fade-in`).
