@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Sun, Moon, Building, Shield, ShoppingCart, Package, Wallet } from 'lucide-react';
+import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Building, Shield, ShoppingCart, Package, Wallet } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -15,7 +15,7 @@ export default function ClientLayout() {
   const isActive = (path) => location.pathname === path;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout, isImpersonating, stopImpersonation } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
 
   if (!user) {
     return <Navigate to="/" replace />;
@@ -107,25 +107,6 @@ export default function ClientLayout() {
           {/* Top Branding Row */}
           <div className="flex justify-between items-center gap-2">
             <VeloLogo variant="horizontal" mode={isDark ? 'dark' : 'light'} size="auto" className="w-[120px] lg:w-[150px] shrink min-w-0" />
-            <button
-              onClick={toggleTheme}
-              title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-              className="relative w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 focus:outline-none shrink-0"
-              style={{
-                backgroundColor: isDark ? 'var(--color-surface-variant)' : 'var(--color-primary-container)',
-              }}
-            >
-              <span
-                className="w-4 h-4 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
-                style={{
-                  transform: isDark ? 'translateX(0)' : 'translateX(24px)',
-                  backgroundColor: 'var(--color-primary)',
-                  color: 'var(--color-on-primary)',
-                }}
-              >
-                {isDark ? <Moon size={10} strokeWidth={2.5} /> : <Sun size={10} strokeWidth={2.5} />}
-              </span>
-            </button>
           </div>
 
           {/* Tenant Info Row */}
