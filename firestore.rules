@@ -170,6 +170,23 @@ service cloud.firestore {
       match /employees/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
+
+      // Módulo Salud / Clínicas
+      match /expedientes/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /citas/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /notas_sesion/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /notas_generales/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /archivos_paciente/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
     }
 
     // --- Logs y Auditoría ---

@@ -13,7 +13,8 @@ const AVAILABLE_MODULES = [
   { id: 'projects', name: 'Gestión de Proyectos' },
   { id: 'purchases', name: 'Compras y Proveedores' },
   { id: 'realestate', name: 'Inmobiliaria / Terrenos' },
-  { id: 'payroll', name: 'Nóminas y RRHH' }
+  { id: 'payroll', name: 'Nóminas y RRHH' },
+  { id: 'health', name: 'Salud / Clínicas' }
 ];
 
 export default function AdminClients() {

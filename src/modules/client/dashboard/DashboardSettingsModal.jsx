@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
-import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud } from 'lucide-react';
+import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud, ChevronUp, ChevronDown } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
+import { getAccessibleModules, getOrderedModules } from '../../modulesConfig';
 
 const MODULE_LABELS = {
   crm: 'CRM y Clientes',
@@ -19,7 +20,7 @@ const MODULE_LABELS = {
   health: 'Salud / Clínicas'
 };
 
-export default function DashboardSettingsModal({ isOpen, onClose, user, activeModules }) {
+export default function DashboardSettingsModal({ isOpen, onClose, user }) {
   const { isDark, toggleTheme } = useTheme();
   const { updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'dashboard'
@@ -27,7 +28,9 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
   const fileInputRef = useRef(null);
   
   // Local state for preferences & profile
-  const [preferences, setPreferences] = useState(user?.dashboardPreferences || activeModules);
+  const accessibleKeys = getAccessibleModules(user);
+  const [preferences, setPreferences] = useState(user?.dashboardPreferences || accessibleKeys);
+  const [orderedModules, setOrderedModules] = useState(getOrderedModules(accessibleKeys, user?.modulesOrder));
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     photoUrl: user?.photoUrl || '',
@@ -42,6 +45,16 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
         ? prev.filter(k => k !== modKey) 
         : [...prev, modKey]
     );
+  };
+
+  const moveModule = (index, direction) => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === orderedModules.length - 1) return;
+    
+    const newOrder = [...orderedModules];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
+    setOrderedModules(newOrder);
   };
 
   const handleProfileChange = (e) => {
@@ -105,6 +118,7 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
       const userRef = doc(db, 'users', user.id || user.uid);
       const finalData = {
         dashboardPreferences: preferences,
+        modulesOrder: orderedModules,
         name: profileData.name,
         photoUrl: profileData.photoUrl,
         position: profileData.position
@@ -297,30 +311,58 @@ export default function DashboardSettingsModal({ isOpen, onClose, user, activeMo
               </div>
               
               <div className="grid grid-cols-1 gap-2.5">
-                {activeModules.map((modKey) => {
+                {orderedModules.map((modKey, index) => {
                   const isVisible = preferences.includes(modKey);
                   return (
-                    <button
+                    <div
                       key={modKey}
-                      onClick={() => toggleWidget(modKey)}
-                      className={`flex items-center justify-between p-3.5 rounded-xl border transition-all text-left group ${
+                      className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
                         isVisible 
                           ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)]' 
-                          : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-70 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
+                          : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm ${isVisible ? 'bg-[#6B4FD8] text-white' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)]'}`}>
-                          {isVisible ? <Eye size={15} /> : <EyeOff size={15} />}
+                      {/* Reorder Controls */}
+                      <div className="flex flex-col gap-0.5 shrink-0">
+                        <button 
+                          type="button"
+                          onClick={() => moveModule(index, 'up')} 
+                          disabled={index === 0}
+                          className="p-1 rounded-md hover:bg-[#6B4FD8]/20 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] disabled:opacity-30 transition-colors"
+                          title="Subir"
+                        >
+                          <ChevronUp size={15} />
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => moveModule(index, 'down')} 
+                          disabled={index === orderedModules.length - 1}
+                          className="p-1 rounded-md hover:bg-[#6B4FD8]/20 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] disabled:opacity-30 transition-colors"
+                          title="Bajar"
+                        >
+                          <ChevronDown size={15} />
+                        </button>
+                      </div>
+
+                      {/* Toggle Info Area */}
+                      <button
+                        type="button"
+                        onClick={() => toggleWidget(modKey)}
+                        className="flex-1 flex items-center justify-between p-2 cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm ${isVisible ? 'bg-[#6B4FD8] text-white' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)]'}`}>
+                            {isVisible ? <Eye size={15} /> : <EyeOff size={15} />}
+                          </div>
+                          <span className="text-[11px] font-bold uppercase tracking-wide">{MODULE_LABELS[modKey] || modKey}</span>
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-wide">{MODULE_LABELS[modKey] || modKey}</span>
-                      </div>
-                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                        isVisible ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white' : 'border-[var(--color-outline-variant)] group-hover:border-[var(--color-on-surface-variant)]'
-                      }`}>
-                        {isVisible && <Check size={12} strokeWidth={4} />}
-                      </div>
-                    </button>
+                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
+                          isVisible ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white' : 'border-[var(--color-outline-variant)] group-hover:border-[var(--color-on-surface-variant)]'
+                        }`}>
+                          {isVisible && <Check size={12} strokeWidth={4} />}
+                        </div>
+                      </button>
+                    </div>
                   );
                 })}
               </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { Settings } from 'lucide-react';
 import DashboardSettingsModal from './DashboardSettingsModal';
+import { getAccessibleModules, getOrderedModules } from '../../modulesConfig';
 
 // Import Cards directly from their respective modules
 import CrmDashboardCard from '../crm/CrmDashboardCard';
@@ -19,7 +20,6 @@ import HealthDashboardCard from '../health/HealthDashboardCard';
 export default function ClientDashboard() {
   const { user } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const activeModules = user?.subscription?.activeModules || [];
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Mapping active module keys to their respective Card Component
@@ -36,11 +36,15 @@ export default function ClientDashboard() {
     payroll: PayrollDashboardCard,
     health: HealthDashboardCard
   };
+  const accessibleKeys = getAccessibleModules(user);
+  const orderedKeys = getOrderedModules(accessibleKeys, user?.modulesOrder);
 
-  // Filter modules based on user preferences
-  const visibleModules = user?.dashboardPreferences && Array.isArray(user.dashboardPreferences)
-    ? activeModules.filter(m => user.dashboardPreferences.includes(m))
-    : activeModules;
+  // Filter modules based on user preferences and access, preserving user order
+  const visibleModules = orderedKeys.filter(k => 
+    user?.dashboardPreferences 
+      ? user.dashboardPreferences.includes(k)
+      : true // Default to visible if preferences don't exist yet
+  );
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6 md:space-y-10">
@@ -94,7 +98,6 @@ export default function ClientDashboard() {
 
           return <CardComponent key={modKey} orgId={orgId} />;
         })}
-        {visibleModules.includes('inventory') && <WarehouseDashboardCard orgId={orgId} />}
       </section>
 
       {/* MODALS */}
@@ -102,7 +105,6 @@ export default function ClientDashboard() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         user={user}
-        activeModules={activeModules}
       />
     </div>
   );

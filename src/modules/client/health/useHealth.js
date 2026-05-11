@@ -87,28 +87,49 @@ export const useHealth = (orgId = "default_org") => {
 
     // 1. Expedientes
     const expRef = collection(db, `organizations/${orgId}/expedientes`);
-    const expQuery = query(expRef, orderBy("updated_at", "desc"));
     
     // 2. Citas
     const citasRef = collection(db, `organizations/${orgId}/citas`);
-    const citasQuery = query(citasRef, orderBy("fecha_hora", "desc"));
 
-    // 3. Notas Generales (todas o por carga)
+    // 3. Notas Generales
     const notesGenRef = collection(db, `organizations/${orgId}/notas_generales`);
-    const notesGenQuery = query(notesGenRef, orderBy("created_at", "desc"));
 
-    const unsubExp = onSnapshot(expQuery, (snapshot) => {
-      setExpedientes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    const unsubExp = onSnapshot(expRef, (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Manual sort by updated_at
+      const sorted = data.sort((a, b) => {
+        const dateA = a.updated_at?.toDate ? a.updated_at.toDate() : new Date(a.updated_at || 0);
+        const dateB = b.updated_at?.toDate ? b.updated_at.toDate() : new Date(b.updated_at || 0);
+        return dateB - dateA;
+      });
+      setExpedientes(sorted);
       setLoading(false);
-    }, (err) => setError(err.message));
-
-    const unsubCitas = onSnapshot(citasQuery, (snapshot) => {
-      setCitas(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => {
+      console.error("Error loading expedientes:", err);
+      setError(err.message);
+      setLoading(false);
     });
 
-    const unsubNotesGen = onSnapshot(notesGenQuery, (snapshot) => {
-      setNotasGenerales(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    const unsubCitas = onSnapshot(citasRef, (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Manual sort by fecha_hora
+      const sorted = data.sort((a, b) => {
+        const dateA = a.fecha_hora?.toDate ? a.fecha_hora.toDate() : new Date(a.fecha_hora || 0);
+        const dateB = b.fecha_hora?.toDate ? b.fecha_hora.toDate() : new Date(b.fecha_hora || 0);
+        return dateB - dateA;
+      });
+      setCitas(sorted);
+    }, (err) => console.error("Error loading citas:", err));
+
+    const unsubNotesGen = onSnapshot(notesGenRef, (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      const sorted = data.sort((a, b) => {
+        const dateA = a.created_at?.toDate ? a.created_at.toDate() : new Date(a.created_at || 0);
+        const dateB = b.created_at?.toDate ? b.created_at.toDate() : new Date(b.created_at || 0);
+        return dateB - dateA;
+      });
+      setNotasGenerales(sorted);
+    }, (err) => console.error("Error loading notas generales:", err));
 
     return () => {
       unsubExp();
@@ -117,16 +138,20 @@ export const useHealth = (orgId = "default_org") => {
     };
   }, [orgId]);
 
-  // Carga de Notas de Sesión específica por cliente o cita si se desea lazy loading, 
-  // pero para mantener consistencia cargaremos las de sesión reactivamente también.
+  // Carga de Notas de Sesión
   useEffect(() => {
     if (!isConfigured) return;
     
     const notesSesRef = collection(db, `organizations/${orgId}/notas_sesion`);
-    const q = query(notesSesRef, orderBy("created_at", "desc"));
-    const unsub = onSnapshot(q, (snap) => {
-      setNotasSesion(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    const unsub = onSnapshot(notesSesRef, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const sorted = data.sort((a, b) => {
+        const dateA = a.created_at?.toDate ? a.created_at.toDate() : new Date(a.created_at || 0);
+        const dateB = b.created_at?.toDate ? b.created_at.toDate() : new Date(b.created_at || 0);
+        return dateB - dateA;
+      });
+      setNotasSesion(sorted);
+    }, (err) => console.error("Error loading notas sesión:", err));
     return () => unsub();
   }, [orgId]);
 
@@ -134,10 +159,15 @@ export const useHealth = (orgId = "default_org") => {
   useEffect(() => {
     if (!isConfigured) return;
     const filesRef = collection(db, `organizations/${orgId}/archivos_paciente`);
-    const q = query(filesRef, orderBy("uploaded_at", "desc"));
-    const unsub = onSnapshot(q, (snap) => {
-      setArchivos(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    const unsub = onSnapshot(filesRef, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const sorted = data.sort((a, b) => {
+        const dateA = a.uploaded_at?.toDate ? a.uploaded_at.toDate() : new Date(a.uploaded_at || 0);
+        const dateB = b.uploaded_at?.toDate ? b.uploaded_at.toDate() : new Date(b.uploaded_at || 0);
+        return dateB - dateA;
+      });
+      setArchivos(sorted);
+    }, (err) => console.error("Error loading archivos:", err));
     return () => unsub();
   }, [orgId]);
 

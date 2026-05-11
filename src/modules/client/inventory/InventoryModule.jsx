@@ -192,26 +192,26 @@ export default function InventoryModule() {
       {/* Stats Indicators - Oculto en móvil */}
       <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
         {inventoryStats.map((stat, idx) => (
-          <div key={idx} className="bg-white p-5 rounded-2xl flex items-center gap-4 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center">
+          <div key={idx} className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30">
               {stat.icon}
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{stat.title}</p>
-              <span className="text-xl font-black text-gray-900">{stat.value}</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">{stat.title}</p>
+              <span className="text-xl font-black text-[var(--color-on-surface)]">{stat.value}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* Barcode Scanner & Search Row */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-[var(--color-surface-container-low)] p-4 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm flex flex-col md:flex-row gap-4 items-center">
         <div className="w-full md:w-96">
           <BarcodeScanner onScan={onBarcodeScan} placeholder="Escanear o buscar SKU..." />
         </div>
-        <div className="hidden md:block h-8 w-px bg-gray-200"></div>
+        <div className="hidden md:block h-8 w-px bg-[var(--color-outline-variant)]/50"></div>
         <div className="flex-1 flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-          <span className="text-xs font-bold text-gray-400 uppercase whitespace-nowrap">Filtros:</span>
+          <span className="text-xs font-bold text-[var(--color-on-surface-variant)] uppercase whitespace-nowrap">Filtros:</span>
           {['Ropa', 'Accesorios', 'Calzado'].map(cat => (
             <button 
               key={cat}
@@ -230,12 +230,12 @@ export default function InventoryModule() {
       </div>
 
       {/* Main Content Area */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden shadow-sm">
         {activeTab === 'products' && (
-          <div className="overflow-x-auto">
+          <div>
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest font-black border-b border-gray-100">
+                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
                   <th className="px-6 py-4">Producto / SKU</th>
                   <th className="px-6 py-4">Categoría</th>
                   <th className="px-6 py-4 text-right">Costo Prom.</th>
@@ -244,30 +244,30 @@ export default function InventoryModule() {
                   <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 text-sm">
+              <tbody className="divide-y divide-[var(--color-outline-variant)]/30 text-sm">
                 {products
                   .filter(p => !activeFilter || JSON.stringify(p).toLowerCase().includes(activeFilter.toLowerCase()))
                   .map((prod) => (
-                    <tr key={prod.id} className="hover:bg-gray-50/50 transition-colors group">
+                    <tr key={prod.id} className="hover:bg-[var(--color-surface-container)]/50 transition-colors group">
                       <td className="px-6 py-4">
-                        <p className="font-bold text-gray-900 group-hover:text-purple-600 transition-colors">{prod.name}</p>
-                        <p className="text-[10px] font-mono text-gray-400 uppercase">{prod.sku}</p>
+                        <p className="font-bold text-[var(--color-on-surface)] group-hover:text-[var(--color-primary)] transition-colors">{prod.name}</p>
+                        <p className="text-[10px] font-mono text-[var(--color-on-surface-variant)] uppercase">{prod.sku}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-tight">{prod.category}</span>
+                        <span className="px-2 py-1 bg-[var(--color-surface-variant)] text-[var(--color-primary)] font-black rounded text-[10px] uppercase tracking-tight">{prod.category}</span>
                       </td>
-                      <td className="px-6 py-4 text-right font-medium text-gray-500">{formatPrice(prod.averageCost || 0)}</td>
-                      <td className="px-6 py-4 text-right font-black text-gray-900">{formatPrice(prod.price)}</td>
+                      <td className="px-6 py-4 text-right font-medium text-[var(--color-on-surface-variant)]">{formatPrice(prod.averageCost || 0)}</td>
+                      <td className="px-6 py-4 text-right font-black text-[var(--color-on-surface)]">{formatPrice(prod.price)}</td>
                       <td className="px-6 py-4 text-center">
                         <div className="inline-flex flex-col items-center">
-                          <span className={`text-base font-black ${prod.stock === 0 ? 'text-red-500' : prod.stock <= (prod.lowStockThreshold || 5) ? 'text-amber-500' : 'text-gray-900'}`}>
+                          <span className={`text-base font-black ${prod.stock === 0 ? 'text-red-500' : prod.stock <= (prod.lowStockThreshold || 5) ? 'text-amber-500' : 'text-[var(--color-on-surface)]'}`}>
                             {prod.stock}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <button onClick={() => handleOpenModal('product', prod)} className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"><Edit2 size={16} /></button>
+                          <button onClick={() => handleOpenModal('product', prod)} className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded-lg transition-all"><Edit2 size={16} /></button>
                         </div>
                       </td>
                     </tr>
@@ -280,18 +280,18 @@ export default function InventoryModule() {
         {activeTab === 'warehouses' && (
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {warehouses.map(w => (
-              <div key={w.id} className="p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all relative group">
+              <div key={w.id} className="p-6 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-container-low)] hover:shadow-xl transition-all relative group">
                 {w.isDefault && (
-                  <span className="absolute top-4 right-4 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase rounded-full">Principal</span>
+                  <span className="absolute top-4 right-4 px-2 py-0.5 bg-emerald-500/20 text-emerald-500 text-[9px] font-black uppercase rounded-full">Principal</span>
                 )}
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-4">
-                  <Warehouse className="text-purple-600" size={24} />
+                <div className="w-12 h-12 bg-[var(--color-surface-container-low)] rounded-xl flex items-center justify-center shadow-sm mb-4 border border-[var(--color-outline-variant)]/30">
+                  <Warehouse className="text-[var(--color-primary)]" size={24} />
                 </div>
-                <h4 className="font-bold text-gray-900 mb-1">{w.name}</h4>
-                <p className="text-xs text-gray-500 mb-4">{w.location}</p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
-                  <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{w.status}</span>
-                  <button onClick={() => handleOpenModal('warehouse', w)} className="text-gray-400 hover:text-purple-600 transition-colors"><Edit2 size={14} /></button>
+                <h4 className="font-bold text-[var(--color-on-surface)] mb-1">{w.name}</h4>
+                <p className="text-xs text-[var(--color-on-surface-variant)] mb-4">{w.location}</p>
+                <div className="flex items-center justify-between pt-4 border-t border-[var(--color-outline-variant)]/30">
+                  <span className="text-[10px] font-black uppercase text-[var(--color-on-surface-variant)] tracking-widest">{w.status}</span>
+                  <button onClick={() => handleOpenModal('warehouse', w)} className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"><Edit2 size={14} /></button>
                 </div>
               </div>
             ))}
@@ -299,17 +299,17 @@ export default function InventoryModule() {
         )}
 
         {activeTab === 'transfers' && (
-          <div className="p-20 text-center flex flex-col items-center">
-             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                <ArrowRightLeft className="text-gray-300" size={40} />
+          <div className="p-20 text-center flex flex-col items-center bg-[var(--color-surface-container-low)]">
+             <div className="w-20 h-20 bg-[var(--color-surface-variant)] rounded-full flex items-center justify-center mb-6 border border-[var(--color-outline-variant)]/30">
+                <ArrowRightLeft className="text-[var(--color-on-surface-variant)]" size={40} />
              </div>
-             <h3 className="text-xl font-bold text-gray-900 mb-2">Gestión de Movimientos</h3>
-             <p className="text-gray-500 max-w-sm mx-auto mb-8 text-sm">
+             <h3 className="text-xl font-bold text-[var(--color-on-surface)] mb-2">Gestión de Movimientos</h3>
+             <p className="text-[var(--color-on-surface-variant)] max-w-sm mx-auto mb-8 text-sm">
                Próximamente: Historial de transferencias en tránsito y confirmación de recepciones entre almacenes.
              </p>
              <button 
                onClick={() => handleOpenModal('transfer')}
-               className="bg-[#6B4FD8] text-[#002150] px-8 py-3 rounded-xl font-black hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] transition-all"
+               className="bg-[#6B4FD8] text-[#002150] px-8 py-3 rounded-xl font-black shadow-lg shadow-[#6B4FD8]/20 active:scale-95 transition-all"
              >
                Nueva Transferencia
              </button>
@@ -321,12 +321,12 @@ export default function InventoryModule() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleCloseModal}></div>
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300">
-            <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">
+          <div className="w-full max-w-md bg-[var(--color-surface-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 border border-[var(--color-outline-variant)]">
+            <div className="p-6 border-b border-[var(--color-outline-variant)]/30 flex justify-between items-center bg-[var(--color-surface-container-low)]">
+              <h3 className="text-lg font-black text-[var(--color-on-surface)] uppercase tracking-tight">
                 {editingId ? 'Editar' : 'Crear'} {modalType === 'warehouse' ? 'Almacén' : 'Producto'}
               </h3>
-              <button onClick={handleCloseModal} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X size={20} /></button>
+              <button onClick={handleCloseModal} className="p-2 hover:bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] rounded-full transition-colors"><X size={20} /></button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-8 space-y-5">
@@ -334,38 +334,38 @@ export default function InventoryModule() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">SKU</label>
-                      <input required name="sku" value={formData.sku} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-bold" />
+                      <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">SKU</label>
+                      <input required name="sku" value={formData.sku} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all font-bold" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Costo Inic.</label>
-                      <input type="number" name="averageCost" value={formData.averageCost} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-bold" />
+                      <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Costo Inic.</label>
+                      <input type="number" name="averageCost" value={formData.averageCost} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all font-bold" />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nombre</label>
-                    <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-bold" />
+                    <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Nombre</label>
+                    <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all font-bold" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Categoría</label>
-                      <input name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all" />
+                      <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Categoría</label>
+                      <input name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio Venta</label>
-                      <input required type="number" name="price" value={formData.price} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-bold" />
+                      <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Precio Venta</label>
+                      <input required type="number" name="price" value={formData.price} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all font-bold" />
                     </div>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nombre del Almacén</label>
-                    <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-bold" />
+                    <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Nombre del Almacén</label>
+                    <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all font-bold" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ubicación / Dirección</label>
-                    <input required name="location" value={formData.location} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all" />
+                    <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Ubicación / Dirección</label>
+                    <input required name="location" value={formData.location} onChange={handleInputChange} className="w-full px-4 py-3 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline-variant)] rounded-xl focus:border-[#6B4FD8] outline-none transition-all" />
                   </div>
                 </>
               )}
@@ -373,7 +373,7 @@ export default function InventoryModule() {
               <div className="pt-4">
                 <button 
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-[#6B4FD8] text-[#002150] font-black rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:grayscale"
+                  className="w-full py-4 bg-[#6B4FD8] text-[#002150] font-black rounded-xl shadow-lg shadow-[#6B4FD8]/20 transition-all flex justify-center items-center gap-2 active:scale-95 disabled:opacity-50 disabled:grayscale"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" /> : editingId ? 'GUARDAR CAMBIOS' : 'CREAR REGISTRO'}
                 </button>

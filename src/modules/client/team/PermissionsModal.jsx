@@ -11,6 +11,7 @@ const MODULES_CONFIG = [
   { key: 'projects', name: 'Proyectos y Tareas' },
   { key: 'finance', name: 'Finanzas y Caja' },
   { key: 'calendar', name: 'Agenda y Citas' },
+  { key: 'health', name: 'Salud / Pacientes' },
   { key: 'team', name: 'Equipo y Seguridad' }
 ];
 

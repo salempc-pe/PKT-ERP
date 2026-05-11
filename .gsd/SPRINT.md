@@ -22,10 +22,10 @@ Permitir que el usuario reordene sus módulos activos en la configuración del d
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Refactorizar sidebar en ClientLayout.jsx para renderizado dinámico ordenado | Antigravity | ⬜ Todo | 1.0 |
-| Implementar UI de reordenación en DashboardSettingsModal.jsx | Antigravity | ⬜ Todo | 1.0 |
-| Ajustar renderizado de tarjetas en ClientDashboard.jsx para respetar el orden | Antigravity | ⬜ Todo | 0.5 |
-| Validación y pruebas del flujo de reordenación y persistencia | Antigravity | ⬜ Todo | 0.5 |
+| Refactorizar sidebar en ClientLayout.jsx para renderizado dinámico ordenado | Antigravity | ✅ Done | 1.0 |
+| Implementar UI de reordenación en DashboardSettingsModal.jsx | Antigravity | ✅ Done | 1.0 |
+| Ajustar renderizado de tarjetas en ClientDashboard.jsx para respetar el orden | Antigravity | ✅ Done | 0.5 |
+| Validación y pruebas del flujo de reordenación y persistencia | Antigravity | ✅ Done | 0.5 |
 
 ## Daily Log
 

@@ -45,7 +45,8 @@ export default function HealthPatientRecord() {
     estado: ''
   });
 
-  const loading = loadingHealth || loadingCrm;
+  // Solo bloqueamos render si el health aún carga. CRM es secundario — si falla, mostramos error de contacto.
+  const loading = loadingHealth;
 
   // Match data
   const contact = contacts.find(c => c.id === clientId);

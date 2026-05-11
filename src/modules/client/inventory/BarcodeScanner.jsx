@@ -59,7 +59,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
       {/* Input para Lector USB (Teclado) */}
       <div className="relative flex-1">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Scan className="h-4 w-4 text-gray-400" />
+          <Scan className="h-4 w-4 text-[var(--color-on-surface-variant)]" />
         </div>
         <input
           ref={inputRef}
@@ -67,7 +67,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
           value={manualCode}
           onChange={(e) => setManualCode(e.target.value)}
           onKeyDown={handleManualSubmit}
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+          className="block w-full pl-10 pr-3 py-2.5 border border-[var(--color-outline-variant)] rounded-xl leading-5 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] placeholder-[var(--color-on-surface-variant)]/60 focus:outline-none focus:ring-2 focus:ring-[#6B4FD8]/20 focus:border-[#6B4FD8] sm:text-sm transition-all shadow-sm"
           placeholder={placeholder}
         />
       </div>
@@ -75,7 +75,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
       {/* Botón para Cámara */}
       <button
         onClick={() => setIsCameraOpen(true)}
-        className="p-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors"
+        className="p-2.5 bg-[var(--color-surface-variant)] text-[var(--color-primary)] rounded-xl hover:bg-[var(--color-outline-variant)]/30 transition-colors border border-[var(--color-outline-variant)] shadow-sm"
         title="Usar Cámara"
       >
         <Camera className="h-5 w-5" />
@@ -83,32 +83,32 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
 
       {/* Modal de Cámara */}
       {isCameraOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                <Camera className="h-5 w-5 text-purple-600" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="bg-[var(--color-surface-container-highest)] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-[var(--color-outline-variant)]/30 animate-in fade-in zoom-in duration-200">
+            <div className="p-4 border-b border-[var(--color-outline-variant)]/30 flex justify-between items-center bg-[var(--color-surface-container)]">
+              <h3 className="font-bold text-[var(--color-on-surface)] flex items-center gap-2">
+                <Camera className="h-5 w-5 text-[var(--color-primary)]" />
                 Escaneo por Cámara
               </h3>
               <button 
                 onClick={() => setIsCameraOpen(false)}
-                className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                className="p-1.5 hover:bg-[var(--color-outline-variant)]/20 rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-[var(--color-on-surface-variant)]" />
               </button>
             </div>
             
-            <div className="p-6">
-              <div id="reader" className="w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300"></div>
-              <p className="mt-4 text-xs text-center text-gray-500">
+            <div className="p-6 bg-[var(--color-surface-container-low)]">
+              <div id="reader" className="w-full overflow-hidden rounded-xl border-2 border-dashed border-[var(--color-outline-variant)] bg-black/10"></div>
+              <p className="mt-4 text-xs font-bold text-center text-[var(--color-on-surface-variant)] uppercase tracking-wide">
                 Coloque el código de barras o QR frente a la cámara
               </p>
             </div>
 
-            <div className="p-4 bg-gray-50 border-t flex justify-end">
+            <div className="p-4 bg-[var(--color-surface-container)] border-t border-[var(--color-outline-variant)]/30 flex justify-end">
               <button
                 onClick={() => setIsCameraOpen(false)}
-                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors"
+                className="px-5 py-2 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface)] rounded-xl hover:bg-[var(--color-surface-container)] text-sm font-bold transition-colors shadow-sm"
               >
                 Cancelar
               </button>

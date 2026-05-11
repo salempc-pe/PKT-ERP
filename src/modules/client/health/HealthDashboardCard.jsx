@@ -9,8 +9,8 @@ export default function HealthDashboardCard({ orgId }) {
   const today = new Date();
   today.setHours(0,0,0,0);
   const upcomingAppointments = citas.filter(c => {
-    if(!c.fecha_inicio?.toDate) return false;
-    return c.fecha_inicio.toDate() >= today && c.estado === 'confirmada';
+    if(!c.fecha_hora?.toDate) return false;
+    return c.fecha_hora.toDate() >= today && c.estado === 'confirmada';
   }).length;
 
   return (

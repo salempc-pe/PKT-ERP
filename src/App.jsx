@@ -21,7 +21,7 @@ import PurchasesModule from './modules/client/purchases/PurchasesModule';
 import RealEstateModule from './modules/client/realestate/RealEstateModule';
 import WarehouseModule from './modules/client/warehouse/WarehouseModule';
 import PayrollModule from './modules/client/payroll/PayrollModule';
-import HealthDashboard from './modules/client/health/HealthDashboard';
+import HealthModule from './modules/client/health/HealthModule';
 
 
 import SetupPassword from './modules/SetupPassword';
@@ -34,13 +34,32 @@ import ErrorBoundary from './components/ErrorBoundary';
 function App() {
   useEffect(() => {
     const handleGesture = (e) => {
-      e.preventDefault();
+      // Evitar zoom innecesario
+      if (e.scale && e.scale !== 1) {
+        e.preventDefault();
+      }
+    };
+    
+    const handleContextMenu = (e) => {
+      // Bloquear menú contextual nativo del navegador en todos lados EXCEPTO inputs/textareas
+      const isInput = 
+        e.target.tagName === 'INPUT' || 
+        e.target.tagName === 'TEXTAREA' || 
+        e.target.isContentEditable ||
+        e.target.closest('[contenteditable="true"]');
+        
+      if (!isInput) {
+        e.preventDefault();
+        return false;
+      }
     };
     
     document.addEventListener('gesturestart', handleGesture);
+    document.addEventListener('contextmenu', handleContextMenu);
     
     return () => {
       document.removeEventListener('gesturestart', handleGesture);
+      document.removeEventListener('contextmenu', handleContextMenu);
     };
   }, []);
 
@@ -89,7 +108,7 @@ function App() {
                 <Route path="payroll" element={<PayrollModule />} />
               </Route>
 
-              <Route path="salud" element={<HealthDashboard />} />
+              <Route path="salud/*" element={<HealthModule />} />
               <Route path="settings" element={<SettingsModule />} />
               <Route element={<AdminRoute />}>
                 <Route path="team" element={<TeamModule />} />

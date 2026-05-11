@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Briefcase, Box, Calculator, FileText, Calendar, Compass, Settings, LogOut, Bell, Menu, Building, Shield, ShoppingCart, Package, Wallet, Activity } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, Menu, Building, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -7,6 +7,12 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import VeloLogo from '../../components/VeloLogo';
 import ErrorBoundary from '../../components/ErrorBoundary';
+
+import { 
+  getAccessibleModules, 
+  getOrderedModules, 
+  MODULES_CATALOG 
+} from '../../modules/modulesConfig';
 
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -22,6 +28,13 @@ export default function ClientLayout() {
   }
   const [tenantName, setTenantName] = useState(user?.organizationName || 'Mi Empresa S.A.');
   const [tenantLogo, setTenantLogo] = useState(null);
+
+  // Dynamic Modules Order calculation
+  const accessibleKeys = getAccessibleModules(user);
+  const orderedKeys = getOrderedModules(accessibleKeys, user?.modulesOrder);
+  
+  // Map keys to actual catalog objects
+  const sidebarItems = orderedKeys.map(key => MODULES_CATALOG.find(m => m.id === key)).filter(Boolean);
 
   const activeStyle = (colorVar = 'var(--color-primary)') => ({
     backgroundColor: 'var(--color-surface-variant)',
@@ -143,86 +156,26 @@ export default function ClientLayout() {
             <span>Dashboard</span>
           </Link>
           
-          {(user?.subscription?.activeModules?.length > 0) && (
+          {sidebarItems.length > 0 && (
             <div style={{ color: 'var(--color-on-surface-variant)' }} className="pt-4 pb-2 px-4 text-[10px] font-bold uppercase tracking-widest opacity-50">Módulos</div>
           )}
           
-          {user?.subscription?.activeModules?.includes('crm') && (
-            <Link to="/client/crm" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/crm') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Users size={20} />
-              <span>CRM y Ventas</span>
-            </Link>
-          )}
-          
-          {user?.subscription?.activeModules?.includes('realestate') && (
-            <Link to="/client/realestate" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/realestate') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Building size={20} />
-              <span>Terrenos Inmobiliarios</span>
-            </Link>
-          )}
-          
-          {user?.subscription?.activeModules?.includes('projects') && (
-            <Link to="/client/projects" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/projects') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Briefcase size={20} />
-              <span>Proyectos</span>
-            </Link>
-          )}
-          
-          {user?.subscription?.activeModules?.includes('inventory') && (
-            <>
-              <Link to="/client/inventory" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/inventory') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-                <Box size={20} />
-                <span>Inventario</span>
+          {/* Render dynamic ordered modules */}
+          {sidebarItems.map(item => {
+            const Icon = item.icon;
+            return (
+              <Link 
+                key={item.id}
+                to={item.path} 
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" 
+                style={isActive(item.path) ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} 
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Icon size={20} />
+                <span>{item.label}</span>
               </Link>
-              <Link to="/client/warehouse" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/warehouse') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-                <Package size={20} />
-                <span>Bodega</span>
-              </Link>
-            </>
-          )}
-          
-          {user?.subscription?.activeModules?.includes('finance') && (
-            <Link to="/client/finance" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/finance') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Calculator size={20} />
-              <span>Contabilidad</span>
-            </Link>
-          )}
-          
-          {user?.subscription?.activeModules?.includes('sales') && (
-            <Link to="/client/sales" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/sales') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <FileText size={20} />
-              <span>Ventas y Facturas</span>
-            </Link>
-          )}
-
-          {user?.subscription?.activeModules?.includes('purchases') && (
-            <Link to="/client/purchases" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/purchases') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <ShoppingCart size={20} />
-              <span>Compras y Proveedores</span>
-            </Link>
-          )}
-  
-          {user?.subscription?.activeModules?.includes('calendar') && (
-            <Link to="/client/calendar" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/calendar') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Calendar size={20} />
-              <span>Agenda</span>
-            </Link>
-          )}
-
-          {(user?.subscription?.activeModules?.includes('payroll') || user?.role === 'admin') && (
-            <Link to="/client/payroll" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/payroll') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Wallet size={20} />
-              <span>Nóminas</span>
-            </Link>
-          )}
-
-          {/* Módulo Salud siempre visible para admins o suscritos */}
-          {(user?.subscription?.activeModules?.includes('health') || user?.role === 'admin') && (
-            <Link to="/client/salud" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/salud') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>
-              <Activity size={20} />
-              <span>Salud</span>
-            </Link>
-          )}
+            );
+          })}
 
           {(user?.role === 'admin') && (
             <Link to="/client/team" className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm" style={isActive('/client/team') ? activeStyle() : { color: 'var(--color-on-surface-variant)' }} onClick={() => setIsSidebarOpen(false)}>

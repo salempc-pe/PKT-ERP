@@ -51,6 +51,14 @@ const MODULES_CONFIG = [
     price: '$35',
     icon: <Briefcase size={24} />,
     color: 'var(--color-tertiary)'
+  },
+  {
+    id: 'health',
+    name: 'Salud / Clínicas',
+    description: 'Expedientes clínicos, notas de evolución y control de pacientes.',
+    price: '$45',
+    icon: <Plus size={24} />,
+    color: 'var(--color-primary)'
   }
 ];
 

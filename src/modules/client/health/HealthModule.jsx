@@ -25,17 +25,7 @@ export default function HealthModule() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Sub-Header Module Internal Nav */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-[var(--color-outline-variant)]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#6B4FD8]/20 flex items-center justify-center text-[#6B4FD8]">
-            <HeartPulse size={22} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-[var(--color-on-surface)]">Salud</h1>
-            <p className="text-xs text-[var(--color-on-surface-variant)] font-medium">Gestión de Pacientes</p>
-          </div>
-        </div>
-
+      <div className="flex justify-center md:justify-start items-center gap-4 pb-4 border-b border-[var(--color-outline-variant)]">
         <div className="flex items-center p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] shadow-sm overflow-x-auto max-w-full">
           {navItems.map((item) => {
             const Icon = item.icon;
