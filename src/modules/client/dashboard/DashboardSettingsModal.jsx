@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud, ChevronUp, ChevronDown } from 'lucide-react';
+import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
@@ -30,7 +30,7 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
   // Local state for preferences & profile
   const accessibleKeys = getAccessibleModules(user);
   const [preferences, setPreferences] = useState(user?.dashboardPreferences || accessibleKeys);
-  const [orderedModules, setOrderedModules] = useState(getOrderedModules(accessibleKeys, user?.modulesOrder));
+  const orderedModules = getOrderedModules(accessibleKeys);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     photoUrl: user?.photoUrl || '',
@@ -45,16 +45,6 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
         ? prev.filter(k => k !== modKey) 
         : [...prev, modKey]
     );
-  };
-
-  const moveModule = (index, direction) => {
-    if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === orderedModules.length - 1) return;
-    
-    const newOrder = [...orderedModules];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
-    setOrderedModules(newOrder);
   };
 
   const handleProfileChange = (e) => {
@@ -118,7 +108,6 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
       const userRef = doc(db, 'users', user.id || user.uid);
       const finalData = {
         dashboardPreferences: preferences,
-        modulesOrder: orderedModules,
         name: profileData.name,
         photoUrl: profileData.photoUrl,
         position: profileData.position
@@ -322,28 +311,6 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
                           : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
                       }`}
                     >
-                      {/* Reorder Controls */}
-                      <div className="flex flex-col gap-0.5 shrink-0">
-                        <button 
-                          type="button"
-                          onClick={() => moveModule(index, 'up')} 
-                          disabled={index === 0}
-                          className="p-1 rounded-md hover:bg-[#6B4FD8]/20 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] disabled:opacity-30 transition-colors"
-                          title="Subir"
-                        >
-                          <ChevronUp size={15} />
-                        </button>
-                        <button 
-                          type="button"
-                          onClick={() => moveModule(index, 'down')} 
-                          disabled={index === orderedModules.length - 1}
-                          className="p-1 rounded-md hover:bg-[#6B4FD8]/20 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] disabled:opacity-30 transition-colors"
-                          title="Bajar"
-                        >
-                          <ChevronDown size={15} />
-                        </button>
-                      </div>
-
                       {/* Toggle Info Area */}
                       <button
                         type="button"
