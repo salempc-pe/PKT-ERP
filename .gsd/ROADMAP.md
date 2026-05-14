@@ -909,3 +909,16 @@
 - [x] Módulo Salud visible y navegable.
 - [x] CRUDs de Expediente y Citas funcionando sobre Firestore.
 - [x] Regla de bloqueo de notas validada.
+
+---
+
+### Phase 54: CRM — Edición y Eliminación de Clientes
+**Status**: ⬜ Not Started
+**Objective**: Implementar botones y flujos funcionales para editar y borrar registros de clientes dentro del módulo CRM en la pestaña de clientes.
+**Depends on**: Phase 53
+
+**Tasks**:
+- [ ] TBD (run /plan 54 to create)
+
+**Verification**:
+- TBD
