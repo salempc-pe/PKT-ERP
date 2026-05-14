@@ -929,13 +929,18 @@
 ---
 
 ### Phase 55: Homologación de Orden de Módulos y Depuración de Duplicados
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Eliminar duplicación del módulo Bodega y forzar que tanto el Dashboard como el Sidebar sigan estrictamente el orden centralizado en MODULES_CATALOG.
 **Depends on**: Phase 54
 
 **Tasks**:
-- [ ] TBD (run /plan 55 to create)
+- [x] Aplicar sanitización `new Set` en `getAccessibleModules` de `modulesConfig.js`.
+- [x] Reescribir `getOrderedModules` para forzar alineamiento con `MODULES_CATALOG`.
+- [x] Eliminar controles manuales de ordenación en `DashboardSettingsModal.jsx` y descontinuar campo en Firebase.
 
 **Verification**:
-- TBD
+- [x] Deduplicación verificada: la doble tarjeta de Bodega desaparece.
+- [x] Sincronización rígida: el orden en Sidebar y Dashboard es el mismo.
+- [x] Limpieza de UI exitosa en ventana de preferencias de usuario.
+
 
