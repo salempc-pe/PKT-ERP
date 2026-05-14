@@ -48,7 +48,8 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
     );
   };
 
-  const handleDrop = (targetIndex) => {
+  const handleDragOver = (e, targetIndex) => {
+    e.preventDefault();
     if (draggedIndex === null || draggedIndex === targetIndex) return;
     
     const newOrder = [...orderedModules];
@@ -56,6 +57,35 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
     newOrder.splice(targetIndex, 0, draggedItem);
     
     setOrderedModules(newOrder);
+    setDraggedIndex(targetIndex);
+  };
+
+  const handleTouchStart = (e, index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleTouchMove = (e) => {
+    if (draggedIndex === null) return;
+    
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!element) return;
+    
+    const dropTarget = element.closest('[data-module-index]');
+    if (!dropTarget) return;
+    
+    const targetIndex = parseInt(dropTarget.getAttribute('data-module-index'), 10);
+    if (isNaN(targetIndex) || targetIndex === draggedIndex) return;
+    
+    const newOrder = [...orderedModules];
+    const [draggedItem] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedItem);
+    
+    setOrderedModules(newOrder);
+    setDraggedIndex(targetIndex);
+  };
+
+  const handleTouchEnd = () => {
     setDraggedIndex(null);
   };
 
@@ -318,21 +348,27 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
                   return (
                     <div
                       key={modKey}
+                      data-module-index={index}
                       draggable
                       onDragStart={() => setDraggedIndex(index)}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={() => handleDrop(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
                       onDragEnd={() => setDraggedIndex(null)}
-                      className={`flex items-center gap-2 p-2 rounded-xl border transition-all duration-200 cursor-grab active:cursor-grabbing ${
+                      className={`flex items-center gap-2 p-2 rounded-xl border transition-all duration-300 ${
                         draggedIndex === index 
-                          ? 'opacity-40 border-dashed scale-[0.98] bg-[var(--color-surface-container-highest)] border-[var(--color-outline)]' 
+                          ? 'opacity-30 border-dashed scale-[0.97] bg-[var(--color-surface-container-highest)] border-[var(--color-outline)] shadow-inner select-none' 
                           : isVisible 
-                            ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)] shadow-sm hover:shadow-md hover:bg-[var(--color-primary-container)]/30' 
-                            : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
+                            ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)] shadow-sm hover:shadow-md hover:bg-[var(--color-primary-container)]/30 cursor-grab active:cursor-grabbing' 
+                            : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)] cursor-grab active:cursor-grabbing'
                       }`}
                     >
                       {/* Grip Indicator Handle */}
-                      <div className="flex items-center text-[var(--color-on-surface-variant)] opacity-40 hover:opacity-80 transition-opacity shrink-0 pl-1.5 pointer-events-none">
+                      <div 
+                        className="flex items-center justify-center text-[var(--color-on-surface-variant)] opacity-40 hover:opacity-100 active:scale-110 transition-all shrink-0 p-2 -ml-1 rounded-md touch-none cursor-grab active:cursor-grabbing select-none"
+                        style={{ touchAction: 'none' }}
+                        onTouchStart={(e) => handleTouchStart(e, index)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                      >
                         <GripVertical size={16} />
                       </div>
 
