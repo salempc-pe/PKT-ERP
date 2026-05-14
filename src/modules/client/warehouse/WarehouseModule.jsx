@@ -99,6 +99,21 @@ export default function WarehouseModule() {
     return materialConfig?.thresholds?.[warehouseId] || 0;
   };
 
+  const lowStockCount = useMemo(() => {
+    return stock.filter(item => {
+      if (item.quantity <= 0) return false;
+      const threshold = getMaterialThreshold(item.materialName, item.warehouseId);
+      return item.quantity <= threshold;
+    }).length;
+  }, [stock, settings]);
+
+  const warehouseStats = useMemo(() => [
+    { title: 'Total Materiales', value: stock.filter(i => i.quantity > 0).length, icon: <Package size={24} className="text-purple-500" /> },
+    { title: 'Almacenes', value: warehouses.length, icon: <Warehouse size={24} className="text-blue-500" /> },
+    { title: 'Alertas Stock', value: lowStockCount, icon: <AlertTriangle size={24} className="text-amber-500" /> },
+    { title: 'Inversión Total', value: formatPrice(totalInvestment), icon: <DollarSign size={24} className="text-emerald-500" /> }
+  ], [stock, warehouses, lowStockCount, totalInvestment]);
+
   const handleOpenModal = (type, item = null) => {
     setModalType(type);
     if (item) {
@@ -221,102 +236,101 @@ export default function WarehouseModule() {
 
   return (
     <div className="animate-in fade-in duration-500 space-y-6">
-      {/* Stats & Title */}
-      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
+      {/* Header & Tabs */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm">
+          {[
+            { id: 'stock', label: 'Stock Actual', icon: Package },
+            { id: 'history', label: 'Historial', icon: History },
+            { id: 'warehouses', label: 'Almacenes', icon: Warehouse }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
+                activeTab === tab.id 
+                ? 'bg-[#6B4FD8] text-[#002150]' 
+                : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
+              }`}
+            >
+              <tab.icon size={16} />
+              <span className="text-xs font-black uppercase tracking-wider">{tab.label}</span>
+            </button>
+          ))}
+        </div>
 
-        <div className="hidden md:flex bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] px-6 py-3 rounded-2xl items-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Inversión Actual</span>
-            <span className="text-xl font-black text-[var(--color-primary)] font-mono">{formatPrice(totalInvestment)}</span>
-          </div>
-          <div className="w-px h-10 bg-[var(--color-outline-variant)]/50"></div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Items</span>
-            <span className="text-xl font-black text-[var(--color-on-surface)]">{filteredStock.length}</span>
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden w-full relative">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-black uppercase tracking-widest text-xs rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+          >
+            <option value="stock">Stock Actual</option>
+            <option value="history">Historial</option>
+            <option value="warehouses">Almacenes</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
           </div>
         </div>
+
+        <button 
+          onClick={() => activeTab === 'warehouses' ? handleOpenWarehouseModal() : handleOpenModal('IN')}
+          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(107,79,216,0.3)] transition-all active:scale-95 shadow-lg shadow-[#6B4FD8]/20"
+        >
+          <Plus size={18} /> 
+          <span className="text-xs uppercase font-black tracking-wider">
+            {activeTab === 'warehouses' ? 'Nuevo Almacén' : 'Registrar Ingreso'}
+          </span>
+        </button>
       </div>
 
-      {/* Filters & Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Tabs & Warehouse Filter */}
-        <div className="lg:col-span-8 flex flex-col sm:flex-row gap-4">
-          {/* Desktop Tabs */}
-          <div className="hidden sm:flex bg-[var(--color-surface-container)] p-1 rounded-xl shadow-inner">
-            <button 
-              onClick={() => setActiveTab('stock')}
-              className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${activeTab === 'stock' ? 'bg-[var(--color-surface-variant)] text-[var(--color-primary)] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
-            >
-              Stock Actual
-            </button>
-            <button 
-              onClick={() => setActiveTab('history')}
-              className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${activeTab === 'history' ? 'bg-[var(--color-surface-variant)] text-[var(--color-primary)] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
-            >
-              Historial
-            </button>
-            <button 
-              onClick={() => setActiveTab('warehouses')}
-              className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${activeTab === 'warehouses' ? 'bg-[var(--color-surface-variant)] text-[var(--color-primary)] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
-            >
-              Almacenes
-            </button>
+      {/* Stats Indicators */}
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {warehouseStats.map((stat, idx) => (
+          <div key={idx} className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30">
+              {stat.icon}
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">{stat.title}</p>
+              <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{stat.value}</p>
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Mobile Tabs Selector */}
-          <div className="sm:hidden relative w-full">
-            <select
-              value={activeTab}
-              onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-sm font-black uppercase tracking-widest rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+      {/* Filters & Search Block */}
+      <div className="flex flex-col md:flex-row items-center gap-4">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+          <input 
+            type="text" 
+            placeholder={activeTab === 'warehouses' ? "Buscar almacén..." : "Buscar material..."} 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all"
+          />
+        </div>
+        
+        {activeTab !== 'warehouses' && (
+          <div className="relative w-full md:w-72">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]" size={16} />
+            <select 
+              value={selectedWarehouseId}
+              onChange={(e) => setSelectedWarehouseId(e.target.value)}
+              className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-10 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all font-bold appearance-none"
             >
-              <option value="stock">Stock Actual</option>
-              <option value="history">Historial</option>
-              <option value="warehouses">Almacenes</option>
+              <option value="">Todos los Almacenes</option>
+              {warehouses.map(w => (
+                <option key={w.id} value={w.id}>{w.name}</option>
+              ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
-              <ChevronDown size={18} />
-            </div>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] pointer-events-none" size={16} />
           </div>
-
-          {activeTab !== 'warehouses' && (
-            <div className="relative flex-1 min-w-[200px]">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]" size={16} />
-              <select 
-                value={selectedWarehouseId}
-                onChange={(e) => setSelectedWarehouseId(e.target.value)}
-                className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all font-bold appearance-none"
-              >
-                <option value="">Todos los Almacenes</option>
-                {warehouses.map(w => (
-                  <option key={w.id} value={w.id}>{w.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* Search & Add */}
-        <div className="lg:col-span-4 flex gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
-            <input 
-              type="text" 
-              placeholder={activeTab === 'warehouses' ? "Buscar almacén..." : "Buscar material..."} 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all"
-            />
-          </div>
-          <button 
-            onClick={() => activeTab === 'warehouses' ? handleOpenWarehouseModal() : handleOpenModal('IN')}
-            className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-[#6B4FD8]/20"
-            title={activeTab === 'warehouses' ? 'Crear Almacén' : 'Registrar Ingreso'}
-          >
-            <Plus size={18} />
-            {activeTab === 'warehouses' && <span className="hidden sm:inline ml-1 text-xs uppercase font-black tracking-wider">Nuevo</span>}
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Table Content */}
