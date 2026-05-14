@@ -5,6 +5,10 @@ trigger: model_decision
 La aplicacion esta en la carpeta /app 
 No buscar nada fuera de esa carpeta.
 
+## Configuración de Entorno
+- El proyecto SIEMPRE se ejecuta y se sirve en el puerto **7100** (`http://localhost:7100`). Nunca intentar otros puertos en pruebas locales.
+
+
 ## Estética y Títulos de Módulos
 - Los módulos NO deben incluir títulos (`<h1>`, `<h2>`, etc.) de forma estática o hardcodeada dentro de sus componentes de vista principal.
 - La versión Web (Desktop) NO lleva título dentro del canvas del módulo.
