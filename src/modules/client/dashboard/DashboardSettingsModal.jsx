@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud } from 'lucide-react';
+import { Settings, X, Check, Eye, EyeOff, Loader2, User, Camera, Sun, Moon, Briefcase, UploadCloud, GripVertical } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
@@ -30,7 +30,8 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
   // Local state for preferences & profile
   const accessibleKeys = getAccessibleModules(user);
   const [preferences, setPreferences] = useState(user?.dashboardPreferences || accessibleKeys);
-  const orderedModules = getOrderedModules(accessibleKeys);
+  const [orderedModules, setOrderedModules] = useState(getOrderedModules(accessibleKeys, user?.modulesOrder));
+  const [draggedIndex, setDraggedIndex] = useState(null);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     photoUrl: user?.photoUrl || '',
@@ -45,6 +46,17 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
         ? prev.filter(k => k !== modKey) 
         : [...prev, modKey]
     );
+  };
+
+  const handleDrop = (targetIndex) => {
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+    
+    const newOrder = [...orderedModules];
+    const [draggedItem] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedItem);
+    
+    setOrderedModules(newOrder);
+    setDraggedIndex(null);
   };
 
   const handleProfileChange = (e) => {
@@ -108,6 +120,7 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
       const userRef = doc(db, 'users', user.id || user.uid);
       const finalData = {
         dashboardPreferences: preferences,
+        modulesOrder: orderedModules,
         name: profileData.name,
         photoUrl: profileData.photoUrl,
         position: profileData.position
@@ -305,12 +318,24 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
                   return (
                     <div
                       key={modKey}
-                      className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
-                        isVisible 
-                          ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)]' 
-                          : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
+                      draggable
+                      onDragStart={() => setDraggedIndex(index)}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => handleDrop(index)}
+                      onDragEnd={() => setDraggedIndex(null)}
+                      className={`flex items-center gap-2 p-2 rounded-xl border transition-all duration-200 cursor-grab active:cursor-grabbing ${
+                        draggedIndex === index 
+                          ? 'opacity-40 border-dashed scale-[0.98] bg-[var(--color-surface-container-highest)] border-[var(--color-outline)]' 
+                          : isVisible 
+                            ? 'bg-[var(--color-primary-container)]/20 border-[#6B4FD8]/40 text-[var(--color-on-surface)] shadow-sm hover:shadow-md hover:bg-[var(--color-primary-container)]/30' 
+                            : 'bg-[var(--color-surface-container-low)] border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] opacity-80 hover:opacity-100 hover:bg-[var(--color-surface-variant)]'
                       }`}
                     >
+                      {/* Grip Indicator Handle */}
+                      <div className="flex items-center text-[var(--color-on-surface-variant)] opacity-40 hover:opacity-80 transition-opacity shrink-0 pl-1.5 pointer-events-none">
+                        <GripVertical size={16} />
+                      </div>
+
                       {/* Toggle Info Area */}
                       <button
                         type="button"

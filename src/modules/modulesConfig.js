@@ -49,15 +49,32 @@ export const getAccessibleModules = (user) => {
   return [...new Set(accessible)];
 };
 
-/**
- * Takes accessible module keys and rigidly sorts them based strictly on the MODULES_CATALOG order.
- * Ignore any savedOrder argument, ensuring absolute synchronization with configuration.
- */
 export const getOrderedModules = (accessibleKeys, savedOrder) => {
   const keys = accessibleKeys || [];
-  // Always respect the rigid central catalog sequence
-  return MODULES_CATALOG
+  
+  // Deduplicate inputs first for consistency
+  const uniqueKeys = [...new Set(keys)];
+
+  if (!savedOrder || !Array.isArray(savedOrder)) {
+    // Fallback to default CATALOG order
+    return MODULES_CATALOG
+      .map(m => m.id)
+      .filter(id => uniqueKeys.includes(id));
+  }
+
+  // Filter saved order to ensure it only contains existing and accessible keys
+  const sortedValid = savedOrder.filter(id => uniqueKeys.includes(id));
+  
+  // Find keys accessible but not explicitly stored in savedOrder
+  const missing = uniqueKeys.filter(id => !sortedValid.includes(id));
+
+  // Order missing keys based on native CATALOG order
+  const orderedMissing = MODULES_CATALOG
     .map(m => m.id)
-    .filter(id => keys.includes(id));
+    .filter(id => missing.includes(id));
+
+  // Deduplicate the combined result just in case to ensure 100% visual integrity
+  return [...new Set([...sortedValid, ...orderedMissing])];
 };
+
 
