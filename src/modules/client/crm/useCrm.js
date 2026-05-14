@@ -4,6 +4,7 @@ import {
   onSnapshot, 
   addDoc, 
   updateDoc, 
+  deleteDoc,
   doc, 
   query, 
   orderBy,
@@ -230,6 +231,26 @@ export const useCrm = (orgId = "default_org") => {
     }
   };
 
+  const deleteContact = async (contactId) => {
+    try {
+      const contactRef = doc(db, `organizations/${orgId}/contacts`, contactId);
+      await deleteDoc(contactRef);
+    } catch (err) {
+      console.error("Error in deleteContact:", err);
+      throw err;
+    }
+  };
+
+  const deleteLead = async (leadId) => {
+    try {
+      const leadRef = doc(db, `organizations/${orgId}/leads`, leadId);
+      await deleteDoc(leadRef);
+    } catch (err) {
+      console.error("Error in deleteLead:", err);
+      throw err;
+    }
+  };
+
   return {
     contacts,
     leads,
@@ -238,9 +259,11 @@ export const useCrm = (orgId = "default_org") => {
     error,
     addContact,
     updateContact,
+    deleteContact,
     addLead,
     updateLeadStatus,
     updateLead,
+    deleteLead,
     addInteraction
   };
 };
