@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Phone, Mail, MoreVertical, Plus, Kanban, List, Loader2, X, AlertCircle, ChevronDown } from 'lucide-react';
+import { Users, Phone, Mail, Edit2, Trash2, Plus, Kanban, List, Loader2, X, AlertCircle, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useCrm } from './useCrm';
 import { useAuth } from '../../../context/AuthContext';
@@ -14,8 +14,8 @@ export default function CRMModule() {
   
   const { 
     contacts, leads, interactions, loading, 
-    addContact, updateContact, addLead, 
-    updateLeadStatus, updateLead, addInteraction 
+    addContact, updateContact, deleteContact, addLead, 
+    updateLeadStatus, updateLead, deleteLead, addInteraction 
   } = useCrm(isReady ? orgId : null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'pipeline');
   const [showModal, setShowModal] = useState(false);
@@ -233,12 +233,31 @@ export default function CRMModule() {
                           </span>
                         )}
                       </p>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
-                        className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
-                      >
-                        <MoreVertical size={14} />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleOpenEditLead(lead); }}
+                          className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
+                          title="Editar Prospecto"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={async (e) => { 
+                            e.stopPropagation(); 
+                            if (window.confirm('¿Estás seguro de que deseas eliminar este prospecto?')) {
+                              try {
+                                await deleteLead(lead.id);
+                              } catch (err) {
+                                alert("No se pudo eliminar el prospecto.");
+                              }
+                            }
+                          }}
+                          className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors"
+                          title="Eliminar Prospecto"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-[10px] text-[var(--color-primary)] font-black uppercase tracking-tight mb-1">{lead.company}</p>
@@ -372,12 +391,31 @@ export default function CRMModule() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}
-                      className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
-                    >
-                      <MoreVertical size={16} />
-                    </button>
+                    <div className="flex justify-end items-center gap-3">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}
+                        className="p-1 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
+                        title="Editar Cliente"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          if (window.confirm('¿Estás seguro de que deseas eliminar este cliente permanentemente?')) {
+                            try {
+                              await deleteContact(contact.id);
+                            } catch (err) {
+                              alert("No se pudo eliminar el cliente.");
+                            }
+                          }
+                        }}
+                        className="p-1 text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors"
+                        title="Eliminar Cliente"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               )) : (
