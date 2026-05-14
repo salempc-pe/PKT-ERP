@@ -17,7 +17,10 @@ import {
   MapPin,
   AlertTriangle,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Warehouse,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 import { useWarehouse } from './useWarehouse';
 import { useMaterialSettings } from './useMaterialSettings';
@@ -30,21 +33,24 @@ export default function WarehouseModule() {
   const orgId = user?.organizationId || "default_org";
   
   // -- Multi-Warehouse State --
-  const { warehouses } = useWarehouses(orgId);
+  const { warehouses, addWarehouse, updateWarehouse, deleteWarehouse } = useWarehouses(orgId);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
 
   const { stock, history, loading, addMovement } = useWarehouse(orgId, selectedWarehouseId);
   const { settings, updateThreshold } = useMaterialSettings(orgId);
 
   // -- UI State --
-  const [activeTab, setActiveTab] = useState('stock'); // 'stock' or 'history'
+  const [activeTab, setActiveTab] = useState('stock'); // 'stock', 'history' or 'warehouses'
   const [showModal, setShowModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showWarehouseModal, setShowWarehouseModal] = useState(false);
   const [modalType, setModalType] = useState('IN'); // 'IN' or 'OUT'
   const [isSaving, setIsSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [newThreshold, setNewThreshold] = useState('');
+  const [editingWarehouseId, setEditingWarehouseId] = useState(null);
+  const [warehouseFormData, setWarehouseFormData] = useState({ name: '', location: '', isDefault: false });
 
   // -- Form State --
   const [formData, setFormData] = useState({
@@ -79,6 +85,13 @@ export default function WarehouseModule() {
       item.materialName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [history, searchQuery]);
+
+  const filteredWarehouses = useMemo(() => {
+    return warehouses.filter(w => 
+      (w.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (w.location || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [warehouses, searchQuery]);
 
   const getMaterialThreshold = (materialName, warehouseId) => {
     if (!warehouseId) return 0;
@@ -155,6 +168,55 @@ export default function WarehouseModule() {
     }
   };
 
+  const handleOpenWarehouseModal = (w = null) => {
+    if (w) {
+      setEditingWarehouseId(w.id);
+      setWarehouseFormData({
+        name: w.name || '',
+        location: w.location || '',
+        isDefault: w.isDefault || false
+      });
+    } else {
+      setEditingWarehouseId(null);
+      setWarehouseFormData({
+        name: '',
+        location: '',
+        isDefault: false
+      });
+    }
+    setShowWarehouseModal(true);
+  };
+
+  const handleWarehouseSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      if (editingWarehouseId) {
+        await updateWarehouse(editingWarehouseId, warehouseFormData);
+      } else {
+        await addWarehouse(warehouseFormData);
+      }
+      setShowWarehouseModal(false);
+    } catch (err) {
+      alert("Error al guardar el almacén");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteWarehouse = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este almacén? Esta acción no se puede deshacer.")) {
+      setIsSaving(true);
+      try {
+        await deleteWarehouse(id);
+      } catch (err) {
+        alert("Error al eliminar el almacén");
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
   if (loading) return <LoadingScreen fullScreen={false} message="Cargando Bodega..." />;
 
   return (
@@ -193,6 +255,12 @@ export default function WarehouseModule() {
             >
               Historial
             </button>
+            <button 
+              onClick={() => setActiveTab('warehouses')}
+              className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${activeTab === 'warehouses' ? 'bg-[var(--color-surface-variant)] text-[var(--color-primary)] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            >
+              Almacenes
+            </button>
           </div>
 
           {/* Mobile Tabs Selector */}
@@ -204,25 +272,28 @@ export default function WarehouseModule() {
             >
               <option value="stock">Stock Actual</option>
               <option value="history">Historial</option>
+              <option value="warehouses">Almacenes</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
               <ChevronDown size={18} />
             </div>
           </div>
 
-          <div className="relative flex-1 min-w-[200px]">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]" size={16} />
-            <select 
-              value={selectedWarehouseId}
-              onChange={(e) => setSelectedWarehouseId(e.target.value)}
-              className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all font-bold appearance-none"
-            >
-              <option value="">Todos los Almacenes</option>
-              {warehouses.map(w => (
-                <option key={w.id} value={w.id}>{w.name}</option>
-              ))}
-            </select>
-          </div>
+          {activeTab !== 'warehouses' && (
+            <div className="relative flex-1 min-w-[200px]">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]" size={16} />
+              <select 
+                value={selectedWarehouseId}
+                onChange={(e) => setSelectedWarehouseId(e.target.value)}
+                className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all font-bold appearance-none"
+              >
+                <option value="">Todos los Almacenes</option>
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Search & Add */}
@@ -231,24 +302,26 @@ export default function WarehouseModule() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
             <input 
               type="text" 
-              placeholder="Buscar material..." 
+              placeholder={activeTab === 'warehouses' ? "Buscar almacén..." : "Buscar material..."} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[var(--color-surface-container-low)] text-[var(--color-on-surface)] text-sm rounded-xl pl-10 pr-4 py-2.5 border border-[var(--color-outline-variant)] outline-none focus:border-[#6B4FD8] transition-all"
             />
           </div>
           <button 
-            onClick={() => handleOpenModal('IN')}
+            onClick={() => activeTab === 'warehouses' ? handleOpenWarehouseModal() : handleOpenModal('IN')}
             className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-[#6B4FD8]/20"
+            title={activeTab === 'warehouses' ? 'Crear Almacén' : 'Registrar Ingreso'}
           >
             <Plus size={18} />
+            {activeTab === 'warehouses' && <span className="hidden sm:inline ml-1 text-xs uppercase font-black tracking-wider">Nuevo</span>}
           </button>
         </div>
       </div>
 
       {/* Table Content */}
       <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
-          {activeTab === 'stock' ? (
+          {activeTab === 'stock' && (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
@@ -318,7 +391,9 @@ export default function WarehouseModule() {
                 )}
               </tbody>
             </table>
-          ) : (
+          )}
+
+          {activeTab === 'history' && (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
@@ -371,6 +446,49 @@ export default function WarehouseModule() {
                 )}
               </tbody>
             </table>
+          )}
+
+          {activeTab === 'warehouses' && (
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredWarehouses.length > 0 ? filteredWarehouses.map((w) => (
+                <div key={w.id} className="p-6 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-container-low)] hover:shadow-xl transition-all relative group animate-in fade-in duration-300">
+                  {w.isDefault && (
+                    <span className="absolute top-4 right-4 px-2 py-0.5 bg-emerald-500/20 text-emerald-500 text-[9px] font-black uppercase rounded-full">Principal</span>
+                  )}
+                  <div className="w-12 h-12 bg-[var(--color-surface-container-low)] rounded-xl flex items-center justify-center shadow-sm mb-4 border border-[var(--color-outline-variant)]/30">
+                    <Warehouse className="text-[var(--color-primary)]" size={24} />
+                  </div>
+                  <h4 className="font-bold text-[var(--color-on-surface)] mb-1">{w.name}</h4>
+                  <p className="text-xs text-[var(--color-on-surface-variant)] mb-4">{w.location || 'Sin dirección registrada'}</p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-[var(--color-outline-variant)]/30">
+                    <span className="text-[10px] font-black uppercase text-[var(--color-on-surface-variant)] tracking-widest">{w.status || 'Activo'}</span>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleOpenWarehouseModal(w)} 
+                        className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors rounded-lg hover:bg-[var(--color-surface-variant)]"
+                        title="Editar Almacén"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      {!w.isDefault && (
+                        <button 
+                          onClick={() => handleDeleteWarehouse(w.id)} 
+                          className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors rounded-lg hover:bg-red-400/10"
+                          title="Eliminar Almacén"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="col-span-full py-20 text-center text-[var(--color-on-surface-variant)] italic">
+                  No se encontraron almacenes registrados que coincidan con tu búsqueda.
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -514,6 +632,87 @@ export default function WarehouseModule() {
                   className={`flex-[2] text-[#002150] font-black px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 ${modalType === 'IN' ? 'bg-[#6B4FD8]' : 'bg-amber-500'}`}
                 >
                   {isSaving ? <Loader2 size={18} className="animate-spin" /> : (modalType === 'IN' ? 'Registrar Ingreso' : 'Registrar Salida')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Warehouse Form Modal */}
+      {showWarehouseModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowWarehouseModal(false)}></div>
+          <div className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300">
+            <div className="p-6 border-b border-[var(--color-outline-variant)]/30 flex justify-between items-center bg-[var(--color-surface-container-low)]">
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
+                <Warehouse size={18} className="text-[var(--color-primary)]" />
+                {editingWarehouseId ? 'Editar Almacén' : 'Nuevo Almacén'}
+              </h3>
+              <button onClick={() => setShowWarehouseModal(false)} className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors">
+                <X size={20}/>
+              </button>
+            </div>
+
+            <form onSubmit={handleWarehouseSubmit} className="p-8 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Nombre del Almacén</label>
+                <input 
+                  required
+                  type="text"
+                  disabled={isSaving}
+                  value={warehouseFormData.name}
+                  onChange={(e) => setWarehouseFormData({...warehouseFormData, name: e.target.value})}
+                  placeholder="Ej: Bodega Central"
+                  className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none font-bold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest">Ubicación / Dirección</label>
+                <div className="relative">
+                  <input 
+                    required
+                    type="text"
+                    disabled={isSaving}
+                    value={warehouseFormData.location}
+                    onChange={(e) => setWarehouseFormData({...warehouseFormData, location: e.target.value})}
+                    placeholder="Ej: Calle Principal #123"
+                    className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-3 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none"
+                  />
+                  <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <input 
+                  type="checkbox"
+                  id="isDefaultCheckbox"
+                  disabled={isSaving}
+                  checked={warehouseFormData.isDefault}
+                  onChange={(e) => setWarehouseFormData({...warehouseFormData, isDefault: e.target.checked})}
+                  className="w-4 h-4 rounded bg-[var(--color-surface-container)] border-[var(--color-outline-variant)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                />
+                <label htmlFor="isDefaultCheckbox" className="text-xs font-bold text-[var(--color-on-surface)] select-none cursor-pointer">
+                  Establecer como almacén principal
+                </label>
+              </div>
+
+              <div className="pt-4 flex gap-4">
+                <button 
+                  type="button" 
+                  onClick={() => setShowWarehouseModal(false)} 
+                  disabled={isSaving}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container)] transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSaving}
+                  className="flex-[2] bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-[#6B4FD8]/20"
+                >
+                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : (editingWarehouseId ? 'Guardar Cambios' : 'Crear Almacén')}
                 </button>
               </div>
             </form>

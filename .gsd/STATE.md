@@ -1,12 +1,13 @@
 # Project State
 
 ## Last Session Summary
-Fase 54 ejecutada con éxito: Añadidos botones de edición y eliminación con diálogos de confirmación nativos en Prospectos y Clientes (CRM). Los hooks de persistencia ahora soportan el borrado físico de documentos en Firestore.
+Fase 54 ejecutada con éxito: Añadidos botones de edición y eliminación con diálogos de confirmación nativos en Prospectos y Clientes (CRM). 
+Adicionalmente, se completó satisfactoriamente el Sprint `warehouse-management-tab` habilitando una pestaña dedicada y el CRUD completo de Almacenes en el módulo de Bodega compartiendo datos persistidos con Inventario.
 
 ## Current Position
-- **Sprint**: warehouse-management-tab
-- **Status**: Sprint in progress
+- **Sprint**: (none)
+- **Status**: Idle
 - **Milestone**: (none)
 
 ## Next Steps
-1. Completar tareas definidas en .gsd/SPRINT.md para habilitar el CRUD de almacenes.
+1. Esperar instrucciones del usuario para abordar la siguiente fase o sprint.
