@@ -45,30 +45,19 @@ export const getAccessibleModules = (user) => {
     if (!accessible.includes('health')) accessible.push('health');
   }
 
-  return accessible;
+  // Safeguard: Deduplicate accessible modules before returning
+  return [...new Set(accessible)];
 };
 
 /**
- * Takes accessible module keys and sorts them based on user's modulesOrder preferences.
+ * Takes accessible module keys and rigidly sorts them based strictly on the MODULES_CATALOG order.
+ * Ignore any savedOrder argument, ensuring absolute synchronization with configuration.
  */
 export const getOrderedModules = (accessibleKeys, savedOrder) => {
-  if (!savedOrder || !Array.isArray(savedOrder)) {
-    // Fallback to default CATALOG order among accessible keys
-    return MODULES_CATALOG
-      .map(m => m.id)
-      .filter(id => accessibleKeys.includes(id));
-  }
-
-  // Filter saved order to only contain currently accessible keys
-  const sortedValid = savedOrder.filter(id => accessibleKeys.includes(id));
-  
-  // Find any new accessible modules not yet in user's saved order
-  const missing = accessibleKeys.filter(id => !sortedValid.includes(id));
-
-  // Merge, keeping missing ones at the end (or ordered by catalog)
-  const orderedMissing = MODULES_CATALOG
+  const keys = accessibleKeys || [];
+  // Always respect the rigid central catalog sequence
+  return MODULES_CATALOG
     .map(m => m.id)
-    .filter(id => missing.includes(id));
-
-  return [...sortedValid, ...orderedMissing];
+    .filter(id => keys.includes(id));
 };
+
