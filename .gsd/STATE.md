@@ -4,16 +4,17 @@
 Se completó con éxito la homologación visual y estructural del módulo de Bodega (`WarehouseModule.jsx`) con el de Inventario. Ahora cuenta con cabecera superior unificada (pestañas + botón), una cuadrícula de 4 tarjetas de métricas (Total Materiales, Almacenes, Alertas Stock, Inversión Total) e interfaz móvil y desktop refinada.
 
 ## Current Position
-- **Phase**: 55 (completed)
-- **Task**: Sprint completed & archived
-- **Status**: Idle / Ready
+- **Sprint**: dashboard-drag-interactive
+- **Status**: Sprint in progress
+- **Milestone**: Milestone 4 (paused for sprint)
 
 ## Last Session Summary
-Sprint completed successfully. Se implementó la reordenación nativa Drag & Drop de los módulos en los Ajustes del Dashboard. Dicho orden personalizado ahora se propaga y sincroniza de manera perfectamente reactiva y consistente tanto en el Sidebar como en las tarjetas principales del Dashboard, persistiendo correctamente en Firestore para el usuario autenticado.
-
+Se restauró la base de Drag and Drop y se ha abierto este Sprint de Optimización para lograr la reordenación visual interactiva fluida (tipo sliding sort) tanto en PC como en Dispositivos Móviles mediante APIs nativas (Drag y Touch).
 
 ## Next Steps
-1. Aguardando nuevas instrucciones o especificación de la siguiente fase.
+1. Implementar intercambio dinámico (swap) durante `onDragOver` para ordenación fluida en PC.
+2. Desarrollar el motor táctil nativo (`onTouchMove`) sobre el Grip vertical para pantallas táctiles móviles.
+
 
 
 

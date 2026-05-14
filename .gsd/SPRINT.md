@@ -1,31 +1,33 @@
-# Sprint 1 — dashboard-drag-reorder
+# Sprint — Dashboard Drag Interactive
 
 > **Duration**: 2026-05-14 to 2026-05-15
 > **Status**: In Progress
 
 ## Goal
-Implementar el reordenamiento de módulos mediante Drag-and-Drop en la configuración del dashboard, y reactivar la sincronización de dicho orden personalizado con el Sidebar y el Dashboard.
+Implementar reordenamiento visual interactivo en tiempo real (sort-as-you-drag) en el modal de configuración del dashboard con compatibilidad completa para PC y dispositivos móviles mediante touch listeners.
 
 ## Scope
 
 ### Included
-- Restaurar la lógica dinámica en `modulesConfig.js` para que acepte `savedOrder` (el orden personalizado del usuario) y lo sincronice con `MODULES_CATALOG`.
-- Reactivar el guardado del campo `modulesOrder` en Firebase Firestore en `DashboardSettingsModal.jsx`.
-- Añadir comportamiento nativo Drag & Drop (draggable, onDragStart, onDragOver, onDrop, onDragEnd) en el mapeo de tarjetas del modal de configuración.
-- Integrar un tirador o icono visual (ej. `GripVertical`) para indicar la posibilidad de arrastre.
+- Transformar la lógica de arrastre en PC de estática (en soltado) a dinámica interactiva (intercambio en tiempo real por hover en `onDragOver`).
+- Añadir soporte de arrastre para pantallas táctiles móviles usando `onTouchStart`, `onTouchMove`, `onTouchEnd` restringido al tirador `GripVertical`.
+- Asegurar transiciones CSS y estados visuales fluidos durante la reordenación en ambas plataformas.
+- Preservar el guardado reactivo del orden en Firestore.
 
 ### Explicitly Excluded
-- Integración de librerías externas de DND (se prioriza usar la API nativa de HTML5 por rendimiento y simplicidad).
+- Añadir librerías npm de Drag & Drop pesadas.
+- Rediseñar el Sidebar o el Dashboard (estos simplemente leen el orden final).
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Restaurar soporte para orden dinámico personalizado y guardar en Firestore | Claude | ⬜ Todo | 0.5h |
-| Implementar interacción interactiva Drag & Drop nativa en DashboardSettingsModal | Claude | ⬜ Todo | 1.0h |
-| Refinar feedback visual, sombras e interacciones móviles del arrastre | Claude | ⬜ Todo | 0.5h |
+| Implementar swap reactivo al pasar ratón (`onDragOver`) para efecto visual interactivo en PC | Claude | ⬜ Todo | 0.5h |
+| Desarrollar el motor de Touch API en JS para emulación de arrastre reactivo en pantallas móviles | Claude | ⬜ Todo | 1.0h |
+| Añadir `touch-action: none` en el Grip handle para permitir scroll general pero habilitar arrastre preciso | Claude | ⬜ Todo | 0.2h |
+| Validar el orden dinámico final y sincronización con Firebase | Claude | ⬜ Todo | 0.3h |
 
 ## Daily Log
 
 ### 2026-05-14
-- Sprint creado e inicializado.
+- Sprint creado para refinar interacción visual y soporte multi-plataforma de arrastre de módulos.
