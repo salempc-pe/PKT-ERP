@@ -925,3 +925,17 @@
 **Verification**:
 - [x] Presencia de métodos de eliminación en el Data Layer.
 - [x] Despliegue visual correcto de iconos en CRM e interacción con la lógica reactiva.
+
+---
+
+### Phase 55: Homologación de Orden de Módulos y Depuración de Duplicados
+**Status**: ⬜ Not Started
+**Objective**: Eliminar duplicación del módulo Bodega y forzar que tanto el Dashboard como el Sidebar sigan estrictamente el orden centralizado en MODULES_CATALOG.
+**Depends on**: Phase 54
+
+**Tasks**:
+- [ ] TBD (run /plan 55 to create)
+
+**Verification**:
+- TBD
+
