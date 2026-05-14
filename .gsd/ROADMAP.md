@@ -913,12 +913,15 @@
 ---
 
 ### Phase 54: CRM — Edición y Eliminación de Clientes
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implementar botones y flujos funcionales para editar y borrar registros de clientes dentro del módulo CRM en la pestaña de clientes.
 **Depends on**: Phase 53
 
 **Tasks**:
-- [ ] TBD (run /plan 54 to create)
+- [x] Extender `useCrm.js` con funciones de eliminación directa (`deleteContact`, `deleteLead`).
+- [x] Actualizar `CRMModule.jsx` integrando iconos explícitos de Editar y Borrar en vistas Kanban y Lista.
+- [x] Añadir diálogo de confirmación nativo (`window.confirm`) en los flujos de borrado.
 
 **Verification**:
-- TBD
+- [x] Presencia de métodos de eliminación en el Data Layer.
+- [x] Despliegue visual correcto de iconos en CRM e interacción con la lógica reactiva.
