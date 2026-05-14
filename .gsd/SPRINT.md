@@ -1,34 +1,30 @@
-# Sprint 2 — reorder-dashboard-modules
+# Sprint — toggle-warehouse-module
 
-> **Duration**: 2026-05-11 to 2026-05-12
+> **Duration**: 2026-05-14 to 2026-05-15
 > **Status**: In Progress
 
 ## Goal
-Permitir que el usuario reordene sus módulos activos en la configuración del dashboard para que dicho orden se refleje consistentemente en la barra lateral (sidebar) y en las tarjetas informativas del dashboard.
+Habilitar el control independiente para activar y desactivar el módulo de Bodega (`warehouse`) desde el panel SuperAdmin de Clientes, desvinculando su herencia implícita del módulo de Inventario.
 
 ## Scope
 
 ### Included
-- Refactorizar `ClientLayout.jsx` para que el sidebar renderice los módulos dinámicamente basándose en el orden guardado en preferencias del usuario.
-- Implementar botones de reordenación (subir/bajar) en `DashboardSettingsModal.jsx` en la lista de módulos.
-- Asegurar la sincronización y persistencia del nuevo orden en Firebase Firestore (`dashboardPreferences`).
-- Modificar `ClientDashboard.jsx` para que las tarjetas respeten el orden específico de las preferencias.
+- Añadir el módulo `warehouse` (Bodega) a la lista `AVAILABLE_MODULES` en `AdminClients.jsx`.
+- Remover la asignación automática del módulo `warehouse` cuando `inventory` está activo en `modulesConfig.js`.
 
 ### Explicitly Excluded
-- Alterar permisos de suscripción o lógicas de acceso a los módulos.
-- Modificar diseños de módulos individuales.
+- Rediseños estéticos de componentes visuales en SuperAdmin o Bodega.
+- Alteraciones en el control de roles dentro del módulo de Bodega.
 
 ## Tasks
 
 | Task | Assignee | Status | Est. Hours |
 |------|----------|--------|------------|
-| Refactorizar sidebar en ClientLayout.jsx para renderizado dinámico ordenado | Antigravity | ✅ Done | 1.0 |
-| Implementar UI de reordenación en DashboardSettingsModal.jsx | Antigravity | ✅ Done | 1.0 |
-| Ajustar renderizado de tarjetas en ClientDashboard.jsx para respetar el orden | Antigravity | ✅ Done | 0.5 |
-| Validación y pruebas del flujo de reordenación y persistencia | Antigravity | ✅ Done | 0.5 |
+| Registrar módulo en panel SuperAdmin (`AdminClients.jsx`) | Antigravity | ⬜ Todo | 0.5 |
+| Eliminar herencia automática de Bodega (`modulesConfig.js`) | Antigravity | ⬜ Todo | 0.5 |
+| Validar cambios | Antigravity | ⬜ Todo | 0.5 |
 
 ## Daily Log
 
-### 2026-05-11
-- Sprint creado a solicitud del usuario.
-- Analizada la estructura de `ClientLayout`, `ClientDashboard` y `DashboardSettingsModal`.
+### 2026-05-14
+- Sprint creado.
