@@ -7,6 +7,7 @@ import LoadingScreen from '../../../components/LoadingScreen';
 const AVAILABLE_MODULES = [
   { id: 'crm', name: 'CRM y Ventas' },
   { id: 'inventory', name: 'Inventario' },
+  { id: 'warehouse', name: 'Bodega' },
   { id: 'sales', name: 'Ventas y Facturación' },
   { id: 'finance', name: 'Contabilidad' },
   { id: 'calendar', name: 'Agenda y Citas' },

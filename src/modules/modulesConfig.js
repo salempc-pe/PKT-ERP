@@ -39,11 +39,6 @@ export const getAccessibleModules = (user) => {
   // Create a complete list of keys accessible to this user
   const accessible = [...baseActive];
 
-  // Implicit: Warehouse is granted if Inventory is present
-  if (baseActive.includes('inventory') && !accessible.includes('warehouse')) {
-    accessible.push('warehouse');
-  }
-
   // Role-based defaults
   if (user.role === 'admin') {
     if (!accessible.includes('payroll')) accessible.push('payroll');
