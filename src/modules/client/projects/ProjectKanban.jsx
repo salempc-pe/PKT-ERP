@@ -187,12 +187,13 @@ export default function ProjectKanban({
                             </span>
                         </div>
 
-                        <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-container)]/40 border border-[var(--color-outline-variant)]/50 rounded-2xl min-h-[400px]">
+                        <div className="flex flex-col gap-3 p-3 bg-[var(--color-surface-variant)]/40 border border-[var(--color-outline-variant)] rounded-2xl h-full min-h-[400px]">
                             {tasks.filter(t => t.status === col.id).map(task => (
                                 <div 
                                     key={task.id} 
-                                    className="bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer relative overflow-hidden"
+                                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
                                 >
+                                    <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${col.color}`}></div>
                                     
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="space-y-1 pr-8" onClick={() => col.next && updateTaskStatus(task.id, col.next)}>
