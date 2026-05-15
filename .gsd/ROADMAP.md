@@ -943,4 +943,61 @@
 - [x] Sincronización rígida: el orden en Sidebar y Dashboard es el mismo.
 - [x] Limpieza de UI exitosa en ventana de preferencias de usuario.
 
+---
 
+### Phase 56: Proyectos — Corrección de Gantt y Fechas de Tareas
+**Status**: ✅ Complete
+**Objective**: Cambiar el nombre de la pestaña de Calendario a GANTT en el módulo de proyectos y corregir el diagrama de Gantt para que las tareas respondan correctamente a las fechas establecidas.
+**Depends on**: Phase 55
+
+**Tasks**:
+- [x] Renombrar pestaña "Calendario" a "GANTT" y actualizar icono a `BarChart2` en `ProjectKanban.jsx`.
+- [x] Corregir función `getTaskPosition` en `ProjectGantt.jsx` eliminando el tope hardcodeado del final de la escala.
+- [x] Implementar parseador de fecha local resistente a desajustes de zona horaria UTC en `ProjectGantt.jsx`.
+- [x] Refinar textos y cabecera en el Diagrama de Gantt para consistencia temática.
+
+**Verification**:
+- [x] Las barras de progreso en el diagrama se detienen exactamente el día de vencimiento de la tarea.
+- [x] El renderizado es resistente a corrimientos de días causados por la hora UTC local.
+- [x] La pestaña en el menú del proyecto ahora dice "GANTT".
+
+---
+
+### Phase 57: Overhaul Estético Homogéneo y Estandarización de UI
+**Status**: ✅ Complete
+**Objective**: Refactorizar visualmente todos los módulos operativos del ERP para unificar estilos tomando como modelo maestro a CRM, Ventas e Inventario. Esto cubre la homologación de tarjetas de métricas, el diseño de pestañas (tabs), botones de acción primaria/secundaria, sombras estilizadas y combinaciones cromáticas.
+**Depends on**: Phase 56
+
+**Tasks**:
+- [x] **57.1 — TeamModule.jsx (ALTO)**: Normalizar tabs desktop (eliminar shadow-lg, text-white→text-[#002150]), stats cards (rounded-3xl→2xl), thead (surface-container-high→surface-variant, font-bold→font-black), table container (rounded-3xl→2xl), botón CTA (text-white→text-[#002150]), modal invite (zoom-in-95→zoom-in, header canónico).
+- [x] **57.2 — PayrollModule.jsx (MODERADO)**: Convertir tabs de border-b pills a contenedor canónico, normalizar tab activo (text-white→text-[#002150]), thead (surface-container-high→surface-variant, tracking-[0.2em]→tracking-widest), table container (rounded-[2rem]→rounded-2xl, border-separate→border-collapse), reducir botón CTA (px-8 py-3.5→px-6 py-2.5).
+- [x] **57.3 — FinanceModule.jsx (LEVE)**: Stats cards: eliminar bg-gradient-to-br y shadow-inner de iconos, normalizar a surface-container-low con shadow-sm; ajustar color CTA (text-[#001b5c]→text-[#002150]).
+- [x] **57.4 — WarehouseModule.jsx (LEVE)**: Modal headers: cambiar bg surface-container-low → surface-container; normalizar bordes de header.
+- [x] **57.5 — PurchasesModule.jsx (LEVE)**: Modal header: cambiar bg surface-container-low/50 → surface-container; normalizar borde.
+- [x] **57.6 — HealthModule.jsx (LEVE)**: Tabs: eliminar shadow-lg y scale-[1.02] del tab activo, normalizar a patrón canónico simple.
+- [x] **57.7 — SalesModule.jsx (LEVE)**: Stats cards: reemplazar gradients de iconos con patrón canónico uniforme; normalizar contenedor de stats a surface-container-low con shadow-sm.
+
+**Verification**:
+- [x] Todos los tabs desktop usan contenedor canónico con bg-[#6B4FD8] text-[#002150] en activo.
+- [x] Todos los tabs mobile usan `<select>` con ChevronDown decorativo.
+- [x] Todas las tarjetas de métricas usan bg-[var(--color-surface-container-low)] con shadow-sm hover:shadow-md.
+- [x] Todos los iconos de stats usan w-12 h-12 rounded-xl bg-[var(--color-surface-container)] con border.
+- [x] Todos los thead usan bg-[var(--color-surface-variant)] con text-[10px] font-black uppercase tracking-widest.
+- [x] Todos los contenedores de tabla usan rounded-2xl (no rounded-3xl ni rounded-[2rem]).
+- [x] Todos los modales usan animate-in zoom-in (no zoom-in-95).
+- [x] Todos los headers de modal usan bg-[var(--color-surface-container)] (no surface-container-low).
+- [x] Todos los botones CTA principales usan text-[#002150].
+- [x] Verificación visual en navegador con npm run dev.
+
+---
+
+### Phase 58: Homologar M�dulo de Proyectos al Est�ndar Est�tico de CRM
+**Status**: ? Not Started
+**Objective**: Refactorizar est�ticamente el m�dulo de proyectos (ProjectModule, Kanban, Gantt, etc.) para igualar el dise�o limpio y de tarjetas flotantes sobre fondo lila pastel del m�dulo CRM.
+**Depends on**: Phase 57
+
+**Tasks**:
+- [ ] TBD (run /plan 58 to create)
+
+**Verification**:
+- [ ] TBD
