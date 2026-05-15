@@ -991,13 +991,15 @@
 
 ---
 
-### Phase 58: Homologar M�dulo de Proyectos al Est�ndar Est�tico de CRM
-**Status**: ? Not Started
-**Objective**: Refactorizar est�ticamente el m�dulo de proyectos (ProjectModule, Kanban, Gantt, etc.) para igualar el dise�o limpio y de tarjetas flotantes sobre fondo lila pastel del m�dulo CRM.
+### Phase 58: Homologar Módulo de Proyectos al Estándar Estético de CRM
+**Status**: ✅ Complete
+**Objective**: Refactorizar estéticamente el módulo de proyectos (ProjectModule, Kanban, Gantt, etc.) para igualar el diseño limpio y de tarjetas flotantes sobre fondo lila pastel del módulo CRM.
 **Depends on**: Phase 57
 
 **Tasks**:
-- [ ] TBD (run /plan 58 to create)
+- [x] **58.1 - ProjectModule.jsx**: Rediseñar cards de listado, botón CTA "Nuevo Proyecto", y normalizar el modal de creación/edición con el fondo de cabecera plano y botón principal.
+- [x] **58.2 - ProjectKanban.jsx**: Aligerar la caja de cabecera y la sombra del tabs selector; normalizar el botón CTA "Nueva Tarea"; rediseñar el fondo de columnas; y quitar gradientes pesados y brillos neón en las cards del tablero Kanban reemplazándolas por tarjetas flotantes.
 
 **Verification**:
-- [ ] TBD
+- [x] Las cards en el listado de proyectos y tareas del tablero Kanban lucen idénticas a la estética del CRM sin luces de neón ni sombras masivas.
+- [x] Modales estandarizados a bg-surface-container en su cabecera con redondeado 2xl.
