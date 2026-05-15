@@ -182,27 +182,27 @@ export default function TeamModule() {
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Desktop Tabs */}
-        <div className="hidden md:flex items-center p-1 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl w-fit">
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 border border-[var(--color-outline-variant)] rounded-xl w-fit shadow-sm">
           <button
             onClick={() => setActiveTab('members')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
               activeTab === 'members' 
-                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-[#6B4FD8]/20' 
+                ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
-            <Users size={18} />
+            <Users size={16} />
             <span>Equipo</span>
           </button>
           <button
             onClick={() => setActiveTab('audit')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
               activeTab === 'audit' 
-                ? 'bg-[#6B4FD8] text-white shadow-lg shadow-[#6B4FD8]/20' 
+                ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
-            <Activity size={18} />
+            <Activity size={16} />
             <span>Auditoría</span>
           </button>
         </div>
@@ -225,9 +225,9 @@ export default function TeamModule() {
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all ${isLimitReached
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 ${isLimitReached
               ? 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)] cursor-not-allowed border border-[var(--color-outline-variant)]'
-              : 'bg-[#6B4FD8] hover:bg-[#7c7cf5] text-white shadow-lg shadow-[#6B4FD8]/10'
+              : 'bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] shadow-sm'
             }`}
         >
           <UserPlus size={18} />
@@ -239,41 +239,45 @@ export default function TeamModule() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {/* Stats / Quota - Oculto en móvil */}
           <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[var(--color-surface-container-low)]/60 border border-[var(--color-outline-variant)] rounded-3xl p-6">
+            <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-10 h-10 bg-[#6B4FD8]/10 rounded-xl flex items-center justify-center text-[var(--color-primary)]">
-                  <Users size={20} />
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)]">
+                  <Users size={24} />
                 </div>
-                <h3 className="text-sm font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Capacidad de Usuarios</h3>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">Capacidad de Usuarios</p>
+                  <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{teamMembers.length} / {maxUsers}</p>
+                </div>
               </div>
-              <p className="text-2xl font-black text-[var(--color-on-surface)] mb-1">{teamMembers.length} / {maxUsers}</p>
-              <div className="w-full bg-[var(--color-surface-container)] h-2 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all ${isLimitReached ? 'bg-red-400' : 'bg-[#6B4FD8]'}`}
-                  style={{ width: `${Math.min((teamMembers.length / maxUsers) * 100, 100)}%` }}
-                ></div>
+              <div className="mt-3">
+                <div className="w-full bg-[var(--color-surface-container)] h-2 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${isLimitReached ? 'bg-red-400' : 'bg-[#6B4FD8]'}`}
+                    style={{ width: `${Math.min((teamMembers.length / maxUsers) * 100, 100)}%` }}
+                  ></div>
+                </div>
+                {isLimitReached && (
+                  <p className="text-[10px] text-red-400 mt-2 font-bold flex items-center gap-1">
+                    <Shield size={10} /> Has alcanzado el límite de tu plan.
+                  </p>
+                )}
               </div>
-              {isLimitReached && (
-                <p className="text-[10px] text-red-400 mt-2 font-bold flex items-center gap-1">
-                  <Shield size={10} /> Has alcanzado el límite de tu plan.
-                </p>
-              )}
             </div>
 
             {/* Zona de Seguridad (Solo Admin) */}
             {user?.role === 'admin' && (
-              <div className="md:col-span-2 bg-[var(--color-surface-container-low)]/60 border border-amber-500/20 rounded-3xl p-6 relative overflow-hidden group">
+              <div className="md:col-span-2 bg-[var(--color-surface-container-low)] border border-amber-500/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <ShieldAlert size={120} />
+                  <ShieldAlert size={100} />
                 </div>
                 
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 mb-1">
-                      <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
-                        <Database size={20} />
+                      <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-amber-500">
+                        <Database size={24} />
                       </div>
-                      <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">Zona de Resguardo de Datos</h3>
+                      <h3 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Zona de Resguardo de Datos</h3>
                     </div>
                     <p className="text-[var(--color-on-surface)] font-bold">Respaldo Total del Sistema</p>
                     <p className="text-xs text-[var(--color-on-surface-variant)] max-w-md">
@@ -285,7 +289,7 @@ export default function TeamModule() {
                   <button
                     onClick={handleExportData}
                     disabled={loadingExport}
-                    className="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-3 px-6 py-3 rounded-xl font-black text-xs bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loadingExport ? (
                       <>
@@ -305,14 +309,14 @@ export default function TeamModule() {
           </div>
 
           {/* Team List */}
-          <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)]/60 overflow-hidden">
+          <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[var(--color-surface-container-high)] border-b border-[var(--color-outline-variant)]">
-                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Colaborador</th>
-                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Rol</th>
-                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Estado</th>
-                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider text-right">Acciones</th>
+                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
+                  <th className="px-6 py-5">Colaborador</th>
+                  <th className="px-6 py-5">Rol</th>
+                  <th className="px-6 py-5">Estado</th>
+                  <th className="px-6 py-5 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#40485d]/10">
@@ -411,7 +415,7 @@ export default function TeamModule() {
       {/* Invite Modal */}
       {isInviteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[var(--color-surface-container-low)] border border-[#40485d]/50 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden relative">
+          <div className="bg-[var(--color-surface-variant)] border border-[var(--color-outline-variant)] rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in duration-300 overflow-hidden relative">
             {loading && (
               <div className="absolute inset-0 z-[60] bg-[var(--color-background)]/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
                 <div className="relative">
@@ -423,17 +427,19 @@ export default function TeamModule() {
                 </p>
               </div>
             )}
-            <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center rounded-t-3xl">
-              <h2 className="text-xl font-black text-[var(--color-on-surface)]">Invitar Miembro</h2>
+            <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)] rounded-t-3xl">
+              <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
+                <UserPlus className="text-[var(--color-primary)]" size={18} /> Invitar Miembro
+              </h3>
               <button
                 onClick={() => {
                   setIsInviteModalOpen(false);
                   setGeneratedInviteLink(null);
                   setNewUser({ name: '', email: '', role: 'user' });
                 }}
-                className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-xl transition-colors"
+                className="text-[var(--color-on-surface-variant)] hover:text-white transition-colors"
               >
-                <X size={20} />
+                <X size={16} />
               </button>
             </div>
 
@@ -472,7 +478,7 @@ export default function TeamModule() {
                     setGeneratedInviteLink(null);
                     setNewUser({ name: '', email: '', role: 'user' });
                   }}
-                  className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-white hover:bg-[#7c7cf5] transition-all"
+                  className="w-full py-3.5 rounded-xl font-black bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all flex items-center justify-center"
                 >
                   ENTENDIDO
                 </button>
@@ -525,7 +531,7 @@ export default function TeamModule() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 rounded-xl font-black bg-[#6B4FD8] text-white hover:bg-[#7c7cf5] transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl font-black bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? 'Procesando...' : 'Generar Invitación'}
               </button>

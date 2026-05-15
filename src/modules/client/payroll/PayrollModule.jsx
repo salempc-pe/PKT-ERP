@@ -97,37 +97,37 @@ export default function PayrollModule() {
       <div className="flex flex-col md:flex-row justify-end items-center gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="w-full md:w-auto bg-[#6B4FD8] text-[#001b5c] font-black px-8 py-3.5 rounded-2xl flex items-center justify-center gap-3 hover:shadow-[0_10px_25px_rgba(107,79,216,0.4)] transition-all active:scale-95"
+          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
         >
-          <Plus size={20} /> <span className="uppercase text-xs tracking-widest">Agregar Colaborador</span>
+          <Plus size={18} /> <span>Agregar Colaborador</span>
         </button>
       </div>
 
       {/* Stats Indicators - Oculto en móvil */}
       <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {payrollStats.map((stat, idx) => (
-          <div key={idx} className="bg-[var(--color-surface-container)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] hover:bg-[var(--color-surface-container-high)] transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container-low)] flex items-center justify-center shadow-sm">
+          <div key={idx} className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 shadow-sm">
               {stat.icon}
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-0.5">{stat.title}</p>
-              <span className="text-xl font-black text-[var(--color-on-surface)]">{stat.value}</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-0.5">{stat.title}</p>
+              <p className="text-xl font-black text-[var(--color-on-surface)] font-mono leading-tight">{stat.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Tabs Navigation - Desktop */}
-      <div className="hidden md:flex items-center gap-2 border-b border-[var(--color-outline-variant)] pb-4 overflow-x-auto no-scrollbar">
+      <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm w-fit">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
               activeTab === tab.id 
-                ? 'bg-[#6B4FD8] text-white shadow-lg' 
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-high)]'
+                ? 'bg-[#6B4FD8] text-[#002150]' 
+                : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
             {tab.icon}
@@ -141,7 +141,7 @@ export default function PayrollModule() {
         <select
           value={activeTab}
           onChange={(e) => setActiveTab(e.target.value)}
-          className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-black uppercase text-xs tracking-widest rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+          className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
         >
           <option value="colaboradores">Colaboradores</option>
           <option value="asistencia">Asistencia</option>
@@ -173,15 +173,15 @@ export default function PayrollModule() {
               </div>
             </div>
 
-            <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-[2rem] bg-[var(--color-surface-container-low)] shadow-sm">
-              <table className="w-full text-left border-separate border-spacing-0">
+            <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-[0.2em] font-black">
-                    <th className="px-6 py-5 first:rounded-tl-[2rem]">Colaborador</th>
+                  <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
+                    <th className="px-6 py-5">Colaborador</th>
                     <th className="px-6 py-5">Cargo</th>
                     <th className="px-6 py-5">Sueldo Bruto</th>
                     <th className="px-6 py-5">Método Pago</th>
-                    <th className="px-6 py-5 text-right last:rounded-tr-[2rem]">Acciones</th>
+                    <th className="px-6 py-5 text-right">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--color-outline-variant)]">

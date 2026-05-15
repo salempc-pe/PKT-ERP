@@ -133,14 +133,14 @@ export default function PurchasesModule() {
         {activeTab === 'orders' ? (
           <button 
             onClick={() => setShowModal(true)}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all text-sm active:scale-95"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Nueva Compra
           </button>
         ) : (
           <button 
             onClick={() => suppliersRef.current?.handleOpenNew()}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all text-sm active:scale-95"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Nuevo Proveedor
           </button>
@@ -219,7 +219,7 @@ export default function PurchasesModule() {
             onSubmit={handleAddSubmit}
             className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-lg overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
           >
-            <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center bg-[var(--color-surface-container-low)]/50">
+            <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)]">
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
                 <ShoppingCart size={18} className="text-[var(--color-primary)]" />
                 Nueva Orden de Compra

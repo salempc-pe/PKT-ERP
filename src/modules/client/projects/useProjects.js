@@ -93,8 +93,27 @@ export function useProjects(orgId = "default_org") {
 
     // Suscripción Timesheets
     const tsRef = collection(db, `organizations/${orgId}/projects/${activeProjectId}/timesheets`);
+    console.log("Suscribiéndose a timesheets en:", tsRef.path);
     const unsubTS = onSnapshot(tsRef, (snapshot) => {
-      setTimesheets(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      console.log(`Recibidos ${snapshot.size} registros de tiempo`);
+      const fbTimesheets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Combinar con los guardados localmente por si acaso (para evitar que desaparezcan si Firebase falla)
+      const localTS = JSON.parse(localStorage.getItem(`ts_fallback_${activeProjectId}`) || '[]');
+      const combined = [...fbTimesheets];
+      
+      localTS.forEach(local => {
+        if (!combined.find(fb => fb.date === local.date && fb.taskId === local.taskId && fb.hours === local.hours)) {
+          combined.push(local);
+        }
+      });
+
+      setTimesheets(combined);
+    }, (err) => {
+      console.error("Error en suscripción timesheets:", err);
+      // Fallback a localStorage si hay error de permisos
+      const localTS = JSON.parse(localStorage.getItem(`ts_fallback_${activeProjectId}`) || '[]');
+      if (localTS.length > 0) setTimesheets(localTS);
     });
 
     // Suscripción Documentos
@@ -176,15 +195,47 @@ export function useProjects(orgId = "default_org") {
     return await updateTask(taskId, { status: newStatus });
   }
 
+  async function deleteTask(taskId) {
+    if (!isFirebaseConfigured) {
+      setTasks(prev => prev.filter(t => t.id !== taskId));
+      return;
+    }
+    const taskRef = doc(db, `organizations/${orgId}/tasks`, taskId);
+    return await deleteDoc(taskRef);
+  }
+
   // -- Timesheet Methods --
   async function addTimesheetEntry(entryData) {
+    console.log("addTimesheetEntry llamada con:", entryData);
+    
+    // Actualización optimista inmediata para que el usuario vea el cambio ya!
+    const tempId = "temp_" + Date.now();
+    const newEntry = { id: tempId, ...entryData, createdAt: new Date() };
+    setTimesheets(prev => [newEntry, ...prev]);
+
     if (!isFirebaseConfigured) {
-      const newEntry = { id: "ts_" + Date.now(), ...entryData, createdAt: new Date() };
-      setTimesheets(prev => [...prev, newEntry]);
+      console.log("Firebase no configurado, guardando localmente...");
       return newEntry;
     }
-    const tsRef = collection(db, `organizations/${orgId}/projects/${activeProjectId}/timesheets`);
-    return await addDoc(tsRef, { ...entryData, createdAt: serverTimestamp() });
+
+    try {
+      const tsRef = collection(db, `organizations/${orgId}/projects/${activeProjectId}/timesheets`);
+      console.log("Guardando en Firebase:", tsRef.path);
+      const result = await addDoc(tsRef, { ...entryData, createdAt: serverTimestamp() });
+      console.log("Guardado en Firebase exitoso:", result.id);
+      return result;
+    } catch (error) {
+      console.error("Fallo crítico al guardar en Firebase, usando localStorage de respaldo:", error);
+      
+      // Guardar en localStorage como respaldo real
+      const currentLocal = JSON.parse(localStorage.getItem(`ts_fallback_${activeProjectId}`) || '[]');
+      const updatedLocal = [newEntry, ...currentLocal];
+      localStorage.setItem(`ts_fallback_${activeProjectId}`, JSON.stringify(updatedLocal));
+      
+      // Notificar al usuario pero dejar que siga viendo su registro
+      alert("Nota: El registro se guardó localmente en tu navegador porque Firebase denegó el acceso (Error de permisos).");
+      return newEntry;
+    }
   }
 
   async function deleteTimesheetEntry(entryId) {
@@ -230,6 +281,7 @@ export function useProjects(orgId = "default_org") {
     addTask,
     updateTask,
     updateTaskStatus,
+    deleteTask,
     addTimesheetEntry,
     deleteTimesheetEntry,
     addProjectDocument,

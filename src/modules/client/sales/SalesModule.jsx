@@ -200,7 +200,7 @@ export default function SalesModule() {
           </button>
           <button 
             onClick={() => { setSelectedDocType('Factura'); setCart([]); setIsModalOpen(true); }}
-            className="bg-[#6B4FD8] text-[#0f0f0f] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
             <Plus size={18} /> Emitir Factura
           </button>
@@ -209,31 +209,31 @@ export default function SalesModule() {
 
       {/* KPI Stats - Ocultos en móvil */}
       <div className="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
-           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] flex items-center justify-center text-[var(--color-primary)] shadow-inner">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)] shadow-sm">
              <TrendingUp size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Pagos Cobrados</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(totalSalesThisMonth)}</h3>
+             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">Pagos Cobrados</p>
+             <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{formatPrice(totalSalesThisMonth)}</p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
-           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#2a1b1a] to-[#1a0a0a] flex items-center justify-center text-[#ff716c] shadow-inner">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#ff716c] shadow-sm">
              <AlertCircle size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Por Cobrar</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{formatPrice(pendingCollection)}</h3>
+             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">Por Cobrar</p>
+             <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{formatPrice(pendingCollection)}</p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container)] p-6 rounded-2xl border border-[#40485d]/20 flex items-center gap-5">
-           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] flex items-center justify-center text-[#85ffab] shadow-inner">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#85ffab] shadow-sm">
              <FileText size={24} />
            </div>
            <div>
-             <p className="text-xs font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-1">Volumen Docs</p>
-             <h3 className="text-2xl font-black text-[var(--color-on-surface)]">{sales.length}</h3>
+             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-1">Volumen Docs</p>
+             <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{sales.length}</p>
            </div>
         </div>
       </div>
