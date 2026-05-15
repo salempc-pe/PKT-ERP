@@ -1003,3 +1003,16 @@
 **Verification**:
 - [x] Las cards en el listado de proyectos y tareas del tablero Kanban lucen idénticas a la estética del CRM sin luces de neón ni sombras masivas.
 - [x] Modales estandarizados a bg-surface-container en su cabecera con redondeado 2xl.
+
+---
+
+### Phase 59: Estandarización Milimétrica de Botones/Pestañas y Pipeline CRM en Proyectos
+**Status**: ⏳ Not Started
+**Objective**: Estandarizar la altura, ancho, diseño, sombra, tipografía y efectos de botones y pestañas del tope de la página de todos los módulos para que sean idénticos al módulo CRM. Además, replicar el diseño de pastillas con franja izquierda de color en los proyectos y aplicar el fondo morado específico de las zonas del pipeline CRM a las columnas Kanban de Proyectos.
+**Depends on**: Phase 58
+
+**Tasks**:
+- [ ] TBD (run /plan 59 to create)
+
+**Verification**:
+- [ ] TBD
