@@ -11,9 +11,11 @@ export default function ProjectModule() {
   const { 
     projects, tasks, timesheets, projectDocuments, loading, 
     addProject, updateProject, deleteProject, setActiveProjectId, 
-    addTask, updateTaskStatus, updateTask,
+    addTask, updateTaskStatus, updateTask, deleteTask,
     addTimesheetEntry, deleteTimesheetEntry, addProjectDocument, deleteProjectDocument 
   } = useProjects(orgId);
+
+  const userId = user?.id || user?.uid || 'demo';
   
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -81,11 +83,13 @@ export default function ProjectModule() {
             addTask={addTask} 
             updateTaskStatus={updateTaskStatus} 
             updateTask={updateTask}
+            deleteTask={deleteTask}
             addTimesheetEntry={addTimesheetEntry}
             deleteTimesheetEntry={deleteTimesheetEntry}
             addProjectDocument={addProjectDocument}
             deleteProjectDocument={deleteProjectDocument}
             onBack={handleBackToList}
+            userId={userId}
         />
     );
   }
@@ -96,7 +100,7 @@ export default function ProjectModule() {
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] active:scale-95 transition-all"
         >
           <Plus size={18} /> Nuevo Proyecto
         </button>
@@ -108,19 +112,16 @@ export default function ProjectModule() {
           <div 
             key={project.id} 
             onClick={() => handleSelectProject(project)}
-            className="group relative bg-[var(--color-surface-variant)]/40 border border-[#40485d]/20 rounded-3xl p-6 hover:border-[#6B4FD8]/50 transition-all cursor-pointer overflow-hidden"
+            className="group relative bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
           >
-            {/* Accent Line */}
-            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: project.color || '#40485d' }}></div>
-            
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-[var(--color-surface-container)] rounded-2xl text-[var(--color-primary)]">
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)]/30 rounded-xl text-[var(--color-primary)] shadow-sm transition-all">
                 <Folder size={24} />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
                 <button 
                   onClick={(e) => handleOpenEditProject(e, project)}
-                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors p-1"
+                  className="p-2 bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-xl transition-all border border-[#6B4FD8]/20 shadow-sm"
                   title="Editar Proyecto"
                 >
                   <MoreVertical size={18}/>
@@ -132,7 +133,7 @@ export default function ProjectModule() {
                       deleteProject(project.id);
                     }
                   }}
-                  className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors p-1"
+                  className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all border border-red-500/20 shadow-sm"
                   title="Eliminar Proyecto"
                 >
                   <X size={18}/>
@@ -154,7 +155,7 @@ export default function ProjectModule() {
               
               <div className="flex justify-between items-center pt-2">
                 <div className="flex -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-[var(--color-primary-container)] border-2 border-[#0f0f0f] flex items-center justify-center text-[10px] font-bold text-[var(--color-primary)] uppercase">
+                    <div className="w-7 h-7 rounded-full bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)]/50 flex items-center justify-center text-[10px] font-bold text-[var(--color-primary)] uppercase">
                       {user?.name?.substring(0, 2) || 'US'}
                     </div>
                 </div>
@@ -179,9 +180,9 @@ export default function ProjectModule() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleAddSubmit}
-            className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
+            className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
-            <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center">
+            <div className="p-6 bg-[var(--color-surface-container)] border-b border-[var(--color-outline-variant)] flex justify-between items-center">
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm">
                 {editingProject ? 'Editar Proyecto' : 'Crear Nuevo Proyecto'}
               </h3>
@@ -253,19 +254,19 @@ export default function ProjectModule() {
               </div>
             </div>
 
-            <div className="p-6 bg-[var(--color-surface-container)] flex gap-3">
+            <div className="p-6 bg-[var(--color-surface-container)] flex gap-3 border-t border-[var(--color-outline-variant)]">
               <button 
                 type="button"
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
-                className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-colors border border-[var(--color-outline-variant)]/50"
               >
                 Cancelar
               </button>
               <button 
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-[#6B4FD8] text-[#002150] font-bold px-4 py-3 rounded-xl hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] disabled:opacity-50 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 {isSaving ? <Loader2 size={18} className="animate-spin" /> : (editingProject ? 'Guardar Cambios' : 'Crear')}
               </button>
