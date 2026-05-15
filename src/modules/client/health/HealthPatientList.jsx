@@ -140,7 +140,7 @@ export default function HealthPatientList() {
 
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#6B4FD8] text-[#002150] font-black px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-[#6B4FD8]/20 hover:shadow-[#6B4FD8]/40 hover:scale-[1.02] transition-all whitespace-nowrap ml-auto md:ml-0"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all whitespace-nowrap ml-auto md:ml-0"
           >
             <UserPlus size={18} />
             <span>Alta Paciente</span>

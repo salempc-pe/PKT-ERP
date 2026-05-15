@@ -238,8 +238,7 @@ export default function WarehouseModule() {
     <div className="animate-in fade-in duration-500 space-y-6">
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        {/* Desktop Tabs */}
-        <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm">
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
           {[
             { id: 'stock', label: 'Stock Actual', icon: Package },
             { id: 'history', label: 'Historial', icon: History },
@@ -264,8 +263,7 @@ export default function WarehouseModule() {
         <div className="md:hidden w-full relative">
           <select
             value={activeTab}
-            onChange={(e) => setActiveTab(e.target.value)}
-            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-black uppercase tracking-widest text-xs rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
           >
             <option value="stock">Stock Actual</option>
             <option value="history">Historial</option>
@@ -278,12 +276,10 @@ export default function WarehouseModule() {
 
         <button 
           onClick={() => activeTab === 'warehouses' ? handleOpenWarehouseModal() : handleOpenModal('IN')}
-          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(107,79,216,0.3)] transition-all active:scale-95 shadow-lg shadow-[#6B4FD8]/20"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <Plus size={18} /> 
-          <span className="text-xs uppercase font-black tracking-wider">
-            {activeTab === 'warehouses' ? 'Nuevo Almacén' : 'Registrar Ingreso'}
-          </span>
+          {activeTab === 'warehouses' ? 'Nuevo Almacén' : 'Registrar Ingreso'}
         </button>
       </div>
 

@@ -100,7 +100,7 @@ export default function ProjectModule() {
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] active:scale-95 transition-all"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
           <Plus size={18} /> Nuevo Proyecto
         </button>

@@ -150,19 +150,19 @@ export default function ProjectKanban({
 
             <button 
             onClick={handleOpenNewTask}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] active:scale-95 transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
             >
             <Plus size={20} /> Nueva Tarea
             </button>
         </div>
 
         {/* Tabs Selector */}
-        <div className="flex gap-2 p-1 bg-[var(--color-surface-container)] rounded-xl border border-[var(--color-outline-variant)] w-fit self-center shadow-sm">
+        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
             {tabs.map(tab => (
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)]'}`}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === tab.id ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
                 >
                     <tab.icon size={16} />
                     {tab.label}

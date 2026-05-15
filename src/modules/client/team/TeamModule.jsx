@@ -182,10 +182,10 @@ export default function TeamModule() {
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Desktop Tabs */}
-        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 border border-[var(--color-outline-variant)] rounded-xl w-fit shadow-sm">
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 border border-[var(--color-outline-variant)] rounded-xl w-fit">
           <button
             onClick={() => setActiveTab('members')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'members' 
                 ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
@@ -196,7 +196,7 @@ export default function TeamModule() {
           </button>
           <button
             onClick={() => setActiveTab('audit')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'audit' 
                 ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
@@ -212,7 +212,7 @@ export default function TeamModule() {
           <select
             value={activeTab}
             onChange={(e) => setActiveTab(e.target.value)}
-            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
           >
             <option value="members">Equipo</option>
             <option value="audit">Auditoría</option>
@@ -225,9 +225,9 @@ export default function TeamModule() {
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 ${isLimitReached
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${isLimitReached
               ? 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)] cursor-not-allowed border border-[var(--color-outline-variant)]'
-              : 'bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] shadow-sm'
+              : 'bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)]'
             }`}
         >
           <UserPlus size={18} />
