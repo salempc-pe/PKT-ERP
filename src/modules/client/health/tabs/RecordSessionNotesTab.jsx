@@ -84,12 +84,12 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
       {/* Form Editor (either creating or editing) */}
       {(isAdding || editingId) && (
          <form onSubmit={handleSave} className="bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/30 rounded-2xl p-5 space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-2">
                <h4 className="text-xs font-black uppercase text-[var(--color-on-surface)] flex items-center gap-2">
-                  {editingId ? 'Editando Nota (Bloqueo en < 24h)' : 'Registrar Evolución de Sesión'}
-                  <ShieldCheck className="text-green-400" size={14}/>
+                  {editingId ? 'Editando Nota' : 'Nueva Nota de Sesión'}
+                  <ShieldCheck className="text-green-400 shrink-0" size={14}/>
                </h4>
-               <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setForm({cita_id:'', contenido:'', privada:true}); }} className="text-xs font-bold text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors">Cancelar</button>
+               <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setForm({cita_id:'', contenido:'', privada:true}); }} className="text-xs font-bold text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors px-2 py-1">Cancelar</button>
             </div>
 
             {!editingId && (
@@ -118,7 +118,7 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
                className="w-full h-40 bg-[var(--color-surface-variant)]/50 border border-[var(--color-outline-variant)] rounded-xl p-4 text-sm font-medium text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-colors"
             />
 
-            <div className="flex items-center justify-between pt-2 border-t border-[var(--color-outline-variant)]/50">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[var(--color-outline-variant)]/50">
                <label className="flex items-center gap-2 cursor-pointer">
                   <input 
                     type="checkbox"
@@ -135,9 +135,9 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
                <button 
                  type="submit"
                  disabled={isSaving || (!editingId && !form.cita_id)}
-                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2 rounded-xl flex items-center gap-2 disabled:opacity-50 transition-all"
+                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2.5 min-h-[44px] rounded-xl flex items-center gap-2 disabled:opacity-50 transition-all"
                >
-                  {isSaving ? <Loader2 size={14} className="animate-spin"/> : <><Save size={14}/> Guardar Nota</>}
+                  {isSaving ? <Loader2 size={14} className="animate-spin"/> : <><Save size={14}/>Guardar Nota</>}
                </button>
             </div>
          </form>
@@ -181,16 +181,16 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
                         </div>
 
                         {locked ? (
-                           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-background)] border border-[var(--color-outline-variant)] rounded-xl text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase opacity-70" title="El registro médico queda sellado tras 24 horas">
-                              <Lock size={12}/> Bloqueada
+                           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-background)] border border-[var(--color-outline-variant)] rounded-xl text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase shrink-0" title="El registro médico queda sellado tras 24 horas">
+                              <Lock size={12} className="shrink-0"/> Bloqueada
                            </div>
                         ) : (
                            editingId !== note.id && (
                               <button 
                                 onClick={() => openEdit(note)}
-                                className="text-[10px] font-black text-[#6B4FD8] hover:underline uppercase flex items-center gap-1"
+                                className="text-[10px] font-black text-[#6B4FD8] hover:underline uppercase flex items-center gap-1 min-h-[44px] px-2"
                               >
-                                 Editar Nota <AlertTriangle size={10} className="text-amber-500"/>
+                                 Editar <AlertTriangle size={10} className="text-amber-500"/>
                               </button>
                            )
                         )}

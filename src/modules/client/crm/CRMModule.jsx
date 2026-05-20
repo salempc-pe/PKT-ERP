@@ -202,9 +202,9 @@ export default function CRMModule() {
       </div>
 
       {activeTab === 'pipeline' ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[500px]">
+        <div className="flex flex-row overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-4 gap-6 md:grid md:grid-cols-4 min-h-[500px] custom-scrollbar">
           {pipelineStages.map(stage => (
-            <div key={stage.id} className="flex flex-col gap-4">
+            <div key={stage.id} className="flex flex-col gap-4 w-[285px] shrink-0 md:w-auto md:shrink">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[var(--color-on-surface-variant)]">
                   <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>
@@ -281,24 +281,24 @@ export default function CRMModule() {
                         {stage.prev && (
                           <button
                             onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.prev); }}
-                            className="p-1.5 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] bg-[var(--color-primary-container)]/50 hover:bg-[var(--color-primary-container)] rounded-lg border border-[var(--color-outline-variant)] transition-all flex-1 flex justify-center"
+                            className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] bg-[var(--color-primary-container)]/50 hover:bg-[var(--color-primary-container)] rounded-lg border border-[var(--color-outline-variant)] transition-all flex-1 flex justify-center items-center"
                             title="Retroceder etapa"
                           >
-                            <Kanban size={12} className="rotate-180" />
+                            <Kanban size={14} className="rotate-180" />
                           </button>
                         )}
 
                         {stage.id === 'negotiating' ? (
-                          <div className="flex gap-1 flex-[3]">
+                          <div className="flex gap-1.5 flex-[3]">
                             <button
                               onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'won'); }}
-                              className="text-[9px] font-black uppercase bg-green-500/10 text-green-400 px-2 py-1 rounded border border-green-500/20 hover:bg-green-500 hover:text-white transition-all flex-1"
+                              className="text-[10px] font-black uppercase bg-green-500/10 text-green-400 px-3 py-2 rounded-lg border border-green-500/20 hover:bg-green-500 hover:text-white transition-all flex-1"
                             >
                               Ganado
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, 'lost'); }}
-                              className="text-[9px] font-black uppercase bg-red-500/10 text-red-300 px-2 py-1 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex-1"
+                              className="text-[10px] font-black uppercase bg-red-500/10 text-red-300 px-3 py-2 rounded-lg border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex-1"
                             >
                               Perdido
                             </button>
@@ -306,9 +306,9 @@ export default function CRMModule() {
                         ) : stage.next && (
                           <button
                             onClick={(e) => { e.stopPropagation(); updateLeadStatus(lead.id, stage.next); }}
-                            className="p-1.5 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all flex-[2] flex items-center justify-center gap-2 text-[10px] font-bold uppercase"
+                            className="p-2 text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500 rounded-lg border border-green-500/20 transition-all flex-[2] flex items-center justify-center gap-2 text-[10px] font-bold uppercase"
                           >
-                            Siguiente <Kanban size={12} />
+                            Siguiente <Kanban size={14} />
                           </button>
                         )}
                       </div>

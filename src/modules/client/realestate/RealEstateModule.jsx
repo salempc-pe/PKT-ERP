@@ -352,9 +352,9 @@ export default function RealEstateModule() {
           </div>
       ) : activeTab === 'pipeline' ? (
         /* Kanban View */
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[500px]">
+        <div className="flex flex-row overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-4 gap-6 md:grid md:grid-cols-4 min-h-[500px] custom-scrollbar">
           {pipelineStages.map(stage => (
-            <div key={stage.id} className="flex flex-col gap-4">
+            <div key={stage.id} className="flex flex-col gap-4 w-[285px] shrink-0 md:w-auto md:shrink">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[var(--color-on-surface-variant)]">
                    <div className={`w-1.5 h-1.5 rounded-full ${stage.color}`}></div>

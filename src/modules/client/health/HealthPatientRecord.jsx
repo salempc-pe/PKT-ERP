@@ -230,7 +230,7 @@ export default function HealthPatientRecord() {
         {/* RIGHT COL: CONTENT TABS */}
         <div className="lg:col-span-2 space-y-6">
            {/* Navigation Tab Bar */}
-           <div className="flex items-center p-1 bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] overflow-x-auto custom-scrollbar">
+           <div className="flex items-center p-1 bg-[var(--color-surface-container-low)] rounded-2xl border border-[var(--color-outline-variant)] gap-1">
               {tabs.map(tab => {
                  const Icon = tab.icon;
                  const isSel = activeTab === tab.id;
@@ -238,9 +238,10 @@ export default function HealthPatientRecord() {
                     <button 
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-black whitespace-nowrap transition-all flex-1 justify-center ${isSel ? 'bg-[#6B4FD8] text-[#002150] shadow-lg shadow-[#6B4FD8]/20' : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+                      title={tab.label}
+                      className={`flex items-center gap-2 px-3 sm:px-5 py-3 rounded-xl text-xs font-black whitespace-nowrap transition-all flex-1 justify-center min-w-[44px] shrink-0 ${isSel ? 'bg-[#6B4FD8] text-[#002150] shadow-lg shadow-[#6B4FD8]/20' : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
                     >
-                       <Icon size={16} />
+                       <Icon size={16} className="shrink-0" />
                        <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                  );

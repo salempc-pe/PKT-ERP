@@ -103,16 +103,16 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
       <div className="bg-[var(--color-surface)] w-full max-w-4xl border border-[var(--color-outline-variant)] rounded-[2rem] shadow-2xl overflow-hidden relative flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container-high)]">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#6B4FD8] flex items-center justify-center text-white">
-              <Building2 size={24} />
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#6B4FD8] flex items-center justify-center text-white shrink-0">
+              <Building2 size={20} />
             </div>
-            <div>
-              <h3 className="font-black text-lg text-[var(--color-on-surface)] leading-tight uppercase tracking-widest">
+            <div className="min-w-0">
+              <h3 className="font-black text-sm sm:text-lg text-[var(--color-on-surface)] leading-tight uppercase tracking-widest truncate">
                 Detalles de Propiedad
               </h3>
-              <p className="text-xs text-[var(--color-on-surface-variant)] font-bold flex items-center gap-1">
-                <MapPin size={12} className="text-[#6B4FD8]" /> {terrain.address}, {terrain.district}
+              <p className="text-xs text-[var(--color-on-surface-variant)] font-bold flex items-center gap-1 truncate">
+                <MapPin size={12} className="text-[#6B4FD8] shrink-0" /> <span className="truncate">{terrain.address}, {terrain.district}</span>
               </p>
             </div>
           </div>
@@ -334,7 +334,8 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
                       </div>
                       <button 
                         onClick={() => handleRemovePresentation(p.id)}
-                        className="p-2 text-red-500/0 group-hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                        className="p-2 min-w-[44px] min-h-[44px] text-red-400 opacity-50 hover:opacity-100 hover:bg-red-500/10 rounded-lg transition-all flex items-center justify-center"
+                        title="Eliminar presentación"
                       >
                         <Trash2 size={16} />
                       </button>

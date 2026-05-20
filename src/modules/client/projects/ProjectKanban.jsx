@@ -174,9 +174,9 @@ export default function ProjectKanban({
       {/* Renderizado Condicional de Vistas */}
       <div className="min-h-[60vh]">
         {activeTab === 'board' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-row overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-4 gap-6 md:grid md:grid-cols-3 animate-in slide-in-from-bottom-4 duration-500 custom-scrollbar">
                 {columns.map(col => (
-                    <div key={col.id} className="flex flex-col gap-4">
+                    <div key={col.id} className="flex flex-col gap-4 w-[285px] shrink-0 md:w-auto md:shrink">
                         <div className="flex items-center justify-between px-2">
                             <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-tighter text-[var(--color-on-surface-variant)]">
                                 <div className={`w-1.5 h-1.5 rounded-full ${col.color}`}></div>
@@ -202,13 +202,13 @@ export default function ProjectKanban({
                                         </div>
                                         
                                         {/* Botones de Acción en Hover */}
-                                        <div className="absolute top-2 right-2 flex flex-row gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-[-4px] group-hover:translate-y-0">
+                                        <div className="absolute top-2 right-2 flex flex-row gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 md:translate-y-[-4px] md:group-hover:translate-y-0">
                                             <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleOpenEditTask(task);
                                                 }}
-                                                className="w-7 h-7 flex items-center justify-center bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-lg transition-all border border-[#6B4FD8]/20 hover:scale-110 active:scale-95"
+                                                className="w-8 h-8 flex items-center justify-center bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-lg transition-all border border-[#6B4FD8]/20 hover:scale-110 active:scale-95"
                                                 title="Editar"
                                             >
                                                 <Edit3 size={12}/>
@@ -218,7 +218,7 @@ export default function ProjectKanban({
                                                     e.stopPropagation();
                                                     handleDeleteTask(task.id);
                                                 }}
-                                                className="w-7 h-7 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all border border-red-500/20 hover:scale-110 active:scale-95"
+                                                className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all border border-red-500/20 hover:scale-110 active:scale-95"
                                                 title="Eliminar"
                                             >
                                                 <Trash2 size={12}/>
@@ -230,11 +230,11 @@ export default function ProjectKanban({
                                         <div onClick={() => col.next && updateTaskStatus(task.id, col.next)}>
                                             {getPriorityBadge(task.priority)}
                                         </div>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             {col.prev && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); updateTaskStatus(task.id, col.prev); }} 
-                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-amber-400 hover:bg-amber-400/10 transition-all hover:scale-110 active:scale-95"
+                                                    className="w-8 h-8 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-amber-400 hover:bg-amber-400/10 transition-all hover:scale-110 active:scale-95"
                                                 >
                                                     <ArrowLeft size={12}/>
                                                 </button>
@@ -242,7 +242,7 @@ export default function ProjectKanban({
                                             {col.next && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); updateTaskStatus(task.id, col.next); }} 
-                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-green-400 hover:bg-green-400/10 transition-all hover:scale-110 active:scale-95"
+                                                    className="w-8 h-8 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-green-400 hover:bg-green-400/10 transition-all hover:scale-110 active:scale-95"
                                                 >
                                                     <ArrowRight size={12}/>
                                                 </button>

@@ -136,13 +136,14 @@ export default function HealthAgenda() {
           <div className="grid grid-cols-7 border-b border-[var(--color-outline-variant)]">
             {dayNames.map(day => (
               <div key={day} className="p-3 text-center text-[10px] font-black uppercase text-[var(--color-on-surface-variant)] tracking-widest opacity-60 border-r border-[var(--color-outline-variant)] last:border-none bg-[var(--color-surface-variant)]">
-                {day}
+                <span className="md:hidden">{day.charAt(0)}</span>
+                <span className="hidden md:inline">{day}</span>
               </div>
             ))}
           </div>
 
           {/* The Grid */}
-          <div className="grid grid-cols-7 auto-rows-[120px]">
+          <div className="grid grid-cols-7 auto-rows-[60px] md:auto-rows-[120px]">
             {blankArr.map((_, idx) => (
               <div key={`blank-${idx}`} className="bg-[var(--color-background)]/30 border-b border-r border-[var(--color-outline-variant)]/40 opacity-30 last:border-r-0" />
             ))}
@@ -160,16 +161,16 @@ export default function HealthAgenda() {
                     setSelectedDay(d);
                     setIsModalOpen(true);
                   }}
-                  className="border-b border-r border-[var(--color-outline-variant)] last:border-r-0 group relative p-2 cursor-pointer hover:bg-[var(--color-surface-container)] transition-colors overflow-hidden flex flex-col"
+                  className="border-b border-r border-[var(--color-outline-variant)] last:border-r-0 group relative p-1 md:p-2 cursor-pointer hover:bg-[var(--color-surface-container)] transition-colors overflow-hidden flex flex-col items-center md:items-stretch justify-between md:justify-start"
                 >
-                  <div className="flex justify-between items-center mb-1">
-                    <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-[#6B4FD8] text-white shadow-md shadow-[#6B4FD8]/30' : 'text-[var(--color-on-surface-variant)]'}`}>
+                  <div className="flex justify-between items-center mb-0.5 md:mb-1 w-full">
+                    <span className={`text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-[#6B4FD8] text-white shadow-md shadow-[#6B4FD8]/30' : 'text-[var(--color-on-surface-variant)]'}`}>
                       {dayNum}
                     </span>
                   </div>
                   
-                  {/* Citas summary in Cell */}
-                  <div className="space-y-1 overflow-y-auto custom-scrollbar flex-1 pr-0.5">
+                  {/* Citas summary in Cell (Desktop only) */}
+                  <div className="space-y-1 overflow-y-auto custom-scrollbar flex-1 pr-0.5 hidden md:block">
                     {dayCitas.slice(0, 3).map(cita => {
                       const contact = contacts.find(c => c.id === cita.client_id);
                       const style = getStatusColor(cita.estado);
@@ -193,9 +194,25 @@ export default function HealthAgenda() {
                       </div>
                     )}
                   </div>
+
+                  {/* Mobile Citas Dot Indicators */}
+                  <div className="flex flex-wrap gap-1 justify-center pb-1 md:hidden w-full max-w-[40px] overflow-hidden">
+                    {dayCitas.slice(0, 3).map(cita => {
+                      let bgDot = 'bg-blue-500';
+                      if (cita.estado === 'confirmada') bgDot = 'bg-[#6B4FD8]';
+                      else if (cita.estado === 'realizada') bgDot = 'bg-green-500';
+                      else if (cita.estado === 'cancelada') bgDot = 'bg-red-500';
+                      return (
+                        <div key={cita.id} className={`w-1 h-1 rounded-full ${bgDot}`} />
+                      );
+                    })}
+                    {dayCitas.length > 3 && (
+                      <span className="text-[8px] font-black text-[#6B4FD8] leading-none">+</span>
+                    )}
+                  </div>
                   
                   {/* Mini Add Button visible on hover */}
-                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#6B4FD8] pointer-events-none">
+                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#6B4FD8] pointer-events-none hidden md:block">
                      <Plus size={12} strokeWidth={3} />
                   </div>
                 </div>

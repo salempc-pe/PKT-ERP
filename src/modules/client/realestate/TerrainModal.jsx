@@ -323,33 +323,36 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
               </div>
               <span className="text-[10px] font-black text-[var(--color-on-surface)] uppercase tracking-widest">Calculadora de Valor</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Área (m²) *</label>
                 <input 
                   type="number"
+                  inputMode="decimal"
                   required
                   value={formData.area}
                   onChange={(e) => handlePriceChange('area', e.target.value)}
-                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black"
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black"
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Precio x m² ({currencySymbol})</label>
                 <input 
                   type="number"
+                  inputMode="decimal"
                   value={formData.pricePerM2}
                   onChange={(e) => handlePriceChange('pricePerM2', e.target.value)}
-                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black text-purple-400"
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2.5 text-[var(--color-on-surface)] focus:border-[#6B4FD8] outline-none text-xs font-black text-purple-400"
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-[#2E8B57] uppercase ml-1">Precio Total ({currencySymbol})</label>
                 <input 
                   type="number"
+                  inputMode="decimal"
                   value={formData.totalPrice}
                   onChange={(e) => handlePriceChange('totalPrice', e.target.value)}
-                  className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black"
+                  className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2.5 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black"
                 />
               </div>
             </div>
@@ -368,19 +371,19 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
         </div>
 
         {/* Footer */}
-        <div className="p-5 bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)] flex gap-4">
+        <div className="p-5 bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)] flex flex-col-reverse sm:flex-row gap-3">
           <button 
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="flex-1 px-4 py-3 rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all disabled:opacity-50 text-xs uppercase tracking-widest"
+            className="sm:flex-1 px-4 py-3 min-h-[48px] rounded-xl font-bold text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-variant)] transition-all disabled:opacity-50 text-xs uppercase tracking-widest"
           >
             Descartar
           </button>
           <button 
             type="submit"
             disabled={isSaving}
-            className="flex-[2] bg-gradient-to-r from-[#6B4FD8] to-[#2E8B57] text-white font-black px-6 py-3 rounded-xl hover:shadow-[0_10px_20px_rgba(107,79,216,0.2)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
+            className="sm:flex-[2] bg-gradient-to-r from-[#6B4FD8] to-[#2E8B57] text-white font-black px-6 py-3 min-h-[48px] rounded-xl hover:shadow-[0_10px_20px_rgba(107,79,216,0.2)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest"
           >
             {isSaving ? (
               <>
