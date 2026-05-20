@@ -1033,13 +1033,20 @@
 ---
 
 ### Phase 61: Auditoría de Reactividad y Legibilidad Móvil
-**Status**: ⬜ Not Started
-**Objective**: Verificar módulo por módulo la visibilidad y la legibilidad de la versión móvil en todos los módulos de cliente, asegurando que siga estándares de reactividad y que sea perfectamente legible en pantallas más pequeñas.
+**Status**: ✅ Complete
+**Objective**: Verificar módulo por módulo la visibilidad y la legibilidad de la versión móvil en todos los módulos de cliente, asegurando que siga estándares de reactividad y que sea perfectamente legible en pantallas de 320px-480px.
 **Depends on**: Phase 60
 
 **Tasks**:
-- [ ] TBD (run /plan 61 to create)
+- [x] **61.1 - Global Shell & Dashboard**: Menú hamburguesa, sidebar móvil, logo, KPIs del dashboard apilados correctamente.
+- [x] **61.2 - Módulos Operativos y Tablas**: Tablas de inventario, finanzas, nómina con scroll horizontal nativo (`-mx-4 overflow-x-auto`). Modales de creación con targets táctiles ≥44px.
+- [x] **61.3 - Kanbans y Módulos Especializados**: Kanbans de CRM/Proyectos/Real Estate con scroll horizontal en columnas. Agenda médica con indicadores de puntos de color en móvil. Expediente clínico con barra de pestañas compacta. TerrainModal con footer responsivo y teclado numérico en calculadora. TerrainDetailsModal con header truncado y botón eliminar siempre visible.
 
 **Verification**:
-- TBD
+- [x] Build de producción sin errores (`npm run build` — 1993 módulos en 969ms).
+- [x] Tableros Kanban (CRM, Proyectos, Real Estate) con scroll horizontal premium, sin desbordamientos.
+- [x] Todos los botones de acción táctil con mínimo 44×44px de área de toque.
+- [x] Sin uso de `group-hover` para visibilidad de elementos en interfaces táctiles.
+- [x] Calendarios y agendas con indicadores compactos de puntos de color en viewports pequeños.
+- [x] Calculadora de terrenos con `inputMode="decimal"` para teclado numérico en iOS/Android.
 
