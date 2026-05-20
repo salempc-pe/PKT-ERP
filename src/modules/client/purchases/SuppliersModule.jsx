@@ -66,16 +66,12 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
   return (
     <div className={`animate-in fade-in duration-500 space-y-8 ${embedded ? '' : 'pb-10'}`}>
       {!embedded && (
-        <div className="flex justify-between items-center">
-          <div className="lg:hidden">
-            <h2 className="text-2xl font-black text-[var(--color-on-surface)] tracking-tight">Proveedores</h2>
-            <p className="text-[var(--color-on-surface-variant)] text-sm">Gestiona tus fuentes de abastecimiento y materia prima.</p>
-          </div>
+        <div className="flex justify-end items-center">
           <button 
             onClick={handleOpenNew}
-            className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all active:scale-95"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
           >
-            <Plus size={18} /> Nuevo Proveedor
+            <Plus size={16} /> Nuevo Proveedor
           </button>
         </div>
       )}
@@ -84,18 +80,18 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">Proveedor / RUC</th>
-                <th className="px-6 py-5">Contacto</th>
-                <th className="px-6 py-5">Ubicación</th>
-                <th className="px-6 py-5">Categoría</th>
-                <th className="px-6 py-5">Estado</th>
-                <th className="px-6 py-5 text-right">Acciones</th>
+                <th className="px-4 py-2.5">Proveedor / RUC</th>
+                <th className="px-4 py-2.5">Contacto</th>
+                <th className="px-4 py-2.5">Ubicación</th>
+                <th className="px-4 py-2.5">Categoría</th>
+                <th className="px-4 py-2.5">Estado</th>
+                <th className="px-4 py-2.5 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {suppliers.length > 0 ? suppliers.map((supplier) => (
                 <tr key={supplier.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs uppercase">
                         {supplier.name.charAt(0)}
@@ -106,7 +102,7 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div className="flex flex-col gap-0.5">
                       <p className="text-[var(--color-on-surface)] font-medium text-xs flex items-center gap-1.5 line-clamp-1">
                         <Mail size={12} className="text-[var(--color-on-surface-variant)]"/> {supplier.email || 'N/A'}
@@ -116,22 +112,22 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
                       </p>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <p className="text-[var(--color-on-surface-variant)] text-xs flex items-start gap-1.5 max-w-[200px]">
                       <MapPin size={12} className="mt-0.5 shrink-0"/> {supplier.address || 'Sin dirección'}
                     </p>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <span className="text-[10px] font-black bg-[var(--color-surface-container)] text-[var(--color-primary)] px-2 py-1 rounded border border-[#6B4FD8]/10 uppercase">
                       {supplier.category || 'General'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${supplier.status === 'active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
                       {supplier.status === 'active' ? 'Activo' : 'Inactivo'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-2 text-right">
                     <button 
                       onClick={() => handleOpenEdit(supplier)}
                       className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors"
@@ -142,7 +138,7 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay proveedores registrados.</td>
+                  <td colSpan="6" className="px-4 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay proveedores registrados.</td>
                 </tr>
               )}
             </tbody>
@@ -155,9 +151,9 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleSubmit}
-            className="bg-[var(--color-surface-variant)] w-full max-w-lg border border-[var(--color-outline-variant)] rounded-3xl shadow-lg overflow-hidden relative animate-in zoom-in duration-300"
+            className="bg-[var(--color-surface-variant)] w-full max-w-lg border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300"
           >
-            <div className="p-6 border-b border-[#40485d]/20 flex justify-between items-center bg-[var(--color-surface-container-low)]/50">
+            <div className="p-6 border-b border-[var(--color-outline-variant)]/30 flex justify-between items-center bg-[var(--color-surface-container)]">
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
                 <Tag size={18} className="text-[var(--color-primary)]" />
                 {editingSupplier ? 'Editar Proveedor' : 'Nuevo Proveedor'}
@@ -249,7 +245,7 @@ const SuppliersModule = forwardRef(({ embedded = false }, ref) => {
                 Cancelar
               </button>
               <button type="submit" disabled={isSaving}
-                className="flex-3 bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="flex-[2] bg-[#6B4FD8] text-[#002150] font-black px-4 py-3 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 disabled:grayscale transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
               >
                 {isSaving ? <><Loader2 size={18} className="animate-spin" /> Procesando...</> : (editingSupplier ? 'Actualizar Proveedor' : 'Guardar Proveedor')}
               </button>

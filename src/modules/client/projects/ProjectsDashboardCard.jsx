@@ -1,6 +1,7 @@
 import { Briefcase } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useProjects } from './useProjects';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function ProjectsDashboardCard({ orgId }) {
   const { projects, tasks, loading } = useProjects(orgId);
@@ -11,10 +12,10 @@ export default function ProjectsDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Proyectos"
+      title={MODULE_NAMES.projects}
       description="Planificación y tareas."
       icon={Briefcase}
-      path="/client/projects"
+      path={`/client/${MODULE_SLUGS.projects}`}
       color="#dee5ff"
       loading={loading}
       metrics={[

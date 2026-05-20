@@ -67,7 +67,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
           value={manualCode}
           onChange={(e) => setManualCode(e.target.value)}
           onKeyDown={handleManualSubmit}
-          className="block w-full pl-10 pr-3 py-2.5 border border-[var(--color-outline-variant)] rounded-xl leading-5 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] placeholder-[var(--color-on-surface-variant)]/60 focus:outline-none focus:ring-2 focus:ring-[#6B4FD8]/20 focus:border-[#6B4FD8] sm:text-sm transition-all shadow-sm"
+          className="block w-full pl-10 pr-3 py-2.5 border border-[var(--color-outline-variant)] rounded-xl leading-5 bg-[var(--color-surface-container)] text-[var(--color-on-surface)] placeholder-[var(--color-on-surface-variant)]/60 focus:outline-none focus:ring-2 focus:ring-[#6B4FD8]/20 focus:border-[#6B4FD8] sm:text-sm transition-all"
           placeholder={placeholder}
         />
       </div>
@@ -75,7 +75,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
       {/* Botón para Cámara */}
       <button
         onClick={() => setIsCameraOpen(true)}
-        className="p-2.5 bg-[var(--color-surface-variant)] text-[var(--color-primary)] rounded-xl hover:bg-[var(--color-outline-variant)]/30 transition-colors border border-[var(--color-outline-variant)] shadow-sm"
+        className="p-2.5 bg-[var(--color-surface-variant)] text-[var(--color-primary)] rounded-xl hover:bg-[var(--color-outline-variant)]/30 transition-colors border border-[var(--color-outline-variant)]"
         title="Usar Cámara"
       >
         <Camera className="h-5 w-5" />
@@ -108,7 +108,7 @@ const BarcodeScanner = ({ onScan, placeholder = "Escanear código..." }) => {
             <div className="p-4 bg-[var(--color-surface-container)] border-t border-[var(--color-outline-variant)]/30 flex justify-end">
               <button
                 onClick={() => setIsCameraOpen(false)}
-                className="px-5 py-2 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface)] rounded-xl hover:bg-[var(--color-surface-container)] text-sm font-bold transition-colors shadow-sm"
+                className="px-5 py-2 bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] text-[var(--color-on-surface)] rounded-xl hover:bg-[var(--color-surface-container)] text-sm font-bold transition-colors"
               >
                 Cancelar
               </button>

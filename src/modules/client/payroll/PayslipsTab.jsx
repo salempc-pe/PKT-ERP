@@ -64,7 +64,7 @@ export default function PayslipsTab({ orgId }) {
           <div className="flex gap-2">
             <button 
               onClick={handlePrint}
-              className="bg-[#6B4FD8] text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:scale-105 transition-all"
+              className="bg-[#6B4FD8] text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all"
             >
               <Printer size={16} /> Imprimir Boleta
             </button>
@@ -91,7 +91,7 @@ export default function PayslipsTab({ orgId }) {
         </div>
       </div>
 
-      <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden shadow-sm">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-3xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
@@ -146,7 +146,7 @@ export default function PayslipsTab({ orgId }) {
                 <td className="px-6 py-5 text-right">
                   <button 
                     onClick={() => setViewingPayslip(emp)}
-                    className="p-2.5 bg-[var(--color-surface-container-high)] text-[#6B4FD8] rounded-xl hover:bg-[#6B4FD8] hover:text-white transition-all shadow-sm group-hover:scale-110"
+                    className="p-2.5 bg-[var(--color-surface-container-high)] text-[#6B4FD8] rounded-xl hover:bg-[#6B4FD8] hover:text-white transition-all group-hover:scale-110"
                     title="Ver Boleta"
                   >
                     <ReceiptText size={18} />
@@ -166,7 +166,7 @@ export default function PayslipsTab({ orgId }) {
           <p className="text-xs font-black uppercase tracking-widest text-[#6B4FD8]">Exportación Masiva</p>
           <p className="text-[10px] text-[var(--color-on-surface-variant)] font-medium">Puedes imprimir todas las boletas del mes en un solo archivo para distribución física o digital.</p>
         </div>
-        <button className="ml-auto px-6 py-2.5 bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg transition-all">
+        <button className="ml-auto px-6 py-2.5 bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all">
           Generar Todo
         </button>
       </div>

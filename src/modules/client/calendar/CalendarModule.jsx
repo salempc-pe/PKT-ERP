@@ -120,22 +120,22 @@ export default function CalendarModule() {
 
           <button 
             onClick={() => setIsHistoryModalOpen(true)}
-            className="p-2.5 border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-xl transition-all hover:bg-[var(--color-surface-container)] active:scale-95"
+            className="p-2 border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] rounded-lg transition-all hover:bg-[var(--color-surface-container)] active:scale-95"
             title="Historial de citas"
           >
-            <History size={18} />
+            <History size={16} />
           </button>
           <button 
             onClick={() => setIsResourcesModalOpen(true)}
-            className="flex-1 md:flex-none border border-[var(--color-outline-variant)] text-[var(--color-on-surface)] font-bold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-[var(--color-surface-container)] active:scale-95"
+            className="flex-1 md:flex-none border border-[var(--color-outline-variant)] text-[var(--color-on-surface)] font-bold px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 transition-all hover:bg-[var(--color-surface-container)] active:scale-95"
           >
-            <Blocks size={18} /> Recursos
+            <Blocks size={16} /> Recursos
           </button>
           <button 
             onClick={openNewEvent}
-            className="flex-1 md:flex-none bg-[#6B4FD8] text-[#001b5c] font-black px-4 py-2 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 hover:shadow-lg hover:shadow-[#6B4FD8]/20"
+            className="flex-1 md:flex-none bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Plus size={18} /> Nueva Cita
+            <Plus size={16} /> Nueva Cita
           </button>
         </div>
       </div>
@@ -180,7 +180,7 @@ export default function CalendarModule() {
                         return (
                           <div 
                             key={appt.id} 
-                            className={`group relative overflow-hidden bg-[var(--color-surface-container)] border p-4 rounded-2xl flex flex-col md:flex-row justify-between gap-4 transition-all duration-300 hover:shadow-xl hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 ${isOverdue ? 'border-red-500/30' : 'border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/30'}`}
+                            className={`group relative overflow-hidden bg-[var(--color-surface-container)] border p-4 rounded-2xl flex flex-col md:flex-row justify-between gap-4 transition-all duration-300 hover:bg-[var(--color-surface-container-high)] hover:-translate-y-1 ${isOverdue ? 'border-red-500/30' : 'border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/30'}`}
                           >
                             {/* Background Glow */}
                             <div 
@@ -211,17 +211,17 @@ export default function CalendarModule() {
                             </div>
                             
                             <div className="flex items-center gap-2 border-t md:border-t-0 md:border-l border-[var(--color-outline-variant)] pt-3 md:pt-0 pl-0 md:pl-4 min-w-max justify-end relative z-10">
-                              <button onClick={() => handleView(appt)} className="p-2 hover:bg-blue-500/10 text-[var(--color-on-surface-variant)] hover:text-blue-400 rounded-lg transition-colors" title="Ver detalles">
-                                <Eye size={18} />
+                              <button onClick={() => handleView(appt)} className="p-1.5 hover:bg-blue-500/10 text-[var(--color-on-surface-variant)] hover:text-blue-400 rounded-lg transition-colors" title="Ver detalles">
+                                <Eye size={16} />
                               </button>
-                              <button onClick={() => handleEdit(appt)} className="p-2 hover:bg-amber-500/10 text-[var(--color-on-surface-variant)] hover:text-amber-400 rounded-lg transition-colors" title="Editar cita">
-                                <Edit2 size={18} />
+                              <button onClick={() => handleEdit(appt)} className="p-1.5 hover:bg-amber-500/10 text-[var(--color-on-surface-variant)] hover:text-amber-400 rounded-lg transition-colors" title="Editar cita">
+                                <Edit2 size={16} />
                               </button>
-                              <button onClick={() => markAsDone(appt.id)} className="p-2 hover:bg-[#85ffab]/10 text-[var(--color-on-surface-variant)] hover:text-[#85ffab] rounded-lg transition-colors" title="Marcar completada">
-                                <CheckCircle size={18} />
+                              <button onClick={() => markAsDone(appt.id)} className="p-1.5 hover:bg-[#85ffab]/10 text-[var(--color-on-surface-variant)] hover:text-[#85ffab] rounded-lg transition-colors" title="Marcar completada">
+                                <CheckCircle size={16} />
                               </button>
-                              <button onClick={() => deleteAppointment(appt.id)} className="p-2 hover:bg-red-500/10 text-[var(--color-on-surface-variant)] hover:text-red-400 rounded-lg transition-colors" title="Cancelar cita">
-                                <Trash2 size={18} />
+                              <button onClick={() => deleteAppointment(appt.id)} className="p-1.5 hover:bg-red-500/10 text-[var(--color-on-surface-variant)] hover:text-red-400 rounded-lg transition-colors" title="Cancelar cita">
+                                <Trash2 size={16} />
                               </button>
                             </div>
 
@@ -243,7 +243,7 @@ export default function CalendarModule() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-           <div className="bg-gradient-to-br from-[#6B4FD8] to-[#8E79F0] p-6 rounded-3xl text-white shadow-xl shadow-[#6B4FD8]/20">
+           <div className="bg-gradient-to-br from-[#6B4FD8] to-[#8E79F0] p-6 rounded-3xl text-white">
              <h3 className="font-black text-sm uppercase tracking-widest opacity-80 mb-1">Citas Activas</h3>
              <div className="flex items-end gap-2">
                <h2 className="text-5xl font-black">{upcomingAppointments.length}</h2>

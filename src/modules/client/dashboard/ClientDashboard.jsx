@@ -13,7 +13,6 @@ import CalendarDashboardCard from '../calendar/CalendarDashboardCard';
 import FinanceDashboardCard from '../finance/FinanceDashboardCard';
 import PurchasesDashboardCard from '../purchases/PurchasesDashboardCard';
 import RealEstateDashboardCard from '../realestate/RealEstateDashboardCard';
-import WarehouseDashboardCard from '../warehouse/WarehouseDashboardCard';
 import PayrollDashboardCard from '../payroll/PayrollDashboardCard';
 import HealthDashboardCard from '../health/HealthDashboardCard';
 
@@ -32,7 +31,6 @@ export default function ClientDashboard() {
     finance: FinanceDashboardCard,
     purchases: PurchasesDashboardCard,
     realestate: RealEstateDashboardCard,
-    warehouse: WarehouseDashboardCard,
     payroll: PayrollDashboardCard,
     health: HealthDashboardCard
   };

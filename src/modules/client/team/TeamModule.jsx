@@ -178,31 +178,31 @@ export default function TeamModule() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in pb-20">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Desktop Tabs */}
         <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 border border-[var(--color-outline-variant)] rounded-xl w-fit">
           <button
             onClick={() => setActiveTab('members')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all ${
               activeTab === 'members' 
                 ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
-            <Users size={16} />
+            <Users size={14} />
             <span>Equipo</span>
           </button>
           <button
             onClick={() => setActiveTab('audit')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all ${
               activeTab === 'audit' 
                 ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
             }`}
           >
-            <Activity size={16} />
+            <Activity size={14} />
             <span>Auditoría</span>
           </button>
         </div>
@@ -225,12 +225,12 @@ export default function TeamModule() {
         <button
           onClick={() => setIsInviteModalOpen(true)}
           disabled={isLimitReached}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${isLimitReached
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all text-sm ${isLimitReached
               ? 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)] cursor-not-allowed border border-[var(--color-outline-variant)]'
               : 'bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_20px_rgba(133,173,255,0.3)]'
             }`}
         >
-          <UserPlus size={18} />
+          <UserPlus size={16} />
           <span>{isLimitReached ? 'Límite alcanzado' : 'Invitar Miembro'}</span>
         </button>
       </div>
@@ -239,7 +239,7 @@ export default function TeamModule() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {/* Stats / Quota - Oculto en móvil */}
           <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+            <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-5 transition-all flex flex-col justify-between">
               <div className="flex items-center gap-4 mb-2">
                 <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)]">
                   <Users size={24} />
@@ -266,7 +266,7 @@ export default function TeamModule() {
 
             {/* Zona de Seguridad (Solo Admin) */}
             {user?.role === 'admin' && (
-              <div className="md:col-span-2 bg-[var(--color-surface-container-low)] border border-amber-500/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+              <div className="md:col-span-2 bg-[var(--color-surface-container-low)] border border-amber-500/20 rounded-2xl p-5 transition-all relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                   <ShieldAlert size={100} />
                 </div>
@@ -289,7 +289,7 @@ export default function TeamModule() {
                   <button
                     onClick={handleExportData}
                     disabled={loadingExport}
-                    className="flex items-center gap-3 px-6 py-3 rounded-xl font-black text-xs bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-3 px-6 py-3 rounded-xl font-black text-xs bg-amber-500 hover:bg-amber-400 text-[#0a0a0a] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loadingExport ? (
                       <>
@@ -312,17 +312,17 @@ export default function TeamModule() {
           <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                  <th className="px-6 py-5">Colaborador</th>
-                  <th className="px-6 py-5">Rol</th>
-                  <th className="px-6 py-5">Estado</th>
-                  <th className="px-6 py-5 text-right">Acciones</th>
+                <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
+                  <th className="px-4 py-2.5">Colaborador</th>
+                  <th className="px-4 py-2.5">Rol</th>
+                  <th className="px-4 py-2.5">Estado</th>
+                  <th className="px-4 py-2.5 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#40485d]/10">
                 {teamMembers.map((member) => (
                   <tr key={member.id} className="hover:bg-[var(--color-surface-container)]/30 transition-colors group">
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[var(--color-surface-container)] border border-[#6B4FD8]/20 flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">
                           {member.name.substring(0, 2).toUpperCase()}
@@ -335,7 +335,7 @@ export default function TeamModule() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <span className={`text-[10px] uppercase font-black px-2 py-1 rounded border tracking-widest leading-none flex items-center w-fit gap-1 ${member.role === 'admin'
                           ? 'bg-[#2E8B57]/10 text-[#2E8B57] border-[#2E8B57]/20'
                           : 'bg-[#6B4FD8]/10 text-[var(--color-primary)] border-[#6B4FD8]/20'
@@ -344,7 +344,7 @@ export default function TeamModule() {
                         {member.role === 'admin' ? 'Admin' : 'User'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${member.status === 'active' ? 'bg-[#4ADE80]' : 'bg-amber-400'}`}></div>
                         <span className={`text-xs font-bold ${member.status === 'active' ? 'text-[#4ADE80]' : 'text-amber-400'}`}>
@@ -352,7 +352,7 @@ export default function TeamModule() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-2 text-right">
                       <div className="flex items-center justify-end gap-1">
                         {member.status === 'pending' && (
                           <button
@@ -466,7 +466,7 @@ export default function TeamModule() {
                       navigator.clipboard.writeText(generatedInviteLink);
                       alert("¡Enlace copiado!");
                     }}
-                    className="p-2 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg hover:bg-[#6B4FD8] hover:text-white transition-all shadow-lg shadow-[#6B4FD8]/10"
+                    className="p-2 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg hover:bg-[#6B4FD8] hover:text-white transition-all"
                   >
                     <Copy size={16} />
                   </button>

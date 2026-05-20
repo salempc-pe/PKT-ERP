@@ -85,16 +85,16 @@ export default function FinanceModule() {
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+          className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
-          <Plus size={18} /> Nueva Transacción
+          <Plus size={16} /> Nueva Transacción
         </button>
       </div>
 
       {/* KPI Stats - Ocultos en móvil */}
       <div className="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)]">
              <Wallet size={24} />
            </div>
            <div>
@@ -104,8 +104,8 @@ export default function FinanceModule() {
              </p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#85ffab] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#85ffab]">
              <TrendingUp size={24} />
            </div>
            <div>
@@ -113,8 +113,8 @@ export default function FinanceModule() {
              <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{formatPrice(totalIncome)}</p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#ff716c] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#ff716c]">
              <TrendingDown size={24} />
            </div>
            <div>
@@ -149,12 +149,12 @@ export default function FinanceModule() {
         <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-xl bg-transparent md:bg-[var(--color-surface-container-low)]">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">Tipo</th>
-                <th className="px-6 py-5">Descripción & Categoría</th>
-                <th className="px-6 py-5">Fecha</th>
-                <th className="px-6 py-5 text-right">Monto</th>
-                <th className="px-6 py-5 text-center">Acción</th>
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
+                <th className="px-4 py-2.5">Tipo</th>
+                <th className="px-4 py-2.5">Descripción & Categoría</th>
+                <th className="px-4 py-2.5">Fecha</th>
+                <th className="px-4 py-2.5 text-right">Monto</th>
+                <th className="px-4 py-2.5 text-center">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
@@ -182,25 +182,25 @@ export default function FinanceModule() {
 
                 return filteredTransactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors">
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       {tx.type === 'income' 
                         ? <span className="inline-flex items-center px-2 py-1 bg-green-500/10 text-green-400 text-[10px] font-black tracking-widest uppercase rounded">Ingreso</span>
                         : <span className="inline-flex items-center px-2 py-1 bg-red-500/10 text-red-400 text-[10px] font-black tracking-widest uppercase rounded">Egreso</span>
                       }
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <p className="font-bold text-[var(--color-on-surface)]">{tx.description}</p>
                       <p className="text-[10px] text-[var(--color-on-surface-variant)]">{tx.category}</p>
                     </td>
-                    <td className="px-6 py-4 text-[var(--color-on-surface-variant)]">
+                    <td className="px-4 py-2 text-[var(--color-on-surface-variant)]">
                       {new Date(tx.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-2 text-right">
                       <span className={`font-bold ${tx.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
                         {tx.type === 'income' ? '+' : '-'}{formatPrice(tx.amount)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-2 text-center">
                        <button onClick={() => deleteTransaction(tx.id)} className="text-[var(--color-on-surface-variant)] hover:text-red-400 transition-colors">
                          <Trash2 size={16} />
                        </button>
@@ -217,7 +217,7 @@ export default function FinanceModule() {
        {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSubmitting && setIsModalOpen(false)}></div>
-          <div className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
+          <div className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl relative animate-in zoom-in duration-300 flex flex-col max-h-[85vh]">
             
             <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)] rounded-t-3xl">
                <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
@@ -228,7 +228,7 @@ export default function FinanceModule() {
                </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1 custom-scrollbar">
               
               <div className="flex bg-[var(--color-surface-container-low)] rounded-xl p-1 border border-[var(--color-outline-variant)]">
                 <button type="button" onClick={() => handleTypeChange('income')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${type === 'income' ? 'bg-[#85ffab]/10 text-[#85ffab] shadow-sm' : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container)]'}`}>Ingreso (+)</button>
@@ -288,7 +288,7 @@ export default function FinanceModule() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting || !amount}
-                  className="w-full bg-[#6B4FD8] text-[#001b5c] font-black px-4 py-3.5 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-[#6B4FD8] text-[#002150] font-black px-4 py-3.5 rounded-xl hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : 'Registrar Transacción'}
                 </button>

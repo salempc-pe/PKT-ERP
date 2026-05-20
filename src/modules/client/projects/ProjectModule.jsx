@@ -112,16 +112,16 @@ export default function ProjectModule() {
           <div 
             key={project.id} 
             onClick={() => handleSelectProject(project)}
-            className="group relative bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
+            className="group relative bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-6 transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
           >
             <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)]/30 rounded-xl text-[var(--color-primary)] shadow-sm transition-all">
+              <div className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)]/30 rounded-xl text-[var(--color-primary)] transition-all">
                 <Folder size={24} />
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
                 <button 
                   onClick={(e) => handleOpenEditProject(e, project)}
-                  className="p-2 bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-xl transition-all border border-[#6B4FD8]/20 shadow-sm"
+                  className="p-2 bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-xl transition-all border border-[#6B4FD8]/20"
                   title="Editar Proyecto"
                 >
                   <MoreVertical size={18}/>
@@ -133,7 +133,7 @@ export default function ProjectModule() {
                       deleteProject(project.id);
                     }
                   }}
-                  className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all border border-red-500/20 shadow-sm"
+                  className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all border border-red-500/20"
                   title="Eliminar Proyecto"
                 >
                   <X size={18}/>

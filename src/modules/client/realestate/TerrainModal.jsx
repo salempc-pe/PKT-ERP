@@ -146,7 +146,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
         {/* Header */}
         <div className="p-5 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container-high)] relative">
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-[#6B4FD8] flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+            <div className="w-10 h-10 rounded-xl bg-[#6B4FD8] flex items-center justify-center text-white">
               <Building2 size={20} />
             </div>
             <div>
@@ -316,7 +316,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
           <hr className="border-[var(--color-outline-variant)]" />
 
           {/* Calculadora de Precios */}
-          <div className="bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm space-y-3">
+          <div className="bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container)] p-5 rounded-2xl border border-[var(--color-outline-variant)] space-y-3">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-7 h-7 rounded-lg bg-[#6B4FD8]/10 flex items-center justify-center text-[#6B4FD8]">
                 <Calculator size={14} />
@@ -349,7 +349,7 @@ export default function TerrainModal({ isOpen, onClose, terrain, onSave, contact
                   type="number"
                   value={formData.totalPrice}
                   onChange={(e) => handlePriceChange('totalPrice', e.target.value)}
-                  className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black shadow-[0_0_10px_rgba(46,139,87,0.05)]"
+                  className="w-full bg-[#2E8B57]/5 border border-[#2E8B57]/30 rounded-lg px-3 py-2 text-[#2E8B57] focus:border-[#2E8B57] outline-none text-xs font-black"
                 />
               </div>
             </div>

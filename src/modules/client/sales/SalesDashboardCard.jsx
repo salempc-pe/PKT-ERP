@@ -2,6 +2,7 @@ import { DollarSign } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useSales } from './useSales';
 import { useAuth } from '../../../context/AuthContext';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function SalesDashboardCard({ orgId }) {
   const { sales, loading } = useSales(orgId);
@@ -13,10 +14,10 @@ export default function SalesDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Facturación"
+      title={MODULE_NAMES.sales}
       description="Cotizaciones y facturas."
       icon={DollarSign}
-      path="/client/sales"
+      path={`/client/${MODULE_SLUGS.sales}`}
       color="#50e3c2"
       loading={loading}
       metrics={[

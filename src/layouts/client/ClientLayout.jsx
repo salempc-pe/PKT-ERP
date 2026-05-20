@@ -14,6 +14,8 @@ import {
   MODULES_CATALOG 
 } from '../../modules/modulesConfig';
 
+import { MODULE_IDS, MODULE_NAMES, MODULE_SLUGS } from '../../modules/moduleNames';
+
 const isFirebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY;
 
 export default function ClientLayout() {
@@ -59,17 +61,16 @@ export default function ClientLayout() {
 
   const moduleTitles = {
     '/client/dashboard': 'Dashboard',
-    '/client/crm': 'CRM y Ventas',
-    '/client/realestate': 'Inmobiliaria',
-    '/client/projects': 'Proyectos',
-    '/client/inventory': 'Inventario',
-    '/client/warehouse': 'Bodega',
-    '/client/finance': 'Contabilidad',
-    '/client/sales': 'Ventas y Facturas',
-    '/client/purchases': 'Compras',
-    '/client/calendar': 'Agenda',
-    '/client/payroll': 'Nóminas y RRHH',
-    '/client/salud': 'Gestión de Salud',
+    [`/client/${MODULE_SLUGS[MODULE_IDS.CRM]}`]: MODULE_NAMES[MODULE_IDS.CRM],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.REALESTATE]}`]: MODULE_NAMES[MODULE_IDS.REALESTATE],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.PROJECTS]}`]: MODULE_NAMES[MODULE_IDS.PROJECTS],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.INVENTORY]}`]: MODULE_NAMES[MODULE_IDS.INVENTORY],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.FINANCE]}`]: MODULE_NAMES[MODULE_IDS.FINANCE],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.SALES]}`]: MODULE_NAMES[MODULE_IDS.SALES],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.PURCHASES]}`]: MODULE_NAMES[MODULE_IDS.PURCHASES],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.CALENDAR]}`]: MODULE_NAMES[MODULE_IDS.CALENDAR],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.PAYROLL]}`]: MODULE_NAMES[MODULE_IDS.PAYROLL],
+    [`/client/${MODULE_SLUGS[MODULE_IDS.HEALTH]}`]: MODULE_NAMES[MODULE_IDS.HEALTH],
     '/client/team': 'Mi Equipo',
     '/client/settings': 'Configuración'
   };

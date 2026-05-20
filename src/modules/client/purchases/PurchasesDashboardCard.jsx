@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, getDocs } from 'firebase/firestore';
 import { db } from '../../../services/firebase';
 import DashboardCard from '../../../components/DashboardCard';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function PurchasesDashboardCard({ orgId }) {
   const [stats, setStats] = useState({ pending: 0, received: 0 });
@@ -33,10 +34,10 @@ export default function PurchasesDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Compras"
+      title={MODULE_NAMES.purchases}
       description="Gestión de proveedores y órdenes de compra."
       icon={ShoppingCart}
-      path="/client/purchases"
+      path={`/client/${MODULE_SLUGS.purchases}`}
       color="#6B4FD8"
       loading={loading}
       metrics={[

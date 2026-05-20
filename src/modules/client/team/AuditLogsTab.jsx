@@ -50,7 +50,7 @@ export default function AuditLogsTab({ orgId }) {
                 <Activity size={14} className="text-[var(--color-primary)]" />
               </div>
               
-              <div className="bg-[var(--color-surface-container-low)]/40 border border-[var(--color-outline-variant)] rounded-2xl p-4 hover:border-[#6B4FD8]/30 transition-all hover:shadow-lg hover:shadow-[#6B4FD8]/5">
+              <div className="bg-[var(--color-surface-container-low)]/40 border border-[var(--color-outline-variant)] rounded-2xl p-4 hover:border-[#6B4FD8]/30 transition-all">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-black text-[var(--color-on-surface)]">{log.userName}</span>

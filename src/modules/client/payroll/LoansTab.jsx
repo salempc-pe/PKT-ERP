@@ -57,13 +57,13 @@ export default function LoansTab({ orgId }) {
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#6B4FD8] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:shadow-lg transition-all"
+          className="bg-[#6B4FD8] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
         >
           <Plus size={16} /> Nuevo Préstamo
         </button>
       </div>
 
-      <div className="overflow-hidden bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl">
+      <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
@@ -136,13 +136,13 @@ export default function LoansTab({ orgId }) {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-[var(--color-surface)] w-full max-w-md rounded-[2rem] border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="bg-[var(--color-surface)] w-full max-w-md rounded-[2rem] border border-[var(--color-outline-variant)] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
             <div className="p-8 border-b border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
               <h2 className="text-xl font-black text-[var(--color-on-surface)] uppercase tracking-tight">Nuevo Préstamo / Adelanto</h2>
               <p className="text-xs text-[var(--color-on-surface-variant)] font-medium">Asignar financiamiento a un colaborador</p>
             </div>
             
-            <form onSubmit={handleAddLoan} className="p-8 space-y-4">
+            <form onSubmit={handleAddLoan} className="p-8 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-on-surface-variant)]">Colaborador</label>
                 <select 
@@ -212,7 +212,7 @@ export default function LoansTab({ orgId }) {
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 py-3 bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg transition-all"
+                  className="flex-1 py-3 bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all"
                 >
                   Crear Registro
                 </button>

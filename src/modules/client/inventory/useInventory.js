@@ -16,9 +16,11 @@ import { z } from "zod";
 const ProductSchema = z.object({
   sku: z.string().min(1, "SKU requerido").max(50),
   name: z.string().min(1, "Nombre del producto requerido").max(100),
+  description: z.string().max(500).optional(),
   category: z.string().max(50).optional(),
   price: z.number().min(0, "Precio no puede ser negativo").optional(),
   stock: z.number().int().min(0, "Stock no puede ser negativo").default(0),
+  unit: z.string().max(20).optional().default("und"),
   lowStockThreshold: z.number().int().min(0).default(5),
   status: z.enum(["Normal", "Bajo Stock", "Agotado"]).optional(),
   averageCost: z.number().min(0).default(0),

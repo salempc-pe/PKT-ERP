@@ -134,7 +134,7 @@ export default function RecordGeneralNotesTab({ clientId, expedienteId, orgId })
                 <button 
                   type="submit"
                   disabled={isSaving}
-                  className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2 rounded-xl flex items-center gap-2 hover:shadow-md disabled:opacity-50 transition-all"
+                  className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2 rounded-xl flex items-center gap-2 disabled:opacity-50 transition-all"
                 >
                    {isSaving ? <Loader2 size={14} className="animate-spin"/> : <><Save size={14}/> Guardar</>}
                 </button>

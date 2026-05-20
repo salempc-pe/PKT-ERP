@@ -83,12 +83,12 @@ export default function PurchasesModule() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Borrador': return 'bg-[#a3aac4] text-[#002150]';
-      case 'Solicitada': return 'bg-[#6B4FD8] text-[#002150]';
-      case 'Recibida': return 'bg-green-500 text-white shadow-[0_0_10px_rgba(34,197,94,0.4)]';
-      case 'Pagada': return 'bg-blue-500 text-white';
-      case 'Anulada': return 'bg-red-500 text-white opacity-50';
-      default: return 'bg-gray-500 text-white';
+      case 'Borrador':  return 'inline-flex items-center px-1.5 py-0.5 bg-[#40485d]/30 text-[var(--color-on-surface-variant)] text-[9px] font-black tracking-widest uppercase rounded';
+      case 'Solicitada': return 'inline-flex items-center px-1.5 py-0.5 bg-[#6B4FD8]/10 text-[#6B4FD8] text-[9px] font-black tracking-widest uppercase rounded border border-[#6B4FD8]/20';
+      case 'Recibida': return 'inline-flex items-center px-1.5 py-0.5 bg-green-500/10 text-green-400 text-[9px] font-black tracking-widest uppercase rounded';
+      case 'Pagada':   return 'inline-flex items-center px-1.5 py-0.5 bg-blue-500/10 text-blue-400 text-[9px] font-black tracking-widest uppercase rounded';
+      case 'Anulada':  return 'inline-flex items-center px-1.5 py-0.5 bg-red-500/10 text-red-400 text-[9px] font-black tracking-widest uppercase rounded opacity-60';
+      default: return 'inline-flex items-center px-1.5 py-0.5 bg-[#40485d]/30 text-[var(--color-on-surface-variant)] text-[9px] font-black tracking-widest uppercase rounded';
     }
   };
 
@@ -103,15 +103,15 @@ export default function PurchasesModule() {
         <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
           <button 
             onClick={() => setActiveTab('orders')}
-            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${activeTab === 'orders' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`text-xs font-bold px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 ${activeTab === 'orders' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <ShoppingCart size={16} /> Órdenes
+            <ShoppingCart size={14} /> Órdenes
           </button>
           <button 
             onClick={() => setActiveTab('suppliers')}
-            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${activeTab === 'suppliers' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`text-xs font-bold px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 ${activeTab === 'suppliers' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <Users size={16} /> Proveedores
+            <Users size={14} /> Proveedores
           </button>
         </div>
 
@@ -133,59 +133,59 @@ export default function PurchasesModule() {
         {activeTab === 'orders' ? (
           <button 
             onClick={() => setShowModal(true)}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Plus size={18} /> Nueva Compra
+            <Plus size={16} /> Nueva Compra
           </button>
         ) : (
           <button 
             onClick={() => suppliersRef.current?.handleOpenNew()}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Plus size={18} /> Nuevo Proveedor
+            <Plus size={16} /> Nuevo Proveedor
           </button>
         )}
       </div>
 
       {activeTab === 'orders' ? (
-        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
+        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">N° Orden</th>
-                <th className="px-6 py-5">Proveedor</th>
-                <th className="px-6 py-5">Estado</th>
-                <th className="px-6 py-5 text-center">Productos</th>
-                <th className="px-6 py-5">Total</th>
-                <th className="px-6 py-5 text-right">Acciones</th>
+                <th className="px-4 py-2.5">N° Orden</th>
+                <th className="px-4 py-2.5">Proveedor</th>
+                <th className="px-4 py-2.5">Estado</th>
+                <th className="px-4 py-2.5 text-center">Productos</th>
+                <th className="px-4 py-2.5">Total</th>
+                <th className="px-4 py-2.5 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
               {purchases.length > 0 ? purchases.map((purchase) => (
                 <tr key={purchase.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <span className="font-mono text-[var(--color-primary)] font-black">{purchase.orderNumber}</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div>
                       <p className="font-bold text-[var(--color-on-surface)]">{purchase.supplierName}</p>
                       <p className="text-[10px] text-[var(--color-on-surface-variant)] uppercase">{new Date(purchase.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-lg ${getStatusColor(purchase.status)}`}>
+                  <td className="px-4 py-2">
+                    <span className={`${getStatusColor(purchase.status)}`}>
                       {purchase.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-2 text-center">
                     <span className="text-xs text-[var(--color-on-surface-variant)] font-bold">
                       {purchase.items.length} sku(s)
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">
+                  <td className="px-4 py-2 font-black text-[var(--color-on-surface)] text-right">
                     {formatPrice(purchase.totalAmount)}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-2 text-right">
                     <div className="flex justify-end gap-2">
                        {purchase.status !== 'Recibida' && purchase.status !== 'Anulada' && (
                         <button 
@@ -201,7 +201,7 @@ export default function PurchasesModule() {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay órdenes de compra registradas.</td>
+                  <td colSpan="6" className="px-4 py-10 text-center text-[var(--color-on-surface-variant)] italic">No hay órdenes de compra registradas.</td>
                 </tr>
               )}
             </tbody>
@@ -217,7 +217,7 @@ export default function PurchasesModule() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSaving && setShowModal(false)}></div>
           <form 
             onSubmit={handleAddSubmit}
-            className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-lg overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
+            className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in duration-300 flex flex-col max-h-[90vh]"
           >
             <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)]">
               <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">

@@ -86,7 +86,7 @@ export default function EmployeeModal({ isOpen, onClose, employee, onSave }) {
         {/* Header */}
         <div className="p-5 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container-high)]">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#6B4FD8] flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+            <div className="w-10 h-10 rounded-xl bg-[#6B4FD8] flex items-center justify-center text-white">
               <User size={20} />
             </div>
             <div>

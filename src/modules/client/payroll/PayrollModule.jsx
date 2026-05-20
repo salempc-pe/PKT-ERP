@@ -86,10 +86,10 @@ export default function PayrollModule() {
   });
 
   const tabs = [
-    { id: 'colaboradores', label: 'Colaboradores', icon: <Users size={16} /> },
-    { id: 'asistencia', label: 'Asistencia', icon: <Clock size={16} /> },
-    { id: 'prestamos', label: 'Préstamos', icon: <Wallet size={16} /> },
-    { id: 'boletas', label: 'Boletas', icon: <ReceiptText size={16} /> }
+    { id: 'colaboradores', label: 'Colaboradores', icon: <Users size={14} /> },
+    { id: 'asistencia', label: 'Asistencia', icon: <Clock size={14} /> },
+    { id: 'prestamos', label: 'Préstamos', icon: <Wallet size={14} /> },
+    { id: 'boletas', label: 'Boletas', icon: <ReceiptText size={14} /> }
   ];
 
   return (
@@ -97,34 +97,34 @@ export default function PayrollModule() {
       <div className="flex flex-col md:flex-row justify-end items-center gap-4">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
+          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
         >
-          <Plus size={18} /> <span>Agregar Colaborador</span>
+          <Plus size={16} /> <span>Agregar Colaborador</span>
         </button>
       </div>
 
       {/* Stats Indicators - Oculto en móvil */}
       <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {payrollStats.map((stat, idx) => (
-          <div key={idx} className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 shadow-sm">
+          <div key={idx} className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl flex items-center gap-4 border border-[var(--color-outline-variant)] transition-all">
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30">
               {stat.icon}
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] mb-0.5">{stat.title}</p>
-              <p className="text-xl font-black text-[var(--color-on-surface)] font-mono leading-tight">{stat.value}</p>
+              <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{stat.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Tabs Navigation - Desktop */}
-      <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] shadow-sm w-fit">
+      <div className="hidden md:flex bg-[var(--color-surface-container)]/50 p-1 rounded-xl border border-[var(--color-outline-variant)] w-fit">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all ${
               activeTab === tab.id 
                 ? 'bg-[#6B4FD8] text-[#002150]' 
                 : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
@@ -141,7 +141,7 @@ export default function PayrollModule() {
         <select
           value={activeTab}
           onChange={(e) => setActiveTab(e.target.value)}
-          className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8] shadow-sm"
+          className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
         >
           <option value="colaboradores">Colaboradores</option>
           <option value="asistencia">Asistencia</option>
@@ -173,21 +173,21 @@ export default function PayrollModule() {
               </div>
             </div>
 
-            <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] shadow-sm overflow-hidden">
+            <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                    <th className="px-6 py-5">Colaborador</th>
-                    <th className="px-6 py-5">Cargo</th>
-                    <th className="px-6 py-5">Sueldo Bruto</th>
-                    <th className="px-6 py-5">Método Pago</th>
-                    <th className="px-6 py-5 text-right">Acciones</th>
+                  <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
+                    <th className="px-4 py-2.5">Colaborador</th>
+                    <th className="px-4 py-2.5">Cargo</th>
+                    <th className="px-4 py-2.5">Sueldo Bruto</th>
+                    <th className="px-4 py-2.5">Método Pago</th>
+                    <th className="px-4 py-2.5 text-right">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--color-outline-variant)]">
                   {filteredEmployees.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="px-6 py-20 text-center">
+                      <td colSpan="5" className="px-4 py-10 text-center">
                         <div className="flex flex-col items-center gap-3 opacity-50">
                           <Users size={48} className="text-[var(--color-on-surface-variant)]" />
                           <p className="text-sm font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Sin registros disponibles</p>
@@ -197,7 +197,7 @@ export default function PayrollModule() {
                   ) : (
                     filteredEmployees.map((emp) => (
                       <tr key={emp.id} className="group hover:bg-[var(--color-surface-container)] transition-colors">
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#6B4FD8] to-[#2E8B57] flex items-center justify-center text-white font-black text-[10px]">
                               {emp.firstName?.[0]}{emp.lastName?.[0]}
@@ -208,14 +208,14 @@ export default function PayrollModule() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <span className="text-xs font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wide bg-[var(--color-surface-container-high)] px-2 py-1 rounded-md">{emp.position}</span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <p className="font-black text-sm text-[var(--color-on-surface)]">{formatPrice(emp.baseSalary)}</p>
                           {emp.variableSalary > 0 && <p className="text-[10px] text-[#2E8B57] font-bold">+{formatPrice(emp.variableSalary)} Var.</p>}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-2">
                           <div className="flex items-center gap-2">
                             {emp.paymentMethod === 'deposito' ? (
                               <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#6B4FD8]/10 text-[#6B4FD8] rounded-lg border border-[#6B4FD8]/20" title={emp.bankInfo?.bankName}>
@@ -230,7 +230,7 @@ export default function PayrollModule() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-4 py-2 text-right">
                           <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
                               onClick={() => handleOpenEdit(emp)}

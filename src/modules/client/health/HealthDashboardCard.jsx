@@ -1,6 +1,7 @@
 import { Activity } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useHealth } from './useHealth';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function HealthDashboardCard({ orgId }) {
   const { expedientes, citas, loading } = useHealth(orgId);
@@ -15,15 +16,15 @@ export default function HealthDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Módulo Salud"
+      title={MODULE_NAMES.health}
       description="Gestión clínica y expedientes médicos."
       icon={Activity}
-      path="/client/salud"
+      path={`/client/${MODULE_SLUGS.health}`}
       color="#EF4444"
       loading={loading}
       metrics={[
-        { label: "Pacientes Activos", value: expedientes.filter(e => e.estado === 'activo').length, path: "/client/salud/pacientes" },
-        { label: "Citas Pendientes", value: upcomingAppointments, path: "/client/salud/agenda" }
+        { label: "Pacientes Activos", value: expedientes.filter(e => e.estado === 'activo').length, path: `/client/${MODULE_SLUGS.health}/pacientes` },
+        { label: "Citas Pendientes", value: upcomingAppointments, path: `/client/${MODULE_SLUGS.health}/agenda` }
       ]}
     />
   );

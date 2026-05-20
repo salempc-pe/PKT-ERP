@@ -112,7 +112,7 @@ export default function CustomDatePicker({ selectedDate, onChange, onClose }) {
               className={`
                 h-9 w-9 text-xs font-bold rounded-xl transition-all
                 ${selected 
-                  ? 'bg-[#6B4FD8] text-[#001b5c] scale-110 shadow-lg shadow-[#6B4FD8]/20' 
+                  ? 'bg-[#6B4FD8] text-[#001b5c] scale-110' 
                   : current
                   ? 'bg-[var(--color-primary-container)] text-[var(--color-primary)] border border-[var(--color-primary)]/20'
                   : 'hover:bg-[var(--color-surface-variant)] text-[var(--color-on-surface)]'}

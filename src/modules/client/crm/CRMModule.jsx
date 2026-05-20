@@ -157,15 +157,15 @@ export default function CRMModule() {
         <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)]">
           <button
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <Kanban size={16} /> Pipeline
+            <Kanban size={14} /> Pipeline
           </button>
           <button
             onClick={() => setActiveTab('contacts')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'contacts' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <List size={16} /> Base de Contactos
+            <List size={14} /> Base de Contactos
           </button>
         </div>
 
@@ -187,16 +187,16 @@ export default function CRMModule() {
         {activeTab === 'pipeline' ? (
           <button
             onClick={() => { setModalType('lead'); setEditingLead(null); setShowModal(true); setSaveError(null); }}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Kanban size={18} /> Iniciar Lead
+            <Kanban size={16} /> Iniciar Lead
           </button>
         ) : (
           <button
             onClick={() => { setModalType('contact'); setEditingContact(null); setFormData({ name: '', company: '', email: '', phone: '', source: 'Manual', description: '', creditDays: 0 }); setShowModal(true); setSaveError(null); }}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Plus size={18} /> Nuevo Cliente
+            <Plus size={16} /> Nuevo Cliente
           </button>
         )}
       </div>
@@ -323,13 +323,13 @@ export default function CRMModule() {
         <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">Identidad</th>
-                <th className="px-6 py-5">Contacto Directo</th>
-                <th className="px-6 py-5">Etiquetas/Puntaje</th>
-                <th className="px-6 py-5 text-center">Crédito</th>
-                <th className="px-6 py-5">Origen / Fuente</th>
-                <th className="px-6 py-5 text-right">Acciones</th>
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
+                <th className="px-4 py-2.5">Identidad</th>
+                <th className="px-4 py-2.5">Contacto Directo</th>
+                <th className="px-4 py-2.5">Etiquetas/Puntaje</th>
+                <th className="px-4 py-2.5 text-center">Crédito</th>
+                <th className="px-4 py-2.5">Origen / Fuente</th>
+                <th className="px-4 py-2.5 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
@@ -339,7 +339,7 @@ export default function CRMModule() {
                   onClick={() => { setHistoryEntity(contact); setHistoryEntityType('contact'); }}
                   className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] font-black text-xs">
                         {contact.name.charAt(0)}
@@ -350,7 +350,7 @@ export default function CRMModule() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div className="flex flex-col gap-0.5">
                       <p className="text-[var(--color-on-surface)] font-medium text-xs flex items-center gap-1.5">
                         <Mail size={12} className="text-[var(--color-on-surface-variant)]" /> {contact.email}
@@ -360,7 +360,7 @@ export default function CRMModule() {
                       </p>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <div className="flex flex-col gap-1">
                       {contact.tags && contact.tags.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
@@ -380,17 +380,17 @@ export default function CRMModule() {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-2 text-center">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${contact.creditDays > 0 ? 'bg-green-400/10 text-green-400' : 'bg-[#40485d]/20 text-[var(--color-on-surface-variant)]'}`}>
                       {contact.creditDays || 0} días
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2">
                     <span className="text-[10px] font-black bg-[var(--color-surface-container)] text-[var(--color-primary)] px-2 py-1 rounded border border-[#6B4FD8]/10 uppercase">
                       {contact.source}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-2 text-right">
                     <div className="flex justify-end items-center gap-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleOpenEditContact(contact); }}

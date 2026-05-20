@@ -1,6 +1,7 @@
 import { Building2 } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useRealEstate } from './useRealEstate';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function RealEstateDashboardCard({ orgId }) {
   const { terrains, loading } = useRealEstate(orgId);
@@ -10,10 +11,10 @@ export default function RealEstateDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Inmobiliaria"
+      title={MODULE_NAMES.realestate}
       description="Base de terrenos y pipeline comercial."
       icon={Building2}
-      path="/client/realestate"
+      path={`/client/${MODULE_SLUGS.realestate}`}
       color="#6B4FD8"
       loading={loading}
       metrics={[

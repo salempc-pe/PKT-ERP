@@ -1,16 +1,17 @@
 import { Users } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useCrm } from './useCrm';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function CrmDashboardCard({ orgId }) {
   const { contacts, leads, loading } = useCrm(orgId);
 
   return (
     <DashboardCard
-      title="CRM y Ventas"
+      title={MODULE_NAMES.crm}
       description="Gestión de clientes y prospectos."
       icon={Users}
-      path="/client/crm"
+      path={`/client/${MODULE_SLUGS.crm}`}
       color="#6B4FD8"
       loading={loading}
       metrics={[

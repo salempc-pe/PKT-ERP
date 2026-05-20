@@ -12,19 +12,20 @@ import {
   Package 
 } from 'lucide-react';
 
+import { MODULE_IDS, MODULE_NAMES, MODULE_SLUGS } from './moduleNames';
+
 // Direct mapping of module definitions to centralize source of truth
 export const MODULES_CATALOG = [
-  { id: 'crm', label: 'CRM y Ventas', icon: Users, path: '/client/crm' },
-  { id: 'inventory', label: 'Inventario', icon: Box, path: '/client/inventory' },
-  { id: 'warehouse', label: 'Bodega', icon: Package, path: '/client/warehouse' },
-  { id: 'sales', label: 'Ventas y Facturas', icon: FileText, path: '/client/sales' },
-  { id: 'finance', label: 'Contabilidad', icon: Calculator, path: '/client/finance' },
-  { id: 'projects', label: 'Proyectos', icon: Briefcase, path: '/client/projects' },
-  { id: 'purchases', label: 'Compras y Proveedores', icon: ShoppingCart, path: '/client/purchases' },
-  { id: 'calendar', label: 'Agenda', icon: Calendar, path: '/client/calendar' },
-  { id: 'realestate', label: 'Terrenos Inmobiliarios', icon: Building, path: '/client/realestate' },
-  { id: 'payroll', label: 'Nóminas', icon: Wallet, path: '/client/payroll', requiresAdminAccess: true },
-  { id: 'health', label: 'Salud', icon: Activity, path: '/client/salud', requiresAdminAccess: true },
+  { id: MODULE_IDS.CRM, label: MODULE_NAMES[MODULE_IDS.CRM], icon: Users, path: `/client/${MODULE_SLUGS[MODULE_IDS.CRM]}` },
+  { id: MODULE_IDS.INVENTORY, label: MODULE_NAMES[MODULE_IDS.INVENTORY], icon: Box, path: `/client/${MODULE_SLUGS[MODULE_IDS.INVENTORY]}` },
+  { id: MODULE_IDS.SALES, label: MODULE_NAMES[MODULE_IDS.SALES], icon: FileText, path: `/client/${MODULE_SLUGS[MODULE_IDS.SALES]}` },
+  { id: MODULE_IDS.FINANCE, label: MODULE_NAMES[MODULE_IDS.FINANCE], icon: Calculator, path: `/client/${MODULE_SLUGS[MODULE_IDS.FINANCE]}` },
+  { id: MODULE_IDS.PROJECTS, label: MODULE_NAMES[MODULE_IDS.PROJECTS], icon: Briefcase, path: `/client/${MODULE_SLUGS[MODULE_IDS.PROJECTS]}` },
+  { id: MODULE_IDS.PURCHASES, label: MODULE_NAMES[MODULE_IDS.PURCHASES], icon: ShoppingCart, path: `/client/${MODULE_SLUGS[MODULE_IDS.PURCHASES]}` },
+  { id: MODULE_IDS.CALENDAR, label: MODULE_NAMES[MODULE_IDS.CALENDAR], icon: Calendar, path: `/client/${MODULE_SLUGS[MODULE_IDS.CALENDAR]}` },
+  { id: MODULE_IDS.REALESTATE, label: MODULE_NAMES[MODULE_IDS.REALESTATE], icon: Building, path: `/client/${MODULE_SLUGS[MODULE_IDS.REALESTATE]}` },
+  { id: MODULE_IDS.PAYROLL, label: MODULE_NAMES[MODULE_IDS.PAYROLL], icon: Wallet, path: `/client/${MODULE_SLUGS[MODULE_IDS.PAYROLL]}`, requiresAdminAccess: true },
+  { id: MODULE_IDS.HEALTH, label: MODULE_NAMES[MODULE_IDS.HEALTH], icon: Activity, path: `/client/${MODULE_SLUGS[MODULE_IDS.HEALTH]}`, requiresAdminAccess: true },
 ];
 
 /**

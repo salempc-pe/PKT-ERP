@@ -2,6 +2,7 @@ import { Box } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useInventory } from './useInventory';
 import { useAuth } from '../../../context/AuthContext';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function InventoryDashboardCard({ orgId }) {
   const { products, loading } = useInventory(orgId);
@@ -12,22 +13,22 @@ export default function InventoryDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Inventario"
+      title={MODULE_NAMES.inventory}
       description="Control de existencias y alertas."
       icon={Box}
-      path="/client/inventory"
+      path={`/client/${MODULE_SLUGS.inventory}`}
       color="#e28ce9"
       loading={loading}
       metrics={[
         { 
           label: "Valor Total", 
           value: formatPrice(totalValue),
-          path: "/client/inventory?tab=inventory"
+          path: `/client/${MODULE_SLUGS.inventory}?tab=inventory`
         },
         { 
           label: "Bajo Stock", 
           value: lowStockCount,
-          path: "/client/inventory?tab=alerts"
+          path: `/client/${MODULE_SLUGS.inventory}?tab=alerts`
         }
       ]}
     />

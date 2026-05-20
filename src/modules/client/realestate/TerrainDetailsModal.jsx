@@ -104,7 +104,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
         {/* Header */}
         <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container-high)]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#6B4FD8] flex items-center justify-center text-white shadow-lg">
+            <div className="w-12 h-12 rounded-2xl bg-[#6B4FD8] flex items-center justify-center text-white">
               <Building2 size={24} />
             </div>
             <div>
@@ -241,7 +241,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
           {activeTab === 'presentations' && (
             <div className="space-y-8 animate-in slide-in-from-right duration-300">
               {/* Formulario Nueva Presentación */}
-              <div className="bg-[var(--color-surface-container-low)] p-6 rounded-3xl border border-[var(--color-outline-variant)] shadow-sm">
+              <div className="bg-[var(--color-surface-container-low)] p-6 rounded-3xl border border-[var(--color-outline-variant)]">
                 <h4 className="text-[10px] font-black text-[#6B4FD8] uppercase tracking-widest mb-4 flex items-center gap-2">
                   <Plus size={14} /> Registrar Nueva Presentación
                 </h4>
@@ -353,7 +353,7 @@ export default function TerrainDetailsModal({ isOpen, onClose, terrain, onUpdate
             <div className="space-y-8 animate-in slide-in-from-right duration-300">
               <div className="flex justify-between items-center">
                 <h4 className="text-[10px] font-black text-[var(--color-on-surface-variant)] uppercase tracking-widest ml-1">Documentos de la Propiedad</h4>
-                <label className="bg-[#6B4FD8] text-white font-black px-6 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#5a42b9] transition-all cursor-pointer flex items-center gap-2 shadow-lg">
+                <label className="bg-[#6B4FD8] text-white font-black px-6 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#5a42b9] transition-all cursor-pointer flex items-center gap-2">
                   <FileUp size={14} /> Subir Documento
                   <input type="file" className="hidden" onChange={handleUploadDocument} accept=".pdf,.png,.jpg,.jpeg" />
                 </label>

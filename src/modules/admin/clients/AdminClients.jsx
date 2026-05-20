@@ -3,19 +3,19 @@ import { Search, Building2, Users, Plus, Box, Check, X, HeartPulse, Trash2, Save
 import { useAuth } from '../../../context/AuthContext';
 import { calculateHealthScore } from '../../../hooks/useAdminAnalytics';
 import LoadingScreen from '../../../components/LoadingScreen';
+import { MODULE_IDS, MODULE_NAMES } from '../../moduleNames';
 
 const AVAILABLE_MODULES = [
-  { id: 'crm', name: 'CRM y Ventas' },
-  { id: 'inventory', name: 'Inventario' },
-  { id: 'warehouse', name: 'Bodega' },
-  { id: 'sales', name: 'Ventas y Facturación' },
-  { id: 'finance', name: 'Contabilidad' },
-  { id: 'calendar', name: 'Agenda y Citas' },
-  { id: 'projects', name: 'Gestión de Proyectos' },
-  { id: 'purchases', name: 'Compras y Proveedores' },
-  { id: 'realestate', name: 'Inmobiliaria / Terrenos' },
-  { id: 'payroll', name: 'Nóminas y RRHH' },
-  { id: 'health', name: 'Salud / Clínicas' }
+  { id: MODULE_IDS.CRM, name: MODULE_NAMES[MODULE_IDS.CRM] },
+  { id: MODULE_IDS.INVENTORY, name: MODULE_NAMES[MODULE_IDS.INVENTORY] },
+  { id: MODULE_IDS.SALES, name: MODULE_NAMES[MODULE_IDS.SALES] },
+  { id: MODULE_IDS.FINANCE, name: MODULE_NAMES[MODULE_IDS.FINANCE] },
+  { id: MODULE_IDS.CALENDAR, name: MODULE_NAMES[MODULE_IDS.CALENDAR] },
+  { id: MODULE_IDS.PROJECTS, name: MODULE_NAMES[MODULE_IDS.PROJECTS] },
+  { id: MODULE_IDS.PURCHASES, name: MODULE_NAMES[MODULE_IDS.PURCHASES] },
+  { id: MODULE_IDS.REALESTATE, name: MODULE_NAMES[MODULE_IDS.REALESTATE] },
+  { id: MODULE_IDS.PAYROLL, name: MODULE_NAMES[MODULE_IDS.PAYROLL] },
+  { id: MODULE_IDS.HEALTH, name: MODULE_NAMES[MODULE_IDS.HEALTH] }
 ];
 
 export default function AdminClients() {
@@ -306,7 +306,7 @@ export default function AdminClients() {
               <div className="flex flex-wrap gap-2">
                 {(org.subscription?.activeModules || []).map(m => (
                   <span key={m} className="px-2 py-1 bg-[var(--color-surface-container)] border border-white/10 text-[var(--color-on-surface)] text-[10px] font-bold rounded-lg uppercase tracking-tight">
-                    {m}
+                    {MODULE_NAMES[m] || m}
                   </span>
                 ))}
                 {(!org.subscription?.activeModules || org.subscription.activeModules.length === 0) && (

@@ -21,7 +21,7 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-lg relative animate-in zoom-in duration-300">
+      <div className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
         
         <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)] rounded-t-3xl">
            <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
@@ -68,7 +68,7 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
               return (
                 <div 
                   key={appt.id} 
-                  className="group relative overflow-hidden bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-2xl flex justify-between items-center gap-4 transition-all duration-300 hover:bg-[var(--color-surface-container-high)] hover:shadow-lg hover:-translate-y-0.5"
+                  className="group relative overflow-hidden bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-2xl flex justify-between items-center gap-4 transition-all duration-300 hover:bg-[var(--color-surface-container-high)] hover:-translate-y-0.5"
                 >
                   {/* Background Glow */}
                   <div 

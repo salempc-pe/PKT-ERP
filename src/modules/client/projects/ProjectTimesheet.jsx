@@ -45,7 +45,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-[var(--color-surface-container)] p-6 rounded-3xl border border-[var(--color-outline-variant)] shadow-lg flex flex-col justify-between">
+        <div className="bg-[var(--color-surface-container)] p-6 rounded-3xl border border-[var(--color-outline-variant)] flex flex-col justify-between">
             <div className="flex justify-between items-start">
                 <div className="p-3 bg-blue-500/10 rounded-2xl">
                     <Timer size={24} className="text-blue-400" />
@@ -58,7 +58,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
             </div>
         </div>
 
-        <div className="md:col-span-3 bg-[var(--color-surface-container)] p-6 rounded-3xl border border-[var(--color-outline-variant)] shadow-lg flex items-center justify-between">
+        <div className="md:col-span-3 bg-[var(--color-surface-container)] p-6 rounded-3xl border border-[var(--color-outline-variant)] flex items-center justify-between">
             <div className="space-y-1">
                 <h3 className="text-lg font-black text-[var(--color-on-surface)] leading-tight uppercase tracking-tight">Registro de Actividad</h3>
                 <p className="text-xs text-[var(--color-on-surface-variant)] font-medium">Control detallado de horas hombre por tarea.</p>
@@ -143,7 +143,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
                         <button 
                             type="button" 
                             onClick={handleSubmit}
-                            className="flex-1 bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black py-3 rounded-xl text-[10px] uppercase shadow-lg shadow-[#6B4FD8]/20 hover:shadow-[#6B4FD8]/40 transition-all hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+                            className="flex-1 bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black py-3 rounded-xl text-[10px] uppercase transition-all hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
                         >
                             <span className="relative z-10">Confirmar</span>
                         </button>
@@ -153,7 +153,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
         )}
 
         <div className={showForm ? 'lg:col-span-2' : 'lg:col-span-3'}>
-            <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden shadow-xl">
+            <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -236,7 +236,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
             >
                 <div className="p-8 border-b border-white/10 flex items-center justify-between bg-gradient-to-br from-blue-600/20 to-purple-600/20">
                     <div className="flex items-center gap-4">
-                        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white">
                             <Clock size={28} />
                         </div>
                         <div>
@@ -305,7 +305,7 @@ export default function ProjectTimesheet({ tasks, timesheets, addEntry, deleteEn
 
                     <button 
                         onClick={() => setViewingEntry(null)}
-                        className="w-full py-5 rounded-3xl bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black text-xs uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                        className="w-full py-5 rounded-3xl bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                     >
                         ENTENDIDO
                     </button>

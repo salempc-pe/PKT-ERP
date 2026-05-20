@@ -132,7 +132,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">
       {/* Barra de Acciones */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--color-surface-container)] p-4 rounded-3xl border border-[var(--color-outline-variant)] shadow-lg">
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--color-surface-container)] p-4 rounded-3xl border border-[var(--color-outline-variant)]">
         <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-64 group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] group-focus-within:text-[#6B4FD8] transition-colors" size={16} />
@@ -152,7 +152,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
 
         <button 
             onClick={() => setShowUploadModal(true)}
-            className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-black px-8 py-3 rounded-2xl flex items-center justify-center gap-2 hover:shadow-xl transition-all"
+            className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-black px-8 py-3 rounded-2xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
         >
             <Plus size={20} /> Subir Documento
         </button>
@@ -162,7 +162,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {filteredDocs.map(doc => (
-                <div key={doc.id} className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl p-5 hover:border-[#6B4FD8]/50 transition-all group relative shadow-sm">
+                <div key={doc.id} className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl p-5 hover:border-[#6B4FD8]/50 transition-all group relative">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-[var(--color-surface-variant)] rounded-2xl">
                             {getFileIcon(doc.type)}
@@ -184,7 +184,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
             ))}
         </div>
       ) : (
-        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden shadow-lg">
+        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-3xl overflow-hidden">
             <table className="w-full text-left">
                 <thead className="bg-[var(--color-surface-variant)]/50 border-b border-[var(--color-outline-variant)]">
                     <tr>
@@ -236,7 +236,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
             <form onSubmit={handleUpload} className="bg-[var(--color-surface-container)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-[2rem] shadow-2xl relative animate-in zoom-in duration-300 overflow-hidden">
                 <div className="px-8 py-6 bg-gradient-to-r from-[#6B4FD8]/10 to-transparent border-b border-[var(--color-outline-variant)] flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#6B4FD8] text-white rounded-xl shadow-lg shadow-[#6B4FD8]/30">
+                        <div className="p-2 bg-[#6B4FD8] text-white rounded-xl">
                             <Plus size={20} />
                         </div>
                         <h4 className="font-black text-[var(--color-on-surface)] uppercase tracking-widest text-sm">Añadir Documento</h4>
@@ -262,7 +262,7 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
                                 placeholder="Pega un enlace aquí..." 
                             />
                             <div className="w-px h-8 bg-[var(--color-outline-variant)] hidden sm:block"></div>
-                            <label className="cursor-pointer bg-[#6B4FD8] hover:bg-[#5a42b8] text-white px-4 py-2.5 rounded-xl shadow-md shadow-[#6B4FD8]/20 transition-all flex items-center justify-center gap-2 group/file font-bold text-xs uppercase tracking-wider whitespace-nowrap">
+                            <label className="cursor-pointer bg-[#6B4FD8] hover:bg-[#5a42b8] text-white px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 group/file font-bold text-xs uppercase tracking-wider whitespace-nowrap">
                                 <Plus size={16} className="group-hover/file:scale-110 transition-transform" /> PC
                                 <input 
                                     type="file" 
@@ -283,15 +283,15 @@ export default function ProjectDocuments({ documents, addDoc, deleteDoc }) {
                         <label className="text-[10px] font-black text-[#6B4FD8] uppercase tracking-wider ml-1">Clasificación</label>
                         <div className="flex flex-wrap gap-2">
                             {['pdf', 'image', 'code', 'text', 'zip'].map(t => (
-                                <button key={t} type="button" onClick={() => setNewDoc({...newDoc, type: t})} className={`px-4 py-2.5 flex-1 min-w-[28%] rounded-xl text-[10px] font-bold border transition-all uppercase tracking-wider ${newDoc.type === t ? 'bg-[#6B4FD8] text-white border-[#6B4FD8] shadow-md shadow-[#6B4FD8]/30 scale-[1.02]' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] border-transparent hover:border-[#6B4FD8]/50'}`}>
+                                <button key={t} type="button" onClick={() => setNewDoc({...newDoc, type: t})} className={`px-4 py-2.5 flex-1 min-w-[28%] rounded-xl text-[10px] font-bold border transition-all uppercase tracking-wider ${newDoc.type === t ? 'bg-[#6B4FD8] text-white border-[#6B4FD8] scale-[1.02]' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] border-transparent hover:border-[#6B4FD8]/50'}`}>
                                     {t}
                                 </button>
                             ))}
                         </div>
                     </div>
                 </div>
-                <div className="p-6 bg-[var(--color-surface-variant)] border-t border-[var(--color-outline-variant)]">
-                    <button type="submit" className="w-full bg-[#6B4FD8] hover:bg-[#5a42b8] text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-[#6B4FD8]/25 transition-all transform hover:-translate-y-1">
+                <div className="p-6 bg-[var(--color-surface-variant)] border-t border-[var(--color-outline-variant)]/30">
+                    <button type="submit" className="w-full bg-[#6B4FD8] text-[#002150] font-black py-4 rounded-2xl text-sm transition-all hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] flex items-center justify-center gap-2">
                         Confirmar y Guardar
                     </button>
                 </div>

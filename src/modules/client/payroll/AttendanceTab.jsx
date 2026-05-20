@@ -76,7 +76,7 @@ export default function AttendanceTab({ orgId }) {
             <div key={emp.id} className="bg-[var(--color-surface-container)] p-4 rounded-2xl border border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/30 transition-all group">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6B4FD8] to-[#2E8B57] flex items-center justify-center text-white font-black text-xs shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6B4FD8] to-[#2E8B57] flex items-center justify-center text-white font-black text-xs">
                     {emp.firstName?.[0]}{emp.lastName?.[0]}
                   </div>
                   <div>

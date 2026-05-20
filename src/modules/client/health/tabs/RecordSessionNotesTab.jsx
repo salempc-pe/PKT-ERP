@@ -73,7 +73,7 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
             {pendingCitas.length > 0 && (
                <button 
                  onClick={() => setIsAdding(true)}
-                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-4 py-2 rounded-xl flex items-center gap-1.5 hover:shadow-lg transition-all active:scale-95"
+                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all active:scale-95"
                >
                   <Plus size={16}/> Nueva Nota
                </button>
@@ -83,7 +83,7 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
 
       {/* Form Editor (either creating or editing) */}
       {(isAdding || editingId) && (
-         <form onSubmit={handleSave} className="bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/30 rounded-2xl p-5 shadow-xl ring-1 ring-[#6B4FD8]/20 space-y-4">
+         <form onSubmit={handleSave} className="bg-[var(--color-surface-container-low)] border border-[#6B4FD8]/30 rounded-2xl p-5 space-y-4">
             <div className="flex justify-between items-center">
                <h4 className="text-xs font-black uppercase text-[var(--color-on-surface)] flex items-center gap-2">
                   {editingId ? 'Editando Nota (Bloqueo en < 24h)' : 'Registrar Evolución de Sesión'}
@@ -135,7 +135,7 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
                <button 
                  type="submit"
                  disabled={isSaving || (!editingId && !form.cita_id)}
-                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2 rounded-xl flex items-center gap-2 hover:shadow-md disabled:opacity-50 transition-all"
+                 className="bg-[#6B4FD8] text-[#002150] text-xs font-black uppercase px-5 py-2 rounded-xl flex items-center gap-2 disabled:opacity-50 transition-all"
                >
                   {isSaving ? <Loader2 size={14} className="animate-spin"/> : <><Save size={14}/> Guardar Nota</>}
                </button>
@@ -161,7 +161,7 @@ export default function RecordSessionNotesTab({ clientId, orgId }) {
             return (
                <div key={note.id} className="relative pl-14">
                   {/* Timeline Dot */}
-                  <div className="absolute left-4 top-2 w-4 h-4 rounded-full bg-[var(--color-surface-container)] border-2 border-[#6B4FD8] flex items-center justify-center shadow-sm z-10">
+                  <div className="absolute left-4 top-2 w-4 h-4 rounded-full bg-[var(--color-surface-container)] border-2 border-[#6B4FD8] flex items-center justify-center z-10">
                      <div className="w-1.5 h-1.5 rounded-full bg-[#6B4FD8]"></div>
                   </div>
 

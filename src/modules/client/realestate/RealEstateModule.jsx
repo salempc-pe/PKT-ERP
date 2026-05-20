@@ -15,7 +15,8 @@ import {
   ChevronLeft,
   ArrowRight,
   Maximize2,
-  Download
+  Download,
+  ChevronDown
 } from 'lucide-react';
 import { useRealEstate } from './useRealEstate';
 import { useInvestors } from './useInvestors';
@@ -175,36 +176,54 @@ export default function RealEstateModule() {
     <div className="animate-in fade-in duration-500 space-y-6 pb-10">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl w-fit border border-[var(--color-outline-variant)] shadow-inner">
+        {/* Desktop Tabs */}
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
           <button 
             onClick={() => setActiveTab('database')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'database' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'database' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <List size={16} /> Base
+            <List size={14} /> Base
           </button>
           <button 
             onClick={() => setActiveTab('pipeline')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'pipeline' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <Kanban size={16} /> Pipeline
+            <Kanban size={14} /> Pipeline
           </button>
           <button 
             onClick={() => setActiveTab('map')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'map' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'map' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <MapPin size={16} /> Mapa
+            <MapPin size={14} /> Mapa
           </button>
           <button 
             onClick={() => setActiveTab('buyers')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'buyers' ? 'bg-[#6B4FD8] text-[#002150] shadow-lg' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'buyers' ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
           >
-            <Users size={16} /> Compradores
+            <Users size={14} /> Compradores
           </button>
+        </div>
+
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden relative w-full">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+          >
+            <option value="database">Base de Terrenos</option>
+            <option value="pipeline">Pipeline</option>
+            <option value="map">Mapa</option>
+            <option value="buyers">Compradores</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+            <ChevronDown size={18} />
+          </div>
         </div>
 
         <button 
           onClick={() => { setEditingTerrain(null); setShowModal(true); }}
-          className="bg-[#6B4FD8] text-[#002150] font-black px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all hover:scale-105 active:scale-95"
+          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
         >
           <Plus size={18} /> Agregar Propiedad
         </button>
@@ -212,23 +231,23 @@ export default function RealEstateModule() {
 
       {/* Filters (Only for Database view) */}
       {activeTab === 'database' && (
-        <div className="flex flex-wrap items-center gap-4 bg-[var(--color-surface-variant)]/40 p-4 rounded-2xl border border-[var(--color-outline-variant)]">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
             <input 
               type="text" 
               placeholder="Buscar por dirección o ciudad..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-10 pr-4 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-sm"
+              className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-xs"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter size={16} className="text-[var(--color-on-surface-variant)]" />
+            <Filter size={14} className="text-[var(--color-on-surface-variant)]" />
             <select 
               value={filterCity}
               onChange={(e) => setFilterCity(e.target.value)}
-              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] text-sm font-bold"
+              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-3 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] text-xs font-bold"
             >
               <option value="">Todas las ciudades</option>
               {uniqueCities.map(city => (
@@ -239,10 +258,10 @@ export default function RealEstateModule() {
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 bg-[#6B4FD8]/10 text-[#6B4FD8] border border-[#6B4FD8]/20 hover:bg-[#6B4FD8] hover:text-[#002150] px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-all active:scale-95 ml-auto"
+            className="flex items-center gap-2 bg-[#6B4FD8]/10 text-[#6B4FD8] border border-[#6B4FD8]/20 hover:bg-[#6B4FD8] hover:text-[#002150] px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ml-auto"
             title="Exportar base de terrenos filtrada"
           >
-            <Download size={16} /> Exportar CSV
+            <Download size={14} /> Exportar CSV
           </button>
         </div>
       )}
@@ -253,17 +272,17 @@ export default function RealEstateModule() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                  <th className="px-6 py-5">Propiedad / Ubicación</th>
-                  <th className="px-6 py-5">Propietario</th>
-                  <th className="px-6 py-5">Corredores</th>
-                  <th className="px-6 py-5">Área / Precio</th>
-                  <th className="px-6 py-5 text-right">Acciones</th>
+                  <th className="px-4 py-2.5">Propiedad / Ubicación</th>
+                  <th className="px-4 py-2.5">Propietario</th>
+                  <th className="px-4 py-2.5">Corredores</th>
+                  <th className="px-4 py-2.5">Área / Precio</th>
+                  <th className="px-4 py-2.5 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#40485d]/10 text-sm">
                 {filteredTerrains.length > 0 ? filteredTerrains.map((t) => (
                   <tr key={t.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer" onClick={() => setSelectedTerrainForDetails(t)}>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)]">
                           <Building2 size={18} />
@@ -276,7 +295,7 @@ export default function RealEstateModule() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-[var(--color-primary-container)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary)]">
                           {contacts.find(c => c.id === t.ownerId)?.name.charAt(0) || <User size={12} />}
@@ -286,7 +305,7 @@ export default function RealEstateModule() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex flex-wrap gap-1 max-w-[150px]">
                         {t.brokers && t.brokers.length > 0 ? t.brokers.map((b, i) => (
                           <span key={i} className="text-[9px] bg-[#6B4FD8]/10 text-[#6B4FD8] px-2 py-0.5 rounded-full font-black border border-[#6B4FD8]/10">
@@ -297,7 +316,7 @@ export default function RealEstateModule() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2">
                       <div className="flex flex-col">
                         <p className="text-[var(--color-on-surface)] font-bold text-xs">{t.area.toLocaleString()} m²</p>
                         <p className="text-[10px] text-[var(--color-primary)] font-black">
@@ -306,7 +325,7 @@ export default function RealEstateModule() {
                         </p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-2 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleOpenEdit(t); }}
@@ -350,7 +369,7 @@ export default function RealEstateModule() {
                 {pipelineInstances.filter(p => p.status === stage.id).map(instance => (
                   <div 
                     key={`${instance.terrainId}-${instance.id}`} 
-                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all group relative overflow-hidden"
+                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl hover:border-[#6B4FD8]/50 transition-all group relative overflow-hidden"
                   >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     

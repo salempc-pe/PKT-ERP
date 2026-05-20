@@ -92,7 +92,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
 
   return (
     <div className="space-y-6">
-      <div className="bg-[var(--color-surface-container-low)]/50 p-3 rounded-2xl border border-[var(--color-outline-variant)] flex flex-wrap items-center gap-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-3 mb-4">
         {/* Búsqueda Compacta */}
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
@@ -101,12 +101,12 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
             placeholder="Buscar comprador..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-[#6B4FD8] transition-all"
+            className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-[#6B4FD8] transition-all"
           />
         </div>
 
         {/* Filtros de Rango Integrados */}
-        <div className="flex items-center gap-4 border-l border-[var(--color-outline-variant)] pl-4">
+        <div className="flex items-center gap-3 border-l border-[var(--color-outline-variant)] pl-3">
           <div className="flex items-center gap-2">
             <span className="text-[9px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-60">Inversión {'>'}</span>
             <input 
@@ -114,7 +114,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               value={filterMinInv || ''}
               onChange={(e) => setFilterMinInv(Number(e.target.value))}
               placeholder="0"
-              className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1.5 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
+              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               value={filterMinArea || ''}
               onChange={(e) => setFilterMinArea(Number(e.target.value))}
               placeholder="0"
-              className="bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1.5 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
+              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg px-2 py-1 text-[10px] font-black outline-none focus:border-[#6B4FD8] w-20 text-center"
             />
           </div>
           {(filterMinInv > 0 || filterMinArea > 0) && (
@@ -139,10 +139,10 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
         </div>
 
         {/* Botón de Acción */}
-        <div className="border-l border-[var(--color-outline-variant)] pl-4">
+        <div className="border-l border-[var(--color-outline-variant)] pl-3">
           <button 
             onClick={() => { resetForm(); setShowForm(true); }}
-            className="bg-[#6B4FD8] text-white font-black px-5 py-2 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
+            className="bg-[#6B4FD8] text-[#002150] font-black px-4 py-2 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-[10px] uppercase tracking-widest"
           >
             <Plus size={14} /> Nuevo Comprador
           </button>
@@ -271,7 +271,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               </button>
               <button 
                 type="submit"
-                className="flex-[2] bg-[#6B4FD8] text-white font-black py-2.5 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#5a42b9] transition-all"
+                className="flex-[2] bg-[#6B4FD8] text-[#002150] font-black py-2.5 rounded-xl text-[10px] uppercase tracking-widest hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] transition-all"
               >
                 {editingId ? 'Actualizar' : 'Guardar'}
               </button>
@@ -294,7 +294,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
             </p>
           </div>
         ) : filtered.length > 0 ? filtered.map(investor => (
-          <div key={investor.id} className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-[2rem] p-6 hover:border-[#6B4FD8]/40 transition-all group relative overflow-hidden shadow-sm">
+          <div key={investor.id} className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-[2rem] p-6 hover:border-[#6B4FD8]/40 transition-all group relative overflow-hidden">
             <div className={`absolute top-0 left-0 w-full h-1.5 ${investor.type === 'constructora' ? 'bg-[#6B4FD8]' : 'bg-[#2E8B57]'}`}></div>
             
             <div className="flex justify-between items-start mb-4">

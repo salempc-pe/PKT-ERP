@@ -122,7 +122,7 @@ export default function HealthAgenda() {
 
           <button 
             onClick={() => { setSelectedDay(new Date()); setIsModalOpen(true); }}
-            className="flex-1 md:flex-none bg-[#6B4FD8] text-[#002150] font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95"
+            className="flex-1 md:flex-none bg-[#6B4FD8] text-[#002150] font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all active:scale-95"
           >
             <Plus size={18} /> Agendar
           </button>
@@ -131,7 +131,7 @@ export default function HealthAgenda() {
 
       {/* Calendar Grid Body */}
       {viewType === 'month' ? (
-        <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl overflow-hidden">
           {/* Day Header Labels */}
           <div className="grid grid-cols-7 border-b border-[var(--color-outline-variant)]">
             {dayNames.map(day => (

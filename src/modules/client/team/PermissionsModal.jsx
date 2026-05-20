@@ -67,7 +67,7 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
         {/* Header */}
         <div className="p-5 border-b border-[var(--color-outline-variant)] bg-[var(--color-surface-container-high)] flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#6B4FD8] rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+            <div className="w-10 h-10 bg-[#6B4FD8] rounded-xl flex items-center justify-center text-white">
               <Shield size={20} />
             </div>
             <div>
@@ -112,7 +112,7 @@ export default function PermissionsModal({ isOpen, onClose, targetUser, activeMo
                             onClick={() => togglePermission(module.key, action.key)}
                             className={`w-6 h-6 mx-auto rounded-md border flex items-center justify-center transition-all ${
                               isActive 
-                                ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white shadow-sm' 
+                                ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white' 
                                 : 'bg-white border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50 text-transparent'
                             }`}
                           >

@@ -19,4 +19,4 @@ Cada vez que se construya un nuevo módulo, SIEMPRE se debe cumplir con lo sigui
 1. **Registro Super Admin**: Añadir la clave del módulo a `AVAILABLE_MODULES` en `AdminClients.jsx` para que pueda activarse/desactivarse por empresa.
 2. **Registro de Permisos**: Añadir a `MODULES_CONFIG` en `PermissionsModal.jsx` para delegación interna.
 3. **Dashboard Widget**: Crear un archivo `{Modulo}DashboardCard.jsx` usando el componente `<DashboardCard />` con métricas vivas, e importarlo en `ClientDashboard.jsx` y `DashboardSettingsModal.jsx`.
-4. **Consistencia Estética**: Usar el sistema de pestañas (tabs) estandarizado con variables de color del tema (`var(--color-*)`) y animaciones de entrada coherentes (`animate-in fade-in`).
+4. **Consistencia Estética**: Todo módulo DEBE seguir los estándares definidos en `.agents/rules/design-standards.md`. Esto incluye: pestañas, botones, pastillas KPI, tablas, badges, Kanban, modales, formularios, animaciones y paleta de colores.

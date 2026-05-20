@@ -2,59 +2,60 @@ import React, { useState } from 'react';
 import { Users, Box, Calculator, FileText, Calendar, Briefcase, Plus, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import CheckoutModal from './CheckoutModal';
+import { MODULE_IDS, MODULE_NAMES } from '../../moduleNames';
 
 const MODULES_CONFIG = [
   {
-    id: 'crm',
-    name: 'CRM y Ventas',
+    id: MODULE_IDS.CRM,
+    name: MODULE_NAMES[MODULE_IDS.CRM],
     description: 'Gestión de contactos, pipeline de ventas e historial de clientes.',
     price: '$29',
     icon: <Users size={24} />,
     color: 'var(--color-primary)'
   },
   {
-    id: 'inventory',
-    name: 'Inventario',
+    id: MODULE_IDS.INVENTORY,
+    name: MODULE_NAMES[MODULE_IDS.INVENTORY],
     description: 'Control de stock en tiempo real, alertas de reabastecimiento y categorías.',
     price: '$19',
     icon: <Box size={24} />,
     color: 'var(--color-tertiary)'
   },
   {
-    id: 'sales',
-    name: 'Ventas y Facturación',
+    id: MODULE_IDS.SALES,
+    name: MODULE_NAMES[MODULE_IDS.SALES],
     description: 'Emisión de facturas, cotizaciones y seguimiento de cobros.',
     price: '$39',
     icon: <FileText size={24} />,
     color: 'var(--color-primary)'
   },
   {
-    id: 'finance',
-    name: 'Contabilidad',
+    id: MODULE_IDS.FINANCE,
+    name: MODULE_NAMES[MODULE_IDS.FINANCE],
     description: 'Registro de ingresos/gastos, reportes financieros y flujo de caja.',
     price: '$25',
     icon: <Calculator size={24} />,
     color: 'var(--color-tertiary)'
   },
   {
-    id: 'calendar',
-    name: 'Agenda y Citas',
+    id: MODULE_IDS.CALENDAR,
+    name: MODULE_NAMES[MODULE_IDS.CALENDAR],
     description: 'Sistema de calendario para reservas y recordatorios automatizados.',
     price: '$15',
     icon: <Calendar size={24} />,
     color: 'var(--color-primary)'
   },
   {
-    id: 'projects',
-    name: 'Gestión de Proyectos',
+    id: MODULE_IDS.PROJECTS,
+    name: MODULE_NAMES[MODULE_IDS.PROJECTS],
     description: 'Tableros Kanban y seguimiento de tareas para equipos.',
     price: '$35',
     icon: <Briefcase size={24} />,
     color: 'var(--color-tertiary)'
   },
   {
-    id: 'health',
-    name: 'Salud / Clínicas',
+    id: MODULE_IDS.HEALTH,
+    name: MODULE_NAMES[MODULE_IDS.HEALTH],
     description: 'Expedientes clínicos, notas de evolución y control de pacientes.',
     price: '$45',
     icon: <Plus size={24} />,
@@ -68,18 +69,6 @@ export default function MarketplaceModule() {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header Section */}
-      <div className="relative overflow-hidden rounded-[2.5rem] p-12 text-white lg:hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-800 z-0"></div>
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-10"></div>
-
-        <div className="relative z-20 max-w-2xl">
-          <h1 className="text-5xl font-black tracking-tighter mb-4">Planes y Membresías</h1>
-          <p className="text-lg opacity-80 font-medium leading-relaxed">
-            Escala tu negocio con el plan que mejor se adapte a tus necesidades. Gestiona tus módulos y límites de forma centralizada.
-          </p>
-        </div>
-      </div>
 
       {/* Grid of Plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -96,7 +85,7 @@ export default function MarketplaceModule() {
                 }`}
             >
               {isCurrent && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-[#6B4FD8] text-white text-[10px] font-black uppercase tracking-widest">
                   Tu Plan Actual
                 </div>
               )}
@@ -116,10 +105,10 @@ export default function MarketplaceModule() {
               <div className="space-y-4 mb-10 flex-1">
                 <p className="text-[10px] font-bold text-[var(--color-on-surface-variant)] uppercase tracking-widest border-b border-[var(--color-outline-variant)] pb-2">Incluye:</p>
                 <div className="space-y-3">
-                  {plan.modules.map(modId => (
+                   {plan.modules.map(modId => (
                     <div key={modId} className="flex items-center gap-2 text-sm text-[var(--color-on-surface)]">
                       <CheckCircle2 size={16} className="text-[#4ADE80]" />
-                      <span className="capitalize">{modId} Full Access</span>
+                      <span>{MODULE_NAMES[modId] || modId} (Acceso Completo)</span>
                     </div>
                   ))}
                   <div className="flex items-center gap-2 text-sm text-[var(--color-primary)] font-bold">
@@ -134,8 +123,8 @@ export default function MarketplaceModule() {
                 className={`w-full py-4 rounded-2xl font-black text-xs transition-all ${isCurrent
                     ? 'bg-transparent border border-[#6B4FD8] text-[var(--color-primary)] cursor-default'
                     : isEnterprise
-                      ? 'bg-[#2E8B57] text-white hover:shadow-lg'
-                      : 'bg-[#6B4FD8] text-white hover:shadow-lg active:scale-95'
+                      ? 'bg-[#2E8B57] text-white hover:shadow-[0_0_15px_rgba(46,139,87,0.4)]'
+                      : 'bg-[#6B4FD8] text-[#002150] hover:shadow-[0_0_15px_rgba(133,173,255,0.4)] active:scale-95'
                   }`}
               >
                 {isCurrent ? 'Plan Activo' : isEnterprise ? 'Contactar' : 'Mejorar Plan'}
@@ -146,7 +135,7 @@ export default function MarketplaceModule() {
       </div>
 
       {/* Footer Info */}
-      <div className="p-8 rounded-[2rem] bg-[var(--color-surface-container)] flex items-center justify-between gap-6 border border-[var(--color-outline-variant)] shadow-xl shadow-black/5">
+      <div className="p-8 rounded-[2rem] bg-[var(--color-surface-container)] flex items-center justify-between gap-6 border border-[var(--color-outline-variant)]">
         <div className="flex gap-4 items-center">
           <div className="w-12 h-12 rounded-full bg-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)] shrink-0">
             <Plus size={24} />

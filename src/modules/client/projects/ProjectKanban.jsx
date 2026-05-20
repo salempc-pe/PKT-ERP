@@ -128,14 +128,14 @@ export default function ProjectKanban({
   return (
     <div className="space-y-6 h-full animate-in fade-in duration-500">
       {/* Header Unificada */}
-      <div className="flex flex-col gap-6 bg-[var(--color-surface-container-low)]/50 p-6 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm">
+      <div className="flex flex-col gap-6 bg-[var(--color-surface-container-low)]/50 p-6 rounded-2xl border border-[var(--color-outline-variant)]">
         <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
             <button 
                 onClick={onBack}
-                className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] flex items-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all bg-[var(--color-surface-container)] px-4 py-2.5 rounded-xl border border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50"
+                className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] flex items-center gap-2 font-black uppercase text-[9px] tracking-widest transition-all bg-[var(--color-surface-container)] px-3 py-2 rounded-lg border border-[var(--color-outline-variant)] hover:border-[#6B4FD8]/50"
             >
-                <ChevronLeft size={16} /> Volver
+                <ChevronLeft size={14} /> Volver
             </button>
             
             <div className="flex flex-col">
@@ -150,9 +150,9 @@ export default function ProjectKanban({
 
             <button 
             onClick={handleOpenNewTask}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
             >
-            <Plus size={20} /> Nueva Tarea
+            <Plus size={16} /> Nueva Tarea
             </button>
         </div>
 
@@ -162,9 +162,9 @@ export default function ProjectKanban({
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === tab.id ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === tab.id ? 'bg-[#6B4FD8] text-[#002150]' : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'}`}
                 >
-                    <tab.icon size={16} />
+                    <tab.icon size={14} />
                     {tab.label}
                 </button>
             ))}
@@ -191,7 +191,7 @@ export default function ProjectKanban({
                             {tasks.filter(t => t.status === col.id).map(task => (
                                 <div 
                                     key={task.id} 
-                                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl shadow-sm hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
+                                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl hover:border-[#6B4FD8]/50 transition-all cursor-pointer group relative overflow-hidden"
                                 >
                                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${col.color}`}></div>
                                     
@@ -208,7 +208,7 @@ export default function ProjectKanban({
                                                     e.stopPropagation();
                                                     handleOpenEditTask(task);
                                                 }}
-                                                className="w-7 h-7 flex items-center justify-center bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-lg transition-all border border-[#6B4FD8]/20 shadow-sm hover:scale-110 active:scale-95"
+                                                className="w-7 h-7 flex items-center justify-center bg-[#6B4FD8]/10 text-[var(--color-primary)] hover:bg-[#6B4FD8] hover:text-white rounded-lg transition-all border border-[#6B4FD8]/20 hover:scale-110 active:scale-95"
                                                 title="Editar"
                                             >
                                                 <Edit3 size={12}/>
@@ -218,7 +218,7 @@ export default function ProjectKanban({
                                                     e.stopPropagation();
                                                     handleDeleteTask(task.id);
                                                 }}
-                                                className="w-7 h-7 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all border border-red-500/20 shadow-sm hover:scale-110 active:scale-95"
+                                                className="w-7 h-7 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all border border-red-500/20 hover:scale-110 active:scale-95"
                                                 title="Eliminar"
                                             >
                                                 <Trash2 size={12}/>
@@ -234,7 +234,7 @@ export default function ProjectKanban({
                                             {col.prev && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); updateTaskStatus(task.id, col.prev); }} 
-                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-amber-400 hover:bg-amber-400/10 transition-all shadow-sm hover:scale-110 active:scale-95"
+                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-amber-400 hover:bg-amber-400/10 transition-all hover:scale-110 active:scale-95"
                                                 >
                                                     <ArrowLeft size={12}/>
                                                 </button>
@@ -242,7 +242,7 @@ export default function ProjectKanban({
                                             {col.next && (
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); updateTaskStatus(task.id, col.next); }} 
-                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-green-400 hover:bg-green-400/10 transition-all shadow-sm hover:scale-110 active:scale-95"
+                                                    className="w-7 h-7 flex items-center justify-center bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg text-green-400 hover:bg-green-400/10 transition-all hover:scale-110 active:scale-95"
                                                 >
                                                     <ArrowRight size={12}/>
                                                 </button>
@@ -325,7 +325,7 @@ export default function ProjectKanban({
                     <button 
                         type="button" 
                         onClick={handleSaveTask}
-                        className="flex-1 bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black py-3 rounded-xl text-sm shadow-lg shadow-[#6B4FD8]/20 hover:shadow-[#6B4FD8]/50 transition-all hover:-translate-y-0.5"
+                        className="flex-1 bg-gradient-to-r from-[#6B4FD8] to-[#4F37A8] text-white font-black py-3 rounded-xl text-sm transition-all hover:-translate-y-0.5"
                     >
                         {editingTask ? 'Actualizar Tarea' : 'Crear Tarea'}
                     </button>

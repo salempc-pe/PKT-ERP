@@ -70,7 +70,7 @@ export default function HealthDashboard() {
       
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl p-6 flex items-center gap-4 shadow-sm relative overflow-hidden group">
+        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl p-6 flex items-center gap-4 relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-[#6B4FD8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="w-12 h-12 rounded-xl bg-[#6B4FD8]/10 flex items-center justify-center text-[#6B4FD8] shrink-0">
             <CalendarIcon size={24} />
@@ -81,7 +81,7 @@ export default function HealthDashboard() {
           </div>
         </div>
 
-        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl p-6 flex items-center gap-4 shadow-sm relative overflow-hidden group">
+        <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-2xl p-6 flex items-center gap-4 relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 shrink-0">
             <Users size={24} />
@@ -92,11 +92,11 @@ export default function HealthDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#6B4FD8] text-[#002150] rounded-2xl p-6 shadow-lg relative overflow-hidden flex items-center justify-between">
+        <div className="bg-[#6B4FD8] text-[#002150] rounded-2xl p-6 relative overflow-hidden flex items-center justify-between">
           <div className="relative z-10">
             <p className="text-[10px] font-black uppercase tracking-wider text-[#002150]/60 mb-1">Acceso Rápido</p>
             <h3 className="text-lg font-black mb-3 leading-tight">Gestionar Agenda</h3>
-            <Link to="/client/salud/agenda" className="inline-flex items-center gap-2 bg-white/90 text-[#6B4FD8] px-4 py-2 rounded-lg font-bold text-xs hover:bg-white transition-all shadow-md hover:-translate-y-0.5 active:translate-y-0">
+            <Link to="/client/salud/agenda" className="inline-flex items-center gap-2 bg-white/90 text-[#6B4FD8] px-4 py-2 rounded-lg font-bold text-xs hover:bg-white transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] hover:-translate-y-0.5 active:translate-y-0">
               Abrir Calendario
             </Link>
           </div>

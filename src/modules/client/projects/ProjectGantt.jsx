@@ -79,7 +79,7 @@ export default function ProjectGantt({ tasks, onEditTask, onDeleteTask }) {
   };
 
   return (
-    <div className="bg-[var(--color-surface-container)] rounded-3xl border border-[var(--color-outline-variant)] overflow-hidden shadow-xl animate-in slide-in-from-bottom-4 duration-500">
+    <div className="bg-[var(--color-surface-container)] rounded-3xl border border-[var(--color-outline-variant)] overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
       {/* Header del Gantt */}
       <div className="p-4 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-variant)]/50">
         <div className="flex items-center gap-3">

@@ -19,10 +19,9 @@ import AdminRoute from './components/AdminRoute';
 import TeamModule from './modules/client/team/TeamModule';
 import PurchasesModule from './modules/client/purchases/PurchasesModule';
 import RealEstateModule from './modules/client/realestate/RealEstateModule';
-import WarehouseModule from './modules/client/warehouse/WarehouseModule';
 import PayrollModule from './modules/client/payroll/PayrollModule';
 import HealthModule from './modules/client/health/HealthModule';
-
+import { MODULE_IDS, MODULE_SLUGS } from './modules/moduleNames';
 
 import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
@@ -43,11 +42,11 @@ function App() {
     const handleContextMenu = (e) => {
       // Bloquear menú contextual nativo del navegador en todos lados EXCEPTO inputs/textareas
       const isInput = 
-        e.target.tagName === 'INPUT' || 
-        e.target.tagName === 'TEXTAREA' || 
-        e.target.isContentEditable ||
-        e.target.closest('[contenteditable="true"]');
-        
+         e.target.tagName === 'INPUT' || 
+         e.target.tagName === 'TEXTAREA' || 
+         e.target.isContentEditable ||
+         e.target.closest('[contenteditable="true"]');
+         
       if (!isInput) {
         e.preventDefault();
         return false;
@@ -79,36 +78,35 @@ function App() {
 
               
               {/* Protected Modules */}
-              <Route element={<ModuleRoute module="crm" />}>
-                <Route path="crm" element={<CRMModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.CRM} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.CRM]} element={<CRMModule />} />
               </Route>
-              <Route element={<ModuleRoute module="inventory" />}>
-                <Route path="inventory" element={<InventoryModule />} />
-                <Route path="warehouse" element={<WarehouseModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.INVENTORY} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.INVENTORY]} element={<InventoryModule />} />
               </Route>
-              <Route element={<ModuleRoute module="sales" />}>
-                <Route path="sales" element={<SalesModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.SALES} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.SALES]} element={<SalesModule />} />
               </Route>
-              <Route element={<ModuleRoute module="finance" />}>
-                <Route path="finance" element={<FinanceModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.FINANCE} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.FINANCE]} element={<FinanceModule />} />
               </Route>
-              <Route element={<ModuleRoute module="calendar" />}>
-                <Route path="calendar" element={<CalendarModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.CALENDAR} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.CALENDAR]} element={<CalendarModule />} />
               </Route>
-              <Route element={<ModuleRoute module="projects" />}>
-                <Route path="projects" element={<ProjectModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.PROJECTS} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.PROJECTS]} element={<ProjectModule />} />
               </Route>
-              <Route element={<ModuleRoute module="purchases" />}>
-                <Route path="purchases" element={<PurchasesModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.PURCHASES} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.PURCHASES]} element={<PurchasesModule />} />
               </Route>
-              <Route element={<ModuleRoute module="realestate" />}>
-                <Route path="realestate" element={<RealEstateModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.REALESTATE} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.REALESTATE]} element={<RealEstateModule />} />
               </Route>
-              <Route element={<ModuleRoute module="payroll" />}>
-                <Route path="payroll" element={<PayrollModule />} />
+              <Route element={<ModuleRoute module={MODULE_IDS.PAYROLL} />}>
+                <Route path={MODULE_SLUGS[MODULE_IDS.PAYROLL]} element={<PayrollModule />} />
               </Route>
 
-              <Route path="salud/*" element={<HealthModule />} />
+              <Route path={`${MODULE_SLUGS[MODULE_IDS.HEALTH]}/*`} element={<HealthModule />} />
               <Route path="settings" element={<SettingsModule />} />
               <Route element={<AdminRoute />}>
                 <Route path="team" element={<TeamModule />} />

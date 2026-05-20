@@ -2,6 +2,7 @@ import { Calculator } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useFinance } from './useFinance';
 import { useAuth } from '../../../context/AuthContext';
+import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function FinanceDashboardCard({ orgId }) {
   const { transactions, loading } = useFinance(orgId);
@@ -19,10 +20,10 @@ export default function FinanceDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title="Contabilidad"
+      title={MODULE_NAMES.finance}
       description="Flujo de caja y finanzas."
       icon={Calculator}
-      path="/client/finance"
+      path={`/client/${MODULE_SLUGS.finance}`}
       color="#6B4FD8"
       loading={loading}
       metrics={[

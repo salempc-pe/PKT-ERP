@@ -5,20 +5,7 @@ import { db } from '../../../services/firebase';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import { getAccessibleModules, getOrderedModules } from '../../modulesConfig';
-
-const MODULE_LABELS = {
-  crm: 'CRM y Clientes',
-  inventory: 'Inventario y Stock',
-  sales: 'Ventas y Facturación',
-  projects: 'Proyectos y Tareas',
-  calendar: 'Agenda y Calendario',
-  finance: 'Finanzas y Caja',
-  purchases: 'Compras y Gastos',
-  realestate: 'Bienes Raíces',
-  warehouse: 'Gestión de Almacenes',
-  payroll: 'Planilla y RRHH',
-  health: 'Salud / Clínicas'
-};
+import { MODULE_NAMES } from '../../moduleNames';
 
 export default function DashboardSettingsModal({ isOpen, onClose, user }) {
   const { isDark, toggleTheme } = useTheme();
@@ -382,7 +369,7 @@ export default function DashboardSettingsModal({ isOpen, onClose, user }) {
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm ${isVisible ? 'bg-[#6B4FD8] text-white' : 'bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)]'}`}>
                             {isVisible ? <Eye size={15} /> : <EyeOff size={15} />}
                           </div>
-                          <span className="text-[11px] font-bold uppercase tracking-wide">{MODULE_LABELS[modKey] || modKey}</span>
+                          <span className="text-[11px] font-bold uppercase tracking-wide">{MODULE_NAMES[modKey] || modKey}</span>
                         </div>
                         <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                           isVisible ? 'bg-[#6B4FD8] border-[#6B4FD8] text-white' : 'border-[var(--color-outline-variant)] group-hover:border-[var(--color-on-surface-variant)]'

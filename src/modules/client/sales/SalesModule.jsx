@@ -194,23 +194,23 @@ export default function SalesModule() {
         <div className="flex gap-3">
           <button 
             onClick={() => { setSelectedDocType('Boleta'); setCart([]); setIsModalOpen(true); }}
-            className="bg-[var(--color-surface-container)] text-[var(--color-primary)] font-bold px-6 py-2.5 rounded-xl border border-[#6B4FD8]/20 hover:bg-[#6B4FD8]/10 transition-all text-sm"
+            className="bg-[var(--color-surface-container)] text-[var(--color-primary)] font-bold px-4 py-2 rounded-lg border border-[#6B4FD8]/20 hover:bg-[#6B4FD8]/10 transition-all text-sm"
           >
             Emitir Boleta
           </button>
           <button 
             onClick={() => { setSelectedDocType('Factura'); setCart([]); setIsModalOpen(true); }}
-            className="bg-[#6B4FD8] text-[#002150] font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
+            className="bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 text-sm rounded-lg flex items-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all"
           >
-            <Plus size={18} /> Emitir Factura
+            <Plus size={16} /> Emitir Factura
           </button>
         </div>
       </div>
 
       {/* KPI Stats - Ocultos en móvil */}
       <div className="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[var(--color-primary)]">
              <TrendingUp size={24} />
            </div>
            <div>
@@ -218,8 +218,8 @@ export default function SalesModule() {
              <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{formatPrice(totalSalesThisMonth)}</p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#ff716c] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#ff716c]">
              <AlertCircle size={24} />
            </div>
            <div>
@@ -227,8 +227,8 @@ export default function SalesModule() {
              <p className="text-lg font-black text-[var(--color-on-surface)] font-mono leading-tight">{formatPrice(pendingCollection)}</p>
            </div>
         </div>
-        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#85ffab] shadow-sm">
+        <div className="bg-[var(--color-surface-container-low)] p-5 rounded-2xl border border-[var(--color-outline-variant)] transition-all flex items-center gap-4">
+           <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-container)] flex items-center justify-center border border-[var(--color-outline-variant)]/30 text-[#85ffab]">
              <FileText size={24} />
            </div>
            <div>
@@ -257,13 +257,13 @@ export default function SalesModule() {
         <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-xl bg-transparent md:bg-[var(--color-surface-container-low)]">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-5">Documento</th>
-                <th className="px-6 py-5">Detalle</th>
-                <th className="px-6 py-5 text-center">Emisión</th>
-                <th className="px-6 py-5 text-center">Vencimiento</th>
-                <th className="px-6 py-5 text-center">Estado / Días</th>
-                <th className="px-6 py-5 text-right">Total</th>
+              <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black border-b border-[var(--color-outline-variant)]/30">
+                <th className="px-4 py-2.5">Documento</th>
+                <th className="px-4 py-2.5">Detalle</th>
+                <th className="px-4 py-2.5 text-center">Emisión</th>
+                <th className="px-4 py-2.5 text-center">Vencimiento</th>
+                <th className="px-4 py-2.5 text-center">Estado / Días</th>
+                <th className="px-4 py-2.5 text-right">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#40485d]/10 text-sm">
@@ -274,21 +274,21 @@ export default function SalesModule() {
                    const dueInfo = getDueStatus(sale.dueDate, sale.status);
                    return (
                     <tr key={sale.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group">
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <span className="text-[10px] block font-black text-[var(--color-on-surface-variant)] mb-1">{sale.documentType?.toUpperCase()}</span>
                         <p className="font-mono font-bold text-[var(--color-primary)] text-xs">{sale.invoiceNumber}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-2">
                         <p className="font-bold text-[var(--color-on-surface)]">{sale.clientName}</p>
                         <p className="text-[10px] text-[var(--color-on-surface-variant)]">{sale.items?.length || 0} productos</p>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-[var(--color-on-surface)] text-xs">
+                      <td className="px-4 py-2 text-center whitespace-nowrap text-[var(--color-on-surface)] text-xs">
                         {formatDate(sale.issueDate || sale.createdAt)}
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-[var(--color-on-surface-variant)] text-xs">
+                      <td className="px-4 py-2 text-center whitespace-nowrap text-[var(--color-on-surface-variant)] text-xs">
                         {formatDate(sale.dueDate || sale.createdAt)}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-4 py-2 text-center">
                         <div className="flex flex-col items-center gap-1.5">
                           {sale.status === 'Pagada' && <span className="inline-flex items-center px-1.5 py-0.5 bg-green-500/10 text-green-400 text-[9px] font-black tracking-widest uppercase rounded">Pagada</span>}
                           {sale.status === 'Pendiente' && <span className="inline-flex items-center px-1.5 py-0.5 bg-yellow-500/10 text-yellow-400 text-[9px] font-black tracking-widest uppercase rounded">Pendiente</span>}
@@ -297,7 +297,7 @@ export default function SalesModule() {
                           <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${dueInfo.color}`}>{dueInfo.text}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-black text-[var(--color-on-surface)] text-right">
+                      <td className="px-4 py-2 font-black text-[var(--color-on-surface)] text-right">
                         <div className="flex flex-col items-end">
                           <span>{formatPrice(sale.totalAmount || 0)}</span>
                           <div className="flex gap-2 mt-2 transition-opacity">
@@ -316,7 +316,7 @@ export default function SalesModule() {
                                   });
                                   setInvoiceToPrint(sale);
                                 }}
-                                className="text-[9px] font-black uppercase tracking-tighter bg-green-500/20 text-green-400 px-2 py-0.5 border border-green-500/20 rounded hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                                className="text-[9px] font-black uppercase tracking-tighter bg-green-500/20 text-green-400 px-2 py-0.5 border border-green-500/20 rounded hover:bg-green-500 hover:text-white transition-all"
                               >
                                 Pagado
                               </button>
@@ -328,7 +328,7 @@ export default function SalesModule() {
                                     deleteSale(sale.id);
                                   }
                                 }}
-                                className="text-[9px] font-black uppercase tracking-tighter bg-red-500/20 text-red-400 px-2 py-0.5 border border-red-500/20 rounded hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                className="text-[9px] font-black uppercase tracking-tighter bg-red-500/20 text-red-400 px-2 py-0.5 border border-red-500/20 rounded hover:bg-red-500 hover:text-white transition-all"
                               >
                                 Anular
                               </button>
