@@ -1016,3 +1016,30 @@
 
 **Verification**:
 - [ ] TBD
+
+---
+
+### Phase 60: Unificación de Módulos de Inventario y Bodega
+**Status**: ⬜ Not Started
+**Objective**: Juntar los módulos de inventario y bodega en un solo módulo consolidado de "Inventario". Contendrá las pestañas: Stock de Inventario, Stock de Bodega, y Almacenes. La transferencia de materiales se manejará dentro de las vistas de stock. Las tarjetas de métricas serán: Ítems de Inventario, Alertas de Stock, Montos en Inventario, y Montos en Materiales. Se debe actualizar el portal SuperAdmin para reflejar este cambio (activado por defecto).
+**Depends on**: Phase 3, Phase 35
+
+**Tasks**:
+- [ ] TBD (run /plan 60 to create)
+
+**Verification**:
+- TBD
+
+---
+
+### Phase 61: Auditoría de Reactividad y Legibilidad Móvil
+**Status**: ⬜ Not Started
+**Objective**: Verificar módulo por módulo la visibilidad y la legibilidad de la versión móvil en todos los módulos de cliente, asegurando que siga estándares de reactividad y que sea perfectamente legible en pantallas más pequeñas.
+**Depends on**: Phase 60
+
+**Tasks**:
+- [ ] TBD (run /plan 61 to create)
+
+**Verification**:
+- TBD
+
