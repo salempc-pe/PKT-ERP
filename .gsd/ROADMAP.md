@@ -1050,3 +1050,32 @@
 - [x] Calendarios y agendas con indicadores compactos de puntos de color en viewports pequeños.
 - [x] Calculadora de terrenos con `inputMode="decimal"` para teclado numérico en iOS/Android.
 
+---
+
+### Phase 62: Real Estate — Optimización de UI/UX, Unificación y Distritos
+**Status**: ⬜ Not Started
+**Objective**: Resolver problemas estéticos y de usabilidad del módulo inmobiliario (Real Estate), logrando una integración fluida de modales, depuración de colores, simplificación de vistas y una base de datos global de distritos para compradores.
+**Depends on**: Phase 32, Phase 48, Phase 61
+
+**Tasks**:
+- [ ] Diseñar e implementar base de datos compartida de distritos en Firestore y actualizar `useInvestors` para leer/escribir en `/organizations/{orgId}/realEstateDistricts`.
+- [ ] Desarrollar e integrar dropdown de distritos editable en el formulario de edición de perfil de comprador (`InvestorsList.jsx`).
+- [ ] Compactar pastillas de compradores en cuadrícula (texto directo, sin cajas de inversión/área individuales ni insignia 'activo').
+- [ ] Rediseñar tarjetas de terrenos en pipeline Kanban para hacerlas compactas, mostrando interesado en una sola línea.
+- [ ] Optimizar pestaña "Base" de terrenos: barra de filtros simplificada (solo buscador full-width, sin dropdown de ciudades ni exportador CSV).
+- [ ] Reestructurar tabla de terrenos en pestaña "Base": columnas separadas para Área (m²), Precio Total y Precio por m².
+- [ ] Actualizar botón de edición en la tabla de terrenos a icono de lápiz.
+- [ ] Unificar modal de detalles de propiedad (`TerrainDetailsModal.jsx` se elimina) dentro de `TerrainModal.jsx` como modal único de 4 pestañas: Resumen (primera pestaña), Editar propiedad, Presentaciones y Documentos legales.
+- [ ] Sanitizar paleta de colores: reemplazar botón guardar degradado por púrpura canónico de Veló y remover verdes de la calculadora de valor comercial.
+
+**Verification**:
+- [ ] El modal de propiedades es único, tiene 4 pestañas funcionales y se abre por defecto en Resumen.
+- [ ] El botón de guardar en edición usa el color `#6B4FD8` estándar y texto `#002150` sin degradados verdes.
+- [ ] La calculadora de valor comercial no tiene campos ni textos de color verde.
+- [ ] Las tarjetas de terrenos en el pipeline Kanban son compactas e interesado ocupa una sola línea.
+- [ ] En edición de compradores, el selector de distritos es un dropdown editable que alimenta y lee de una colección compartida única.
+- [ ] Las pastillas de compradores son ultracompactas en líneas de texto directo y no muestran la insignia "activo".
+- [ ] La barra de filtros de la pestaña Base solo muestra la caja de búsqueda full-width.
+- [ ] La tabla de terrenos muestra Área (m²), Precio Total y Precio por m² en columnas independientes y usa el icono de lápiz para editar.
+- [ ] Build de producción exitoso sin errores en Vite.
+
