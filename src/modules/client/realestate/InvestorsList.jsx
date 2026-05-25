@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
-export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, loading, error }) {
+export default function InvestorsList({ investors, districts = [], onAdd, onUpdate, onDelete, loading, error }) {
   const { currencySymbol, formatPrice } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -19,6 +19,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
     email: '',
     phone: '',
     notes: '',
+    district: '',
     budget: 0,
     minInvestment: 0,
     maxInvestment: 0,
@@ -32,15 +33,14 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
 
   const filtered = investors.filter(i => {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        i.contactName?.toLowerCase().includes(searchTerm.toLowerCase());
+                        i.contactName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        i.district?.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Lógica de rangos: 0 significa no configurado (infinito/cualquiera)
-    // Inversión Mínima: Mostrar inversionistas cuya capacidad MAX sea >= al filtro (o si su MAX es 0)
     const matchesInvestment = filterMinInv === 0 || 
                              (i.maxInvestment >= filterMinInv) || 
                              (i.maxInvestment === 0);
     
-    // Área Mínima: Mostrar inversionistas cuyo MAX de interés sea >= al filtro (o si su MAX es 0)
     const matchesArea = filterMinArea === 0 || 
                        (i.maxArea >= filterMinArea) || 
                        (i.maxArea === 0);
@@ -72,6 +72,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
       email: '',
       phone: '',
       notes: '',
+      district: '',
       budget: 0,
       minInvestment: 0,
       maxInvestment: 0,
@@ -85,7 +86,10 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
   };
 
   const handleEdit = (investor) => {
-    setFormData({ ...investor });
+    setFormData({
+      ...investor,
+      district: investor.district || ''
+    });
     setEditingId(investor.id);
     setShowForm(true);
   };
@@ -98,7 +102,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
           <input 
             type="text" 
-            placeholder="Buscar comprador..."
+            placeholder="Buscar comprador por nombre, contacto o distrito..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-[#6B4FD8] transition-all"
@@ -204,20 +208,36 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               />
             </div>
             
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Distrito</label>
+              <input 
+                value={formData.district}
+                onChange={(e) => setFormData({...formData, district: e.target.value})}
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
+                placeholder="Escribe o selecciona un distrito"
+                list="districts-datalist"
+              />
+              <datalist id="districts-datalist">
+                {districts.map(d => (
+                  <option key={d.id} value={d.name} />
+                ))}
+              </datalist>
+            </div>
+            
             {/* Rangos */}
             <div className="space-y-1.5">
               <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Rango Inversión (Min - Max)</label>
               <div className="flex gap-2">
                 <input 
                   type="number"
-                  value={formData.minInvestment}
+                  value={formData.minInvestment || ''}
                   onChange={(e) => setFormData({...formData, minInvestment: Number(e.target.value)})}
                   className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                   placeholder="Min"
                 />
                 <input 
                   type="number"
-                  value={formData.maxInvestment}
+                  value={formData.maxInvestment || ''}
                   onChange={(e) => setFormData({...formData, maxInvestment: Number(e.target.value)})}
                   className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                   placeholder="Max"
@@ -230,14 +250,14 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
               <div className="flex gap-2">
                 <input 
                   type="number"
-                  value={formData.minArea}
+                  value={formData.minArea || ''}
                   onChange={(e) => setFormData({...formData, minArea: Number(e.target.value)})}
                   className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                   placeholder="Min"
                 />
                 <input 
                   type="number"
-                  value={formData.maxArea}
+                  value={formData.maxArea || ''}
                   onChange={(e) => setFormData({...formData, maxArea: Number(e.target.value)})}
                   className="w-1/2 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8]"
                   placeholder="Max"
@@ -248,7 +268,7 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
             <div className="md:col-span-2 space-y-1.5">
               <label className="text-[9px] font-black text-[var(--color-on-surface-variant)] uppercase ml-1">Notas / Preferencias</label>
               <textarea 
-                value={formData.notes}
+                value={formData.notes || ''}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
                 className="w-full bg-[var(--color-surface)] border border-[var(--color-outline-variant)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-[#6B4FD8] h-20 resize-none"
                 placeholder="Ej: Interesado solo en zonas comerciales, requiere documentación saneada..."
@@ -294,88 +314,85 @@ export default function InvestorsList({ investors, onAdd, onUpdate, onDelete, lo
             </p>
           </div>
         ) : filtered.length > 0 ? filtered.map(investor => (
-          <div key={investor.id} className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-[2rem] p-6 hover:border-[#6B4FD8]/40 transition-all group relative overflow-hidden">
-            <div className={`absolute top-0 left-0 w-full h-1.5 ${investor.type === 'constructora' ? 'bg-[#6B4FD8]' : 'bg-[#2E8B57]'}`}></div>
+          <div key={investor.id} className="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-5 hover:border-[#6B4FD8]/40 transition-all group relative overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md">
+            <div className={`absolute top-0 left-0 w-full h-1 ${investor.type === 'constructora' ? 'bg-[#6B4FD8]' : 'bg-[#2E8B57]'}`}></div>
             
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${investor.type === 'constructora' ? 'bg-[#6B4FD8]/10 text-[#6B4FD8]' : 'bg-[#2E8B57]/10 text-[#2E8B57]'}`}>
-                  {investor.type === 'constructora' ? <Building2 size={20}/> : <User size={20}/>}
+            <div>
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center border ${investor.type === 'constructora' ? 'bg-[#6B4FD8]/10 text-[#6B4FD8] border-[#6B4FD8]/20' : 'bg-[#2E8B57]/10 text-[#2E8B57] border-[#2E8B57]/20'}`}>
+                    {investor.type === 'constructora' ? <Building2 size={16}/> : <User size={16}/>}
+                  </div>
+                  <div>
+                    <h5 className="font-black text-xs text-[var(--color-on-surface)]">{investor.name}</h5>
+                    <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-60 tracking-wider">
+                      {investor.type}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h5 className="font-black text-sm text-[var(--color-on-surface)]">{investor.name}</h5>
-                  <p className="text-[9px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-60 tracking-tighter">
-                    {investor.type}
-                  </p>
+                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => handleEdit(investor)} className="p-1.5 text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-lg transition-colors">
+                    <Edit2 size={12}/>
+                  </button>
+                  <button onClick={() => onDelete(investor.id)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                    <Trash2 size={12}/>
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button onClick={() => handleEdit(investor)} className="p-2 text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-lg transition-colors">
-                  <Edit2 size={14}/>
-                </button>
-                <button onClick={() => onDelete(investor.id)} className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                  <Trash2 size={14}/>
-                </button>
+
+              <div className="space-y-1.5 border-t border-[var(--color-outline-variant)] pt-3 text-[10px]">
+                <div className="flex items-center gap-1.5 text-[11px] mb-1">
+                  <Users size={12} className="text-[#6B4FD8]" />
+                  <span className="font-bold text-[var(--color-on-surface)]">{investor.contactName || 'Sin contacto'}</span>
+                </div>
+                
+                {investor.district && (
+                  <div className="text-[10px] text-[var(--color-on-surface-variant)]">
+                    <span className="font-bold text-[#6B4FD8]">Distrito:</span> {investor.district}
+                  </div>
+                )}
+
+                <div className="text-[10px] text-[var(--color-on-surface-variant)]">
+                  <span className="font-bold text-[var(--color-on-surface)]">Inversión:</span>{' '}
+                  {investor.minInvestment === 0 && investor.maxInvestment === 0 ? 'Cualquiera' :
+                   investor.minInvestment > 0 && investor.maxInvestment === 0 ? `> ${formatPrice(investor.minInvestment)}` :
+                   investor.minInvestment === 0 && investor.maxInvestment > 0 ? `< ${formatPrice(investor.maxInvestment)}` :
+                   `${formatPrice(investor.minInvestment)} - ${formatPrice(investor.maxInvestment)}`}
+                </div>
+
+                <div className="text-[10px] text-[var(--color-on-surface-variant)]">
+                  <span className="font-bold text-[var(--color-on-surface)]">Área requerida:</span>{' '}
+                  {investor.minArea === 0 && investor.maxArea === 0 ? 'Cualquiera' :
+                   investor.minArea > 0 && investor.maxArea === 0 ? `> ${investor.minArea.toLocaleString()} m²` :
+                   investor.minArea === 0 && investor.maxArea > 0 ? `< ${investor.maxArea.toLocaleString()} m²` :
+                   `${investor.minArea.toLocaleString()} - ${investor.maxArea.toLocaleString()} m²`}
+                </div>
+
+                {investor.notes && (
+                  <div className="text-[10px] text-[var(--color-on-surface-variant)] italic leading-relaxed mt-2 opacity-80 border-l-2 border-[#6B4FD8]/20 pl-2 py-0.5">
+                    "{investor.notes}"
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="space-y-3 border-t border-[var(--color-outline-variant)] pt-4">
-              <div className="flex items-center gap-2 text-[11px]">
-                <Users size={14} className="text-[#6B4FD8]" />
-                <span className="font-bold text-[var(--color-on-surface)]">{investor.contactName || 'Sin contacto'}</span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
-                  <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Inversión</p>
-                  <p className="text-[10px] font-black text-[var(--color-on-surface)]">
-                    {investor.minInvestment === 0 && investor.maxInvestment === 0 ? 'Cualquiera' :
-                     investor.minInvestment > 0 && investor.maxInvestment === 0 ? `> ${formatPrice(investor.minInvestment)}` :
-                     investor.minInvestment === 0 && investor.maxInvestment > 0 ? `< ${formatPrice(investor.maxInvestment)}` :
-                     `${formatPrice(investor.minInvestment)} - ${formatPrice(investor.maxInvestment)}`}
-                  </p>
-                </div>
-                <div className="bg-[var(--color-surface)] p-2 rounded-xl border border-[var(--color-outline-variant)]">
-                  <p className="text-[8px] font-black uppercase text-[var(--color-on-surface-variant)] opacity-50">Área m²</p>
-                  <p className="text-[10px] font-black text-[var(--color-on-surface)]">
-                    {investor.minArea === 0 && investor.maxArea === 0 ? 'Cualquiera' :
-                     investor.minArea > 0 && investor.maxArea === 0 ? `> ${investor.minArea.toLocaleString()} m²` :
-                     investor.minArea === 0 && investor.maxArea > 0 ? `< ${investor.maxArea.toLocaleString()} m²` :
-                     `${investor.minArea.toLocaleString()} - ${investor.maxArea.toLocaleString()} m²`}
-                  </p>
-                </div>
-              </div>
-
-              {investor.notes && (
-                <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 mt-2">
-                  <p className="text-[9px] text-amber-600 font-medium leading-relaxed italic">
-                    "{investor.notes}"
-                  </p>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px] text-[var(--color-on-surface-variant)] opacity-70 mt-3 border-t border-[var(--color-outline-variant)] pt-2">
+              {investor.email && (
+                <div className="flex items-center gap-1">
+                  <Mail size={10} />
+                  <span className="truncate max-w-[120px]">{investor.email}</span>
                 </div>
               )}
-
-              <div className="flex flex-col gap-2 mt-2">
-                <div className="flex items-center gap-2 text-[10px] text-[var(--color-on-surface-variant)]">
-                  <Mail size={12} />
-                  <span className="truncate">{investor.email || 'No registra'}</span>
+              {investor.phone && (
+                <div className="flex items-center gap-1">
+                  <Phone size={10} />
+                  <span>{investor.phone}</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-[var(--color-on-surface-variant)]">
-                  <Phone size={12} />
-                  <span>{investor.phone || 'No registra'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-[var(--color-outline-variant)] flex items-center justify-between">
-              <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${
-                investor.status === 'activo' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'
-              }`}>
-                {investor.status}
-              </span>
+              )}
             </div>
           </div>
         )) : (
-          <div className="col-span-full py-20 text-center text-[var(--color-on-surface-variant)] italic bg-[var(--color-surface-container-low)] rounded-[3rem] border border-dashed border-[var(--color-outline-variant)]">
+          <div className="col-span-full py-20 text-center text-[var(--color-on-surface-variant)] italic bg-[var(--color-surface-container-low)] rounded-2xl border border-dashed border-[var(--color-outline-variant)]">
             No se encontraron compradores potenciales.
           </div>
         )}

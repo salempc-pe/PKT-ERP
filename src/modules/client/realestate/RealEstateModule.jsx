@@ -7,15 +7,11 @@ import {
   Plus, 
   Kanban, 
   List, 
-  Loader2, 
   Search, 
-  Filter, 
   MoreVertical,
-  ChevronRight,
   ChevronLeft,
   ArrowRight,
-  Maximize2,
-  Download,
+  Pencil,
   ChevronDown
 } from 'lucide-react';
 import { useRealEstate } from './useRealEstate';
@@ -23,25 +19,21 @@ import { useInvestors } from './useInvestors';
 import { useCrm } from '../crm/useCrm';
 import { useAuth } from '../../../context/AuthContext';
 import TerrainModal from './TerrainModal';
-import TerrainDetailsModal from './TerrainDetailsModal';
 import InvestorsList from './InvestorsList';
 import LoadingScreen from '../../../components/LoadingScreen';
-
 import MapViewer from './MapViewer';
 
 export default function RealEstateModule() {
   const { user, formatPrice } = useAuth();
   const orgId = user?.organizationId || "default_org";
-  const { terrains, loading, addTerrain, updateTerrain, deleteTerrain } = useRealEstate(orgId);
-  const { investors, loading: loadingInv, error: investorsError, addInvestor, updateInvestor, deleteInvestor } = useInvestors(orgId);
+  const { terrains, loading, addTerrain, updateTerrain } = useRealEstate(orgId);
+  const { investors, districts, loading: loadingInv, error: investorsError, addInvestor, updateInvestor, deleteInvestor } = useInvestors(orgId);
   const { contacts } = useCrm(orgId);
   
   const [activeTab, setActiveTab] = useState('database'); // database | pipeline | map | buyers
   const [showModal, setShowModal] = useState(false);
   const [editingTerrain, setEditingTerrain] = useState(null);
-  const [selectedTerrainForDetails, setSelectedTerrainForDetails] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCity, setFilterCity] = useState('');
 
   const pipelineStages = [
     { id: 'presentacion', title: 'Presentación', color: 'bg-[#a3aac4]' },
@@ -51,14 +43,11 @@ export default function RealEstateModule() {
   ];
 
   const filteredTerrains = terrains.filter(t => {
-    const matchesSearch = t.address.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         t.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         t.district.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCity = filterCity === '' || t.city === filterCity;
-    return matchesSearch && matchesCity;
+    const searchVal = searchTerm.toLowerCase();
+    return (t.address || '').toLowerCase().includes(searchVal) || 
+           (t.city || '').toLowerCase().includes(searchVal) ||
+           (t.district || '').toLowerCase().includes(searchVal);
   });
-
-  const uniqueCities = [...new Set(terrains.map(t => t.city))];
 
   // Generar instancias para el Pipeline basadas en presentaciones
   const pipelineInstances = terrains.flatMap(terrain => 
@@ -77,14 +66,6 @@ export default function RealEstateModule() {
   const handleOpenEdit = (terrain) => {
     setEditingTerrain(terrain);
     setShowModal(true);
-  };
-
-  const handleStatusChange = async (terrainId, newStatus) => {
-    try {
-      await updateTerrain(terrainId, { status: newStatus });
-    } catch (err) {
-      console.error("Error al actualizar estado:", err);
-    }
   };
 
   const handleSaveTerrain = async (id, data) => {
@@ -108,64 +89,6 @@ export default function RealEstateModule() {
     } catch (err) {
       console.error("Error al actualizar estado de presentación:", err);
     }
-  };
-
-  const handleExportCSV = () => {
-    const headers = [
-      'Propiedad / Dirección',
-      'Distrito',
-      'Ciudad',
-      'Propietario',
-      'Corredores',
-      'Área (m²)',
-      'Precio por m²',
-      'Precio Total',
-      'Estado',
-      'Notas'
-    ];
-
-    const rows = filteredTerrains.map(t => {
-      const ownerName = contacts.find(c => c.id === t.ownerId)?.name || 'Desconocido';
-      const brokersStr = (t.brokers || []).join(', ');
-      const statusStr = {
-        presentacion: 'Presentación',
-        negociacion: 'Negociación',
-        aprobado: 'Aprobado',
-        descartado: 'Descartado'
-      }[t.status] || t.status;
-
-      return [
-        t.address,
-        t.district,
-        t.city,
-        ownerName,
-        brokersStr,
-        t.area,
-        t.pricePerM2,
-        t.totalPrice,
-        statusStr,
-        t.notes || ''
-      ];
-    });
-
-    const csvContent = [
-      'sep=;',
-      headers.join(';'),
-      ...rows.map(row => row.map(val => {
-        const strVal = val === null || val === undefined ? '' : String(val);
-        const escaped = strVal.replace(/"/g, '""');
-        return `"${escaped}"`;
-      }).join(';'))
-    ].join('\n');
-
-    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `terrenos_filtrados_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   if (loading) {
@@ -223,65 +146,48 @@ export default function RealEstateModule() {
 
         <button 
           onClick={() => { setEditingTerrain(null); setShowModal(true); }}
-          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm"
+          className="w-full md:w-auto bg-[#6B4FD8] text-[#002150] font-bold px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(133,173,255,0.3)] transition-all text-sm animate-in fade-in"
         >
           <Plus size={18} /> Agregar Propiedad
         </button>
       </div>
 
-      {/* Filters (Only for Database view) */}
+      {/* Filters (Only for Database view) - Simplified to full width search bar */}
       {activeTab === 'database' && (
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
-            <input 
-              type="text" 
-              placeholder="Buscar por dirección o ciudad..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-xs"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter size={14} className="text-[var(--color-on-surface-variant)]" />
-            <select 
-              value={filterCity}
-              onChange={(e) => setFilterCity(e.target.value)}
-              className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl px-3 py-2 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] text-xs font-bold"
-            >
-              <option value="">Todas las ciudades</option>
-              {uniqueCities.map(city => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-2 bg-[#6B4FD8]/10 text-[#6B4FD8] border border-[#6B4FD8]/20 hover:bg-[#6B4FD8] hover:text-[#002150] px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ml-auto"
-            title="Exportar base de terrenos filtrada"
-          >
-            <Download size={14} /> Exportar CSV
-          </button>
+        <div className="relative w-full mb-4 animate-in fade-in">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)]" size={14} />
+          <input 
+            type="text" 
+            placeholder="Buscar por dirección, ciudad o distrito..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-xl pl-9 pr-4 py-2.5 text-[var(--color-on-surface)] outline-none focus:border-[#6B4FD8] transition-all text-xs font-bold"
+          />
         </div>
       )}
 
       {/* Content Rendering */}
       {activeTab === 'database' ? (
-        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden">
+        <div className="overflow-x-auto -mx-4 md:mx-0 border-y md:border border-[var(--color-outline-variant)] md:rounded-2xl bg-transparent md:bg-[var(--color-surface-container-low)] overflow-hidden animate-in fade-in">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] text-[10px] uppercase tracking-widest font-black">
                   <th className="px-4 py-2.5">Propiedad / Ubicación</th>
                   <th className="px-4 py-2.5">Propietario</th>
                   <th className="px-4 py-2.5">Corredores</th>
-                  <th className="px-4 py-2.5">Área / Precio</th>
+                  <th className="px-4 py-2.5">Área (m²)</th>
+                  <th className="px-4 py-2.5">Precio Total</th>
+                  <th className="px-4 py-2.5">Precio x m²</th>
                   <th className="px-4 py-2.5 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#40485d]/10 text-sm">
                 {filteredTerrains.length > 0 ? filteredTerrains.map((t) => (
-                  <tr key={t.id} className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer" onClick={() => setSelectedTerrainForDetails(t)}>
+                  <tr 
+                    key={t.id} 
+                    className="hover:bg-[var(--color-surface-container)]/40 transition-colors group cursor-pointer" 
+                    onClick={() => handleOpenEdit(t)}
+                  >
                     <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-surface-container)] to-[var(--color-surface-container-low)] border border-[#6B4FD8]/10 flex items-center justify-center text-[var(--color-primary)]">
@@ -316,14 +222,14 @@ export default function RealEstateModule() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex flex-col">
-                        <p className="text-[var(--color-on-surface)] font-bold text-xs">{t.area.toLocaleString()} m²</p>
-                        <p className="text-[10px] text-[var(--color-primary)] font-black">
-                          {formatPrice(t.totalPrice)} 
-                          <span className="text-[var(--color-on-surface-variant)] font-normal ml-1">({formatPrice(t.pricePerM2)}/m²)</span>
-                        </p>
-                      </div>
+                    <td className="px-4 py-2 text-xs font-bold text-[var(--color-on-surface)]">
+                      {t.area.toLocaleString()} m²
+                    </td>
+                    <td className="px-4 py-2 text-xs font-bold text-[var(--color-on-surface)]">
+                      {formatPrice(t.totalPrice)}
+                    </td>
+                    <td className="px-4 py-2 text-xs font-black text-[var(--color-primary)]">
+                      {formatPrice(t.pricePerM2)}/m²
                     </td>
                     <td className="px-4 py-2 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -332,7 +238,7 @@ export default function RealEstateModule() {
                           className="p-2 text-[var(--color-on-surface-variant)] hover:text-[#6B4FD8] hover:bg-[#6B4FD8]/10 rounded-lg transition-all"
                           title="Editar"
                         >
-                          <Maximize2 size={16} />
+                          <Pencil size={16} />
                         </button>
                         <button className="p-2 text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
                           <MoreVertical size={16} />
@@ -342,7 +248,7 @@ export default function RealEstateModule() {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">
+                    <td colSpan="7" className="px-6 py-10 text-center text-[var(--color-on-surface-variant)] italic">
                       No se encontraron propiedades que coincidan con los filtros.
                     </td>
                   </tr>
@@ -352,7 +258,7 @@ export default function RealEstateModule() {
           </div>
       ) : activeTab === 'pipeline' ? (
         /* Kanban View */
-        <div className="flex flex-row overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-4 gap-6 md:grid md:grid-cols-4 min-h-[500px] custom-scrollbar">
+        <div className="flex flex-row overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-4 gap-6 md:grid md:grid-cols-4 min-h-[500px] custom-scrollbar animate-in fade-in">
           {pipelineStages.map(stage => (
             <div key={stage.id} className="flex flex-col gap-4 w-[285px] shrink-0 md:w-auto md:shrink">
               <div className="flex items-center justify-between px-2">
@@ -369,35 +275,30 @@ export default function RealEstateModule() {
                 {pipelineInstances.filter(p => p.status === stage.id).map(instance => (
                   <div 
                     key={`${instance.terrainId}-${instance.id}`} 
-                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-xl hover:border-[#6B4FD8]/50 transition-all group relative overflow-hidden"
+                    className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-3 rounded-xl hover:border-[#6B4FD8]/50 transition-all group relative overflow-hidden cursor-pointer"
+                    onClick={() => handleOpenEdit(instance.originalTerrain)}
                   >
                     <div className={`absolute top-0 left-0 w-1 h-full opacity-20 ${stage.color}`}></div>
                     
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mb-1">
                       <p className="font-extrabold text-[var(--color-on-surface)] text-xs group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">{instance.address}</p>
                     </div>
                     
-                    <div className="flex items-center gap-1.5 mb-3">
+                    <div className="flex items-center gap-1.5 mb-1.5">
                       <MapPin size={10} className="text-[var(--color-primary)]" />
                       <p className="text-[10px] text-[var(--color-on-surface-variant)] font-bold uppercase tracking-tight">{instance.district}, {instance.city}</p>
                     </div>
                     
-                    <div className="flex justify-between items-center mb-3">
+                    <div className="flex justify-between items-center mb-1.5">
                       <p className="text-[11px] font-black text-[var(--color-on-surface)]">{formatPrice(instance.totalPrice)}</p>
                       <p className="text-[10px] text-[var(--color-on-surface-variant)]">{instance.area} m²</p>
                     </div>
 
-                    <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-container-low)] rounded-lg mb-3 border border-[#6B4FD8]/10">
-                      <div className="w-5 h-5 rounded-full bg-[#6B4FD8] flex items-center justify-center text-[8px] font-black text-[#002150]">
-                        {instance.buyerName?.charAt(0) || <User size={8}/>}
-                      </div>
-                      <div>
-                        <p className="text-[8px] text-[var(--color-on-surface-variant)] uppercase font-black tracking-tighter">Interesado</p>
-                        <p className="text-[10px] text-[var(--color-primary)] font-bold truncate">{instance.buyerName || 'Sin nombre'}</p>
-                      </div>
-                    </div>
+                    <p className="text-[10px] text-[var(--color-on-surface-variant)] font-bold mt-1.5 border-t border-[var(--color-outline-variant)] pt-1.5">
+                      <span className="font-black text-[#6B4FD8]">Interesado:</span> {instance.buyerName || 'Sin nombre'}
+                    </p>
 
-                    <div className="flex gap-1 pt-3 border-t border-[var(--color-outline-variant)]">
+                    <div className="flex gap-1 pt-3 mt-2 border-t border-[var(--color-outline-variant)]">
                       {stage.id === 'presentacion' && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); handlePresentationStatusChange(instance.terrainId, instance.id, 'negociacion'); }}
@@ -453,6 +354,7 @@ export default function RealEstateModule() {
         <div className="animate-in fade-in slide-in-from-bottom duration-500">
           <InvestorsList 
             investors={investors}
+            districts={districts}
             onAdd={addInvestor}
             onUpdate={updateInvestor}
             onDelete={deleteInvestor}
@@ -472,17 +374,6 @@ export default function RealEstateModule() {
           contacts={contacts}
           investors={investors}
           terrains={terrains}
-        />
-      )}
-
-      {selectedTerrainForDetails && (
-        <TerrainDetailsModal
-          isOpen={!!selectedTerrainForDetails}
-          onClose={() => setSelectedTerrainForDetails(null)}
-          terrain={terrains.find(t => t.id === selectedTerrainForDetails.id) || selectedTerrainForDetails}
-          onUpdate={updateTerrain}
-          contacts={contacts}
-          investors={investors}
         />
       )}
     </div>

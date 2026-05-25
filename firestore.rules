@@ -110,7 +110,7 @@ service cloud.firestore {
       }
       
       // Ventas y Facturación
-      match /sales/{docId} {
+      match /invoices/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       

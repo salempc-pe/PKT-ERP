@@ -18,9 +18,12 @@ import {
   getDoc,
   serverTimestamp,
   deleteDoc,
-  onSnapshot
+  onSnapshot,
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
+import { seedDatabase as seedDb } from '../services/dbSeeder';
 
 const AuthContext = createContext();
 
@@ -437,8 +440,10 @@ export function AuthProvider({ children }) {
       ));
       
       addLog('Modules Updated', `Módulos actualizados para organización ${orgId}`, 'info', orgId);
+      return { success: true };
     } catch (error) {
       console.error("Error updating org modules:", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -746,8 +751,10 @@ export function AuthProvider({ children }) {
       await deleteDoc(doc(db, 'users', userId));
       setAllUsers(prev => prev.filter(u => u.id !== userId));
       addLog('User Removed', `Usuario ${userId} eliminado de la base de datos`, 'danger');
+      return { success: true };
     } catch (error) {
       console.error("Error removing user:", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -762,8 +769,10 @@ export function AuthProvider({ children }) {
       ));
 
       addLog('Org Updated', `Datos de organización ${orgId} actualizados en DB`, 'info', orgId);
+      return { success: true };
     } catch (error) {
       console.error("Error updating org:", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -774,55 +783,11 @@ export function AuthProvider({ children }) {
       await deleteDoc(doc(db, 'organizations', orgId));
       setAllOrganizations(prev => prev.filter(o => o.id !== orgId));
       addLog('Org Removed', `Organización ${orgId} eliminada de la base de datos`, 'danger', orgId);
+      return { success: true };
     } catch (error) {
       console.error("Error removing org:", error);
+      return { success: false, error: error.message };
     }
-  };
-
-  // Función para poblar la base de datos con datos de prueba si está vacía
-  const seedDatabase = async () => {
-    if (user?.role !== 'superadmin') return;
-    
-    try {
-      console.log("🌱 Iniciando seeding de base de datos...");
-      
-      // 1. Crear algunas organizaciones de prueba
-      const demoOrgs = [
-        { name: 'Empresa Alpha S.A.C.', ruc: '20123456789', planId: 'business', modules: ['crm', 'inventory', 'sales', 'projects'], users: 3 },
-        { name: 'Beta Tech Solutions', ruc: '20987654321', planId: 'startup', modules: ['crm', 'calendar'], users: 1 },
-        { name: 'Gamarra Fashion ERP', ruc: '20555555555', planId: 'business', modules: ['crm', 'inventory', 'sales', 'finance', 'purchases'], users: 5 }
-      ];
-
-      for (const org of demoOrgs) {
-        await adminCreateOrg({
-          name: org.name,
-          ruc: org.ruc,
-          planId: org.planId,
-          activeModules: org.modules,
-          maxUsers: 10
-        });
-      }
-
-      // 2. Crear algunos logs de prueba
-      const demoLogs = [
-        { action: 'Configuración Inicial', details: 'Se activaron módulos base para la organización Alpha', type: 'info' },
-        { action: 'Alerta de Inventario', details: 'Stock crítico detectado en Almacén Central', type: 'warning' },
-        { action: 'Nueva Venta', details: 'Factura F001-0005 generada satisfactoriamente', type: 'success' }
-      ];
-
-      for (const log of demoLogs) {
-        await addLog(log.action, log.details, log.type);
-      }
-
-      console.log("✅ Seeding completado.");
-      window.location.reload(); // Recargar para ver los cambios
-    } catch (error) {
-      console.error("Error durane el seeding:", error);
-    }
-  };
-
-  const getClientUsers = () => {
-    return allUsers.filter(u => u.role === 'client');
   };
 
   const formatPrice = (amount) => {
@@ -838,13 +803,13 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, updateUser, 
-      getClientUsers, adminCreateUser, adminUpdateOrgModules,
+      adminCreateUser, adminUpdateOrgModules,
       allUsers, allOrganizations, adminCreateOrg, adminRemoveUser, adminUpdateOrg, adminRemoveOrg,
       adminUpdateFullOrg, SUBSCRIPTION_PLANS,
       impersonateUser, stopImpersonation, isImpersonating,
       setupUserPassword,
       allActivityLogs, systemAlerts, addLog,
-      seedDatabase,
+      seedDatabase: () => seedDb(user, adminCreateOrg, addLog),
       currencySymbol: user?.currencySymbol || '$',
       formatPrice,
       isAdmin: user?.role === 'superadmin' || user?.role === 'admin',
