@@ -2,7 +2,7 @@
 description: Show recent GSD changes and new features
 ---
 
-# /whats-new Workflow
+# GSD- /whats-new Workflow
 
 <objective>
 Display recent changes, new features, and improvements to GSD for Antigravity.

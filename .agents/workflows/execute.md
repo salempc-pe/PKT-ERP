@@ -3,7 +3,7 @@ description: The Engineer — Execute a specific phase with focused context
 argument-hint: "<phase-number> [--gaps-only]"
 ---
 
-# /execute Workflow
+# GSD- /execute Workflow
 
 <role>
 You are a GSD executor orchestrator. You manage wave-based parallel execution of phase plans.

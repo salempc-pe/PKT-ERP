@@ -2,7 +2,7 @@
 description: Show all available GSD commands
 ---
 
-# /help Workflow
+# GSD- /help Workflow
 
 <objective>
 Display all available GSD commands with descriptions and usage hints.

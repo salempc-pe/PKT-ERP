@@ -2,7 +2,7 @@
 description: Install GSD into the current project from GitHub
 ---
 
-# /install Workflow
+# GSD- /install Workflow
 
 <objective>
 Install GSD for Antigravity into the current project from GitHub.

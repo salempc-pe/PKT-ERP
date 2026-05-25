@@ -3,7 +3,7 @@ description: Create and manage a time-boxed sprint for quick focused work
 argument-hint: "[new|status|close] [sprint-name]"
 ---
 
-# /sprint Workflow
+# GSD- /sprint Workflow
 
 <objective>
 Manage time-boxed sprints for quick, focused work outside the full milestone/phase cycle.

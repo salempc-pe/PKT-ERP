@@ -3,7 +3,7 @@ description: Discuss a phase before planning (clarify scope and approach)
 argument-hint: "<phase-number>"
 ---
 
-# /discuss-phase Workflow
+# GSD- /discuss-phase Workflow
 
 <objective>
 Interactive discussion about a phase to clarify scope, approach, and concerns before creating plans.

@@ -3,7 +3,7 @@ description: Create a new milestone with phases
 argument-hint: "<milestone-name>"
 ---
 
-# /new-milestone Workflow
+# GSD- /new-milestone Workflow
 
 <objective>
 Define a new milestone with goal, phases, and success criteria.

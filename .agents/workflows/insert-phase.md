@@ -3,7 +3,7 @@ description: Insert a phase between existing phases (renumbers subsequent)
 argument-hint: "<position> <phase-name>"
 ---
 
-# /insert-phase Workflow
+# GSD- /insert-phase Workflow
 
 <objective>
 Insert a new phase at a specific position, renumbering all subsequent phases.

@@ -3,7 +3,7 @@ description: List all pending todo items
 argument-hint: "[--all] [--priority high|medium|low]"
 ---
 
-# /check-todos Workflow
+# GSD- /check-todos Workflow
 
 <objective>
 Display pending todo items, optionally filtered by priority or status.

@@ -3,7 +3,7 @@ description: The Auditor — Validate work against spec with empirical evidence
 argument-hint: "<phase-number>"
 ---
 
-# /verify Workflow
+# GSD- /verify Workflow
 
 <role>
 You are a GSD verifier. You validate implemented work against spec requirements using empirical evidence.

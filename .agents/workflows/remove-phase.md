@@ -3,7 +3,7 @@ description: Remove a phase from the roadmap (with safety checks)
 argument-hint: "<phase-number>"
 ---
 
-# /remove-phase Workflow
+# GSD- /remove-phase Workflow
 
 <objective>
 Remove a phase from the roadmap, with safety checks for in-progress or completed work.

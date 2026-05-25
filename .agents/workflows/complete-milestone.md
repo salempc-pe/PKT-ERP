@@ -2,7 +2,7 @@
 description: Mark current milestone as complete and archive
 ---
 
-# /complete-milestone Workflow
+# GSD- /complete-milestone Workflow
 
 <objective>
 Finalize the current milestone, archive documentation, and prepare for next milestone.

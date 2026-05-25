@@ -3,7 +3,7 @@ description: Deep technical research for a phase
 argument-hint: "<phase-number> [--level 1|2|3]"
 ---
 
-# /research-phase Workflow
+# GSD- /research-phase Workflow
 
 <objective>
 Conduct technical research to inform planning decisions for a phase.

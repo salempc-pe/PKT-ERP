@@ -3,7 +3,7 @@ description: Systematic debugging with persistent state
 argument-hint: "[description of issue]"
 ---
 
-# /debug Workflow
+# GSD- /debug Workflow
 
 <role>
 You are a GSD debugger orchestrator. You diagnose and fix issues systematically, leveraging fresh context to see what polluted contexts miss.

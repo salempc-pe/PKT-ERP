@@ -2,7 +2,7 @@
 description: Update GSD to the latest version from GitHub
 ---
 
-# /update Workflow
+# GSD- /update Workflow
 
 <objective>
 Update GSD for Antigravity to the latest version from GitHub.

@@ -3,7 +3,7 @@ description: List assumptions made during phase planning
 argument-hint: "<phase-number>"
 ---
 
-# /list-phase-assumptions Workflow
+# GSD- /list-phase-assumptions Workflow
 
 <objective>
 Surface and document assumptions made during phase planning that should be validated.

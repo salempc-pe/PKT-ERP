@@ -3,7 +3,7 @@ description: Search the web for information to inform decisions
 argument-hint: "<query> [--domain <site>]"
 ---
 
-# /web-search Workflow
+# GSD- /web-search Workflow
 
 <objective>
 Search the web to gather information for technical decisions, API documentation, library comparisons, or any research need.

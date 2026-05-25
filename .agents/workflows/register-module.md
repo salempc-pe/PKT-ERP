@@ -1,3 +1,5 @@
+# GSD- /register-module Workflow
+
 ---
 description: Este workflow automatiza la integración de un nuevo módulo en la estructura de PKT ERP.
 ---
