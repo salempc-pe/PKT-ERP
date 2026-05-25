@@ -1,51 +1,40 @@
-# Sprint 3 — compact-ui
+# Sprint 4 — refactor-audit-findings
 
-> **Duración**: 2026-05-20 to 2026-05-20
-> **Estado**: Completado
+> **Duración**: 2026-05-25 to 2026-05-27
+> **Estado**: En Progreso
 
 ## Goal
-Hacer que el diseño visual sea más compacto en todas las vistas (incluyendo pestañas superiores, botones y tablas) y remover las pastillas pesadas de los buscadores en Inventario e Inmobiliaria para un acabado estético más limpio y profesional.
+Resolver los hallazgos críticos y de alto riesgo identificados en la auditoría de código, eliminando crashes de ejecución para el SuperAdmin, alineando las reglas de Firebase con la subcolección de facturas reales, mejorando la propagación de errores de base de datos en la UI y reduciendo el acoplamiento de `AuthContext.jsx`.
 
 ## Alcance
 
 ### Incluido
-- **Inventario (`InventoryModule.jsx`)**:
-  - Eliminar contenedor tipo tarjeta de la barra de búsqueda y filtros.
-  - Eliminar los botones de categorías estáticas ("Ropa", "Accesorios", "Calzado").
-  - Reducir paddings en pestañas, botón principal y celdas/headers de tablas.
-- **Inmobiliaria (`RealEstateModule.jsx` e `InvestorsList.jsx`)**:
-  - Eliminar contenedor de fondo de filtros en Base de Terrenos.
-  - Eliminar contenedor de filtros en Compradores.
-  - Reducir paddings en pestañas superiores, botón de agregar propiedad y tablas.
-- **Estándares (`design-standards.md`)**:
-  - Incorporar la directiva global de diseño compacto (Directiva de Alta Densidad).
+- **Fallo Crítico de Importación (`AuthContext.jsx`)**:
+  - Importar explícitamente `orderBy` y `limit` desde `'firebase/firestore'`.
+- **Desajuste de Reglas de Firebase (`firestore.rules`)**:
+  - Alinear las reglas para la subcolección `/invoices` en lugar de `/sales`, garantizando el aislamiento multi-inquilino.
+- **Robustez y Gestión de Errores (`AuthContext.jsx`)**:
+  - Refactorizar funciones de base de datos (`adminRemoveUser`, `adminRemoveOrg`, etc.) para propagar fallos con `{ success: false, error }`.
+- **Reducción de Deuda Técnica (Estructura)**:
+  - Extraer funciones secundarias como `formatPrice`, `getClientUsers` y el seeder del proveedor principal, o modularizarlas para aliviar el tamaño de `AuthContext.jsx`.
 
 ### Excluido
-- Cambios funcionales en la lógica de bases de datos o consultas.
-- Rediseño de componentes no solicitados.
+- Cambios funcionales en los flujos visuales que no afecten a la estabilidad.
+- Migraciones masivas de bases de datos operativas en vivo.
 
 ## Tareas
 
 | Tarea | Asignado | Estado | Est. Horas |
 |-------|----------|--------|------------|
-| T1 — Configuración del Sprint | Antigravity | ✅ Hecho | 0.5 |
-| T2 — Refactorización de Inventario (`InventoryModule.jsx`) | Antigravity | ✅ Hecho | 1.5 |
-| T3 — Refactorización de Inmobiliaria (`RealEstateModule.jsx`) | Antigravity | ✅ Hecho | 1.0 |
-| T4 — Refactorización de Compradores (`InvestorsList.jsx`) | Antigravity | ✅ Hecho | 1.0 |
-| T5 — Actualización de Estándares (`design-standards.md`) | Antigravity | ✅ Hecho | 0.5 |
-| T6 — Pruebas de compilación y verificación local | Antigravity | ✅ Hecho | 0.5 |
+| T1 — Configuración del Sprint | Antigravity | ⬜ Todo | 0.5 |
+| T2 — Resolver crash en logs de SuperAdmin (Importaciones en `AuthContext.jsx`) | Antigravity | ⬜ Todo | 0.5 |
+| T3 — Alinear subcolección `/invoices` en `firestore.rules` | Antigravity | ⬜ Todo | 0.5 |
+| T4 — Mejorar propagación de errores en API interna de `AuthContext.jsx` | Antigravity | ⬜ Todo | 1.5 |
+| T5 — Limpieza y modularización del archivo `AuthContext.jsx` | Antigravity | ⬜ Todo | 2.5 |
+| T6 — Pruebas de compilación y verificación local | Antigravity | ⬜ Todo | 1.0 |
 
 ## Log Diario
 
-### 2026-05-20
-- Sprint 3 creado.
-- Sprint 2 archivado exitosamente.
-- Finalización de las modificaciones de UI compacta en el módulo de Inventario (`InventoryModule.jsx`), optimizando espaciado de tablas, reduciendo pestañas y eliminando el contenedor de filtros junto con botones estáticos de categorías.
-- Finalización de las refactorizaciones en el módulo de Inmobiliaria (`RealEstateModule.jsx` e `InvestorsList.jsx`), removiendo las tarjetas ("pastillas") pesadas de filtros/buscadores y aplicando alta densidad a tablas y botones.
-- Actualización de los estándares globales en `documentacion/design-standards.md`, incorporando la directiva formal de "Sección 17: Alta Densidad (Diseño Compacto)".
-- Inicio de las pruebas de compilación de producción locales para validación final.
-
-## Retrospectiva del Sprint
-
-- **Qué salió bien**: La refactorización fue quirúrgicamente precisa y respetó rigurosamente la lógica del ERP (incluyendo hooks de estado y layouts de exportación). El diseño ahora luce excepcionalmente sofisticado, moderno y enfocado a la productividad, flotando las barras de búsqueda y filtros directo sobre el fondo de las vistas de Inventario e Inmobiliaria.
-- **Lecciones aprendidas**: Remover los contenedores de tarjetas ("pastillas") para buscadores exige asegurar que los inputs utilicen la variable de fondo `bg-[var(--color-surface-container)]` con bordes sutiles para que sigan teniendo un excelente contraste sobre el fondo base de la página.
+### 2026-05-25
+- Creación de Sprint 4 para abordar la refactorización técnica post-auditoría.
+- Sprint 3 compact-ui archivado exitosamente en `.gsd/sprints/compact-ui-SPRINT.md`.
