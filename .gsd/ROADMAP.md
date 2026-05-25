@@ -1020,15 +1020,19 @@
 ---
 
 ### Phase 60: Unificación de Módulos de Inventario y Bodega
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Juntar los módulos de inventario y bodega en un solo módulo consolidado de "Inventario". Contendrá las pestañas: Stock de Inventario, Stock de Bodega, y Almacenes. La transferencia de materiales se manejará dentro de las vistas de stock. Las tarjetas de métricas serán: Ítems de Inventario, Alertas de Stock, Montos en Inventario, y Montos en Materiales. Se debe actualizar el portal SuperAdmin para reflejar este cambio (activado por defecto).
 **Depends on**: Phase 3, Phase 35
 
 **Tasks**:
-- [ ] TBD (run /plan 60 to create)
+- [x] Crear e integrar el componente consolidado `InventoryModule.jsx` con pestañas para Stock de Inventario, Stock de Bodega y Almacenes.
+- [x] Diseñar e implementar las cuatro tarjetas de métricas en la cabecera (Ítems de Inventario, Alertas de Stock, Monto en Inventario y Monto en Materiales).
+- [x] Unificar la gestión y flujos de transferencia de stock e insumos dentro del mismo módulo.
+- [x] Actualizar el ruteo en `App.jsx` eliminando referencias duplicadas a Bodega como ruta independiente.
 
 **Verification**:
-- TBD
+- [x] Módulo consolidado operando correctamente en producción.
+- [x] Las 4 métricas calculan montos e ítems en tiempo real usando Firestore.
 
 ---
 
@@ -1053,29 +1057,29 @@
 ---
 
 ### Phase 62: Real Estate — Optimización de UI/UX, Unificación y Distritos
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Resolver problemas estéticos y de usabilidad del módulo inmobiliario (Real Estate), logrando una integración fluida de modales, depuración de colores, simplificación de vistas y una base de datos global de distritos para compradores.
 **Depends on**: Phase 32, Phase 48, Phase 61
 
 **Tasks**:
-- [ ] Diseñar e implementar base de datos compartida de distritos en Firestore y actualizar `useInvestors` para leer/escribir en `/organizations/{orgId}/realEstateDistricts`.
-- [ ] Desarrollar e integrar dropdown de distritos editable en el formulario de edición de perfil de comprador (`InvestorsList.jsx`).
-- [ ] Compactar pastillas de compradores en cuadrícula (texto directo, sin cajas de inversión/área individuales ni insignia 'activo').
-- [ ] Rediseñar tarjetas de terrenos en pipeline Kanban para hacerlas compactas, mostrando interesado en una sola línea.
-- [ ] Optimizar pestaña "Base" de terrenos: barra de filtros simplificada (solo buscador full-width, sin dropdown de ciudades ni exportador CSV).
-- [ ] Reestructurar tabla de terrenos en pestaña "Base": columnas separadas para Área (m²), Precio Total y Precio por m².
-- [ ] Actualizar botón de edición en la tabla de terrenos a icono de lápiz.
-- [ ] Unificar modal de detalles de propiedad (`TerrainDetailsModal.jsx` se elimina) dentro de `TerrainModal.jsx` como modal único de 4 pestañas: Resumen (primera pestaña), Editar propiedad, Presentaciones y Documentos legales.
-- [ ] Sanitizar paleta de colores: reemplazar botón guardar degradado por púrpura canónico de Veló y remover verdes de la calculadora de valor comercial.
+- [x] Diseñar e implementar base de datos compartida de distritos en Firestore y actualizar `useInvestors` para leer/escribir en `/organizations/{orgId}/realEstateDistricts`.
+- [x] Desarrollar e integrar dropdown de distritos editable en el formulario de edición de perfil de comprador (`InvestorsList.jsx`).
+- [x] Compactar pastillas de compradores en cuadrícula (texto directo, sin cajas de inversión/área individuales ni insignia 'activo').
+- [x] Rediseñar tarjetas de terrenos en pipeline Kanban para hacerlas compactas, mostrando interesado en una sola línea.
+- [x] Optimizar pestaña "Base" de terrenos: barra de filtros simplificada (solo buscador full-width, sin dropdown de ciudades ni exportador CSV).
+- [x] Reestructurar tabla de terrenos en pestaña "Base": columnas separadas para Área (m²), Precio Total y Precio por m².
+- [x] Actualizar botón de edición en la tabla de terrenos a icono de lápiz.
+- [x] Unificar modal de detalles de propiedad (`TerrainDetailsModal.jsx` se elimina) dentro de `TerrainModal.jsx` como modal único de 4 pestañas: Resumen (primera pestaña), Editar propiedad, Presentaciones y Documentos legales.
+- [x] Sanitizar paleta de colores: reemplazar botón guardar degradado por púrpura canónico de Veló y remover verdes de la calculadora de valor comercial.
 
 **Verification**:
-- [ ] El modal de propiedades es único, tiene 4 pestañas funcionales y se abre por defecto en Resumen.
-- [ ] El botón de guardar en edición usa el color `#6B4FD8` estándar y texto `#002150` sin degradados verdes.
-- [ ] La calculadora de valor comercial no tiene campos ni textos de color verde.
-- [ ] Las tarjetas de terrenos en el pipeline Kanban son compactas e interesado ocupa una sola línea.
-- [ ] En edición de compradores, el selector de distritos es un dropdown editable que alimenta y lee de una colección compartida única.
-- [ ] Las pastillas de compradores son ultracompactas en líneas de texto directo y no muestran la insignia "activo".
-- [ ] La barra de filtros de la pestaña Base solo muestra la caja de búsqueda full-width.
-- [ ] La tabla de terrenos muestra Área (m²), Precio Total y Precio por m² en columnas independientes y usa el icono de lápiz para editar.
-- [ ] Build de producción exitoso sin errores en Vite.
+- [x] El modal de propiedades es único, tiene 4 pestañas funcionales y se abre por defecto en Resumen.
+- [x] El botón de guardar en edición usa el color `#6B4FD8` estándar y texto `#002150` sin degradados verdes.
+- [x] La calculadora de valor comercial no tiene campos ni textos de color verde.
+- [x] Las tarjetas de terrenos en el pipeline Kanban son compactas e interesado ocupa una sola línea.
+- [x] En edición de compradores, el selector de distritos es un dropdown editable que alimenta y lee de una colección compartida única.
+- [x] Las pastillas de compradores son ultracompactas en líneas de texto directo y no muestran la insignia "activo".
+- [x] La barra de filtros de la pestaña Base solo muestra la caja de búsqueda full-width.
+- [x] La tabla de terrenos muestra Área (m²), Precio Total y Precio por m² en columnas independientes y usa el icono de lápiz para editar.
+- [x] Build de producción exitoso sin errores en Vite.
 
