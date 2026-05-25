@@ -112,8 +112,9 @@ export default function ProjectModule() {
           <div 
             key={project.id} 
             onClick={() => handleSelectProject(project)}
-            className="group relative bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-6 transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
+            className="group relative bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-2xl p-6 pl-8 transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1 hover:shadow-lg"
           >
+            <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl opacity-95" style={{ backgroundColor: project.color || '#6B4FD8' }}></div>
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="p-3 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)]/30 rounded-xl text-[var(--color-primary)] transition-all">
                 <Folder size={24} />

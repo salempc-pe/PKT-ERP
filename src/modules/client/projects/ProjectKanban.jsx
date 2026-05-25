@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, MoreVertical, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Trash2, X, Edit3, ArrowRight, ArrowLeft, Layout, BarChart2, Calendar, FileText, Timer } from 'lucide-react';
+import { Plus, MoreVertical, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Trash2, X, Edit3, ArrowRight, ArrowLeft, Layout, BarChart2, Calendar, FileText, Timer, ChevronDown } from 'lucide-react';
 import ProjectGantt from './ProjectGantt';
 import ProjectTimesheet from './ProjectTimesheet';
 import ProjectDocuments from './ProjectDocuments';
@@ -156,8 +156,8 @@ export default function ProjectKanban({
             </button>
         </div>
 
-        {/* Tabs Selector */}
-        <div className="flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
+        {/* Desktop Tabs Selector */}
+        <div className="hidden md:flex p-1 bg-[var(--color-surface-container)]/50 rounded-xl border border-[var(--color-outline-variant)] w-fit">
             {tabs.map(tab => (
                 <button
                     key={tab.id}
@@ -168,6 +168,22 @@ export default function ProjectKanban({
                     {tab.label}
                 </button>
             ))}
+        </div>
+
+        {/* Mobile Tabs Selector */}
+        <div className="md:hidden relative w-full">
+            <select
+                value={activeTab}
+                onChange={(e) => setActiveTab(e.target.value)}
+                className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] font-bold rounded-xl border border-[var(--color-outline-variant)] px-4 py-3 outline-none appearance-none focus:border-[#6B4FD8]"
+            >
+                {tabs.map(tab => (
+                    <option key={tab.id} value={tab.id}>{tab.label}</option>
+                ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--color-on-surface-variant)]">
+                <ChevronDown size={18} />
+            </div>
         </div>
       </div>
 
