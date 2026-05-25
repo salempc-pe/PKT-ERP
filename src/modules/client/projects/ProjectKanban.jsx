@@ -34,9 +34,9 @@ export default function ProjectKanban({
   });
 
   const columns = [
-    { id: 'todo', title: 'Por Hacer', color: 'bg-slate-500', next: 'in_progress', prev: null },
-    { id: 'in_progress', title: 'En Curso', color: 'bg-blue-500', next: 'done', prev: 'todo' },
-    { id: 'done', title: 'Finalizado', color: 'bg-emerald-500', next: null, prev: 'in_progress' }
+    { id: 'todo', title: 'Por Hacer', color: 'bg-[#a3aac4]', next: 'in_progress', prev: null },
+    { id: 'in_progress', title: 'En Curso', color: 'bg-[#6B4FD8]', next: 'done', prev: 'todo' },
+    { id: 'done', title: 'Finalizado', color: 'bg-[#5391ff]', next: null, prev: 'in_progress' }
   ];
 
   const tabs = [
