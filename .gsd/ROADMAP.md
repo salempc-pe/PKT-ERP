@@ -1092,7 +1092,7 @@
 ## Milestone 5: Veló AI Assistant (WhatsApp & Internal Chat)
 
 ### Phase 63: AI Assistant Foundation & Firebase Cloud Functions
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Configurar la infraestructura del asistente de IA. Crear la Firebase Cloud Function que servirá como backend y webhook de WhatsApp, integrar la Gemini API mediante Node.js, y configurar el catálogo de Tools (Function Calling) estructurado para interactuar con Firestore.
 **Depends on**: Phase 51
 
