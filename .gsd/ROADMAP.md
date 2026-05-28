@@ -1087,3 +1087,109 @@
 - [x] La tabla de terrenos muestra Área (m²), Precio Total y Precio por m² en columnas independientes y usa el icono de lápiz para editar.
 - [x] Build de producción exitoso sin errores en Vite.
 
+---
+
+## Milestone 5: Veló AI Assistant (WhatsApp & Internal Chat)
+
+### Phase 63: AI Assistant Foundation & Firebase Cloud Functions
+**Status**: ⬜ Not Started
+**Objective**: Configurar la infraestructura del asistente de IA. Crear la Firebase Cloud Function que servirá como backend y webhook de WhatsApp, integrar la Gemini API mediante Node.js, y configurar el catálogo de Tools (Function Calling) estructurado para interactuar con Firestore.
+**Depends on**: Phase 51
+
+**Tasks**:
+- [ ] Inicializar y configurar Firebase Cloud Functions en el proyecto.
+- [ ] Instalar `@google/generative-ai` y configurar el cliente con las credenciales de desarrollo.
+- [ ] Desarrollar la función `velóAssistantEndpoint` que reciba mensajes, mantenga el historial en base a `sessionId` y llame a Gemini.
+- [ ] Definir el esquema JSON de respuesta (texto, sugerencias y payload estructurado de acciones: `CREATE_SALE`, `DEDUCT_INVENTORY`, `QUERY_STOCK`).
+- [ ] Configurar el sistema de Tools en Gemini para mapear lenguaje natural a llamadas estructuradas.
+
+**Verification**:
+- [ ] Endpoint de la función responde exitosamente a consultas estructuradas en POSTman.
+- [ ] La IA devuelve intenciones estructuradas (payloads JSON de acción) cuando se le solicita una venta o stock.
+
+---
+
+### Phase 64: Web Client: Drawer Glassmorphic & Internal Chat
+**Status**: ⬜ Not Started
+**Objective**: Implementar el Drawer Lateral Deslizable del Asistente en la aplicación web del cliente. Reemplazar el botón de feedback flotante con el nuevo botón de Veló Assistant, aplicando la estética glassmorphic con desenfoque de fondo y comandos rápidos.
+**Depends on**: Phase 63
+
+**Tasks**:
+- [ ] Crear el componente `AiAssistantDrawer.jsx` con diseño translúcido (glassmorphic, backdrop-blur) y animaciones de deslizamiento (`animate-in slide-in-from-right`).
+- [ ] Reemplazar el botón flotante de feedback en `ClientLayout.jsx` por un botón de IA con icono personalizado y animación de pulso.
+- [ ] Diseñar las burbujas de conversación, cabecera de Veló AI, estados de escritura (Loading palpitante) y scrolls.
+- [ ] Implementar la lista de "Comandos Rápidos" interactivos como pastillas flotantes en la parte inferior del chat vacío.
+- [ ] Desarrollar el hook cliente `useAiAssistant.js` para enviar mensajes al backend en tiempo real de forma aislada por `organizationId`.
+
+**Verification**:
+- [ ] El Drawer se desliza perfectamente al pulsar el botón flotante y se cierra correctamente.
+- [ ] El diseño móvil es responsivo, ocupando el 100% del viewport en pantallas pequeñas y de manera compacta en desktop.
+
+---
+
+### Phase 65: Interactive UI Action Confirmation Cards
+**Status**: ⬜ Not Started
+**Objective**: Desarrollar los componentes visuales de confirmación de transacciones dentro del chat del frontend. Al recibir un payload de acción de escritura por parte del asistente de IA, el chat debe mostrar una tarjeta rica con los datos y botones de confirmación táctil antes de impactar Firestore.
+**Depends on**: Phase 64
+
+**Tasks**:
+- [ ] Diseñar el componente `AiActionCard.jsx` para representar visualmente cotizaciones/facturas previas, cargos financieros o salidas de inventario.
+- [ ] Conectar los botones "Confirmar" y "Cancelar" de la tarjeta con los hooks existentes de la aplicación (`useSales`, `useInventory`, `useCrm`).
+- [ ] Implementar la lógica de ejecución: al presionar "Confirmar", realizar la escritura en Firestore, descontar el stock e imprimir un mensaje de confirmación del bot.
+- [ ] Sanitizar los inputs y asegurar que la IA no pueda realizar escrituras directas sin la validación del clic del usuario.
+
+**Verification**:
+- [ ] Al pedir *"Registrar venta de 2 palas"* la IA no escribe directo, sino que muestra una tarjeta con botones en el chat.
+- [ ] Presionar "Confirmar" genera la factura con su número secuencial, descuenta el stock en tiempo real y actualiza el saldo de finanzas.
+
+---
+
+### Phase 66: WhatsApp Channel & Multi-Tenant Profile Binding
+**Status**: ⬜ Not Started
+**Objective**: Habilitar el canal de comunicación por WhatsApp Cloud API en el webhook del backend. Implementar la lógica de vinculación multi-tenant súper segura para identificar al inquilino correcto y al usuario emisor de mensajes en base a su número de teléfono.
+**Depends on**: Phase 63
+
+**Tasks**:
+- [ ] Configurar la lógica de verificación de tokens del webhook de Meta (WhatsApp) en la Cloud Function.
+- [ ] Desarrollar el sistema de flujo de bienvenida y vinculación: si el remitente no está en la colección `/users`, el bot solicita el Token de 6 dígitos.
+- [ ] Implementar en el perfil de configuración del usuario en la web (`ProfileSettings`) un botón para "Vincular WhatsApp" que genere un código de 6 dígitos de corta duración en Firestore.
+- [ ] Validar y registrar la relación teléfono-usuario tras ingresar el código correcto por WhatsApp, permitiendo subsiguientes peticiones directas.
+- [ ] Restringir las capacidades del bot en WhatsApp de acuerdo al rol del usuario vinculado (`admin` vs `user`).
+
+**Verification**:
+- [ ] Un número de WhatsApp desconocido recibe un flujo interactivo solicitando vinculación.
+- [ ] Ingresar el código del ERP asocia el número al perfil del usuario de forma inmediata.
+
+---
+
+### Phase 67: SuperAdmin Support Panel & WhatsApp Simulator
+**Status**: ⬜ Not Started
+**Objective**: Construir un simulador interactivo de WhatsApp dentro del portal SuperAdmin de Veló ERP para propósitos de pruebas locales, depuración de logs e inspección del comportamiento de la IA sin depender de Meta en local.
+**Depends on**: Phase 66
+
+**Tasks**:
+- [ ] Crear el componente `AdminWhatsappSimulator.jsx` que permita escribir y recibir mensajes simulando el canal de WhatsApp de un usuario específico.
+- [ ] Diseñar una interfaz interactiva de doble columna: simulación del chat a la izquierda y visor de logs estructurados del motor de IA a la derecha (JSON payloads, Tools llamadas, etc.).
+- [ ] Vincular el simulador directamente con el endpoint local de la Cloud Function de desarrollo.
+
+**Verification**:
+- [ ] El SuperAdmin puede probar diálogos completos simulando diferentes números de teléfono.
+- [ ] El panel muestra exactamente qué herramientas (Tools) está invocando Gemini y los estados del pipeline.
+
+---
+
+### Phase 68: Verification & Launch
+**Status**: ⬜ Not Started
+**Objective**: Realizar la auditoría de seguridad integral, verificar el correcto aislamiento multi-tenant de las Firebase Cloud Functions, probar flujos con alta concurrencia y optimizar la carga del drawer web.
+**Depends on**: Phase 65, Phase 67
+
+**Tasks**:
+- [ ] Auditar reglas de seguridad de Firestore asociadas a escrituras gatilladas por tokens del backend.
+- [ ] Optimizar el bundle del cliente para que las librerías del asistente se carguen de manera perezosa (lazy load) al pulsar el botón.
+- [ ] Redactar el reporte de verificación `WALKTHROUGH.md` demostrando el correcto funcionamiento con capturas/videos.
+
+**Verification**:
+- [ ] El build de producción se genera perfectamente sin advertencias de Vite.
+- [ ] El tiempo de respuesta de la IA (Gemini API) es óptimo y la UX es impecable.
+
+
