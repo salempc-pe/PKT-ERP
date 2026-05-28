@@ -1145,20 +1145,20 @@
 ---
 
 ### Phase 66: WhatsApp Channel & Multi-Tenant Profile Binding
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Habilitar el canal de comunicación por WhatsApp Cloud API en el webhook del backend. Implementar la lógica de vinculación multi-tenant súper segura para identificar al inquilino correcto y al usuario emisor de mensajes en base a su número de teléfono.
 **Depends on**: Phase 63
 
 **Tasks**:
-- [ ] Configurar la lógica de verificación de tokens del webhook de Meta (WhatsApp) en la Cloud Function.
-- [ ] Desarrollar el sistema de flujo de bienvenida y vinculación: si el remitente no está en la colección `/users`, el bot solicita el Token de 6 dígitos.
-- [ ] Implementar en el perfil de configuración del usuario en la web (`ProfileSettings`) un botón para "Vincular WhatsApp" que genere un código de 6 dígitos de corta duración en Firestore.
-- [ ] Validar y registrar la relación teléfono-usuario tras ingresar el código correcto por WhatsApp, permitiendo subsiguientes peticiones directas.
-- [ ] Restringir las capacidades del bot en WhatsApp de acuerdo al rol del usuario vinculado (`admin` vs `user`).
+- [x] Configurar la lógica de verificación de tokens del webhook de Meta (WhatsApp) en la Cloud Function.
+- [x] Desarrollar el sistema de flujo de bienvenida y vinculación: si el remitente no está en la colección `/users`, el bot solicita el Token de 6 dígitos.
+- [x] Implementar en el perfil de configuración del usuario en la web (`ProfileSettings`) un botón para "Vincular WhatsApp" que genere un código de 6 dígitos de corta duración en Firestore.
+- [x] Validar y registrar la relación teléfono-usuario tras ingresar el código correcto por WhatsApp, permitiendo subsiguientes peticiones directas.
+- [x] Restringir las capacidades del bot en WhatsApp de acuerdo al rol del usuario vinculado (`admin` vs `user`).
 
 **Verification**:
-- [ ] Un número de WhatsApp desconocido recibe un flujo interactivo solicitando vinculación.
-- [ ] Ingresar el código del ERP asocia el número al perfil del usuario de forma inmediata.
+- [x] Un número de WhatsApp desconocido recibe un flujo interactivo solicitando vinculación.
+- [x] Ingresar el código del ERP asocia el número al perfil del usuario de forma inmediata.
 
 ---
 

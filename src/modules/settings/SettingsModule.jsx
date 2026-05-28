@@ -1,4 +1,5 @@
 import BusinessProfileForm from './components/BusinessProfileForm';
+import WhatsappBindingPanel from './components/WhatsappBindingPanel';
 
 export default function SettingsModule() {
   return (
@@ -20,8 +21,9 @@ export default function SettingsModule() {
         </div>
       </section>
 
-      <section>
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <BusinessProfileForm />
+        <WhatsappBindingPanel />
       </section>
     </div>
   );
