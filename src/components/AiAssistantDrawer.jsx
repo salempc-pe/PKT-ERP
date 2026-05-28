@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Sparkles, Send, X, Bot, User, Trash2 } from 'lucide-react';
 import { useAiAssistant } from '../hooks/useAiAssistant';
+import AiActionCard from './AiActionCard';
 import './AiAssistantDrawer.css';
 
 /**
@@ -96,12 +97,7 @@ export default function AiAssistantDrawer({ isOpen, onClose }) {
                       <p>{msg.text}</p>
                       
                       {/* Si la IA devuelve un payload estructurado de acción */}
-                      {msg.action && (
-                        <div className="ai-action-preview">
-                          <span className="ai-action-badge">{msg.action.type}</span>
-                          <pre className="ai-action-code">{JSON.stringify(msg.action.payload, null, 2)}</pre>
-                        </div>
-                      )}
+                      {msg.action && <AiActionCard action={msg.action} />}
                     </div>
                   </div>
                 </div>
