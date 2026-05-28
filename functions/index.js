@@ -26,7 +26,25 @@ exports.helloWorld = onRequest({ cors: true }, (req, res) => {
  * consulta a Gemini API aplicando el Function Calling y persiste el diálogo en Firestore.
  */
 exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
-  // Solo procesar peticiones HTTP POST
+  // 1. Procesar verificación del Webhook de Meta (WhatsApp Cloud API) vía GET
+  if (req.method === "GET") {
+    const mode = req.query["hub.mode"];
+    const token = req.query["hub.verify_token"];
+    const challenge = req.query["hub.challenge"];
+
+    const verifyToken = process.env.WA_VERIFY_TOKEN || "VELO_WA_SECRET";
+
+    if (mode === "subscribe" && token === verifyToken) {
+      console.log("✅ Webhook verificado de forma exitosa por Meta.");
+      res.setHeader("Content-Type", "text/plain");
+      return res.status(200).send(challenge);
+    } else {
+      console.warn("❌ Intento de verificación fallido: token de verificación inválido.");
+      return res.status(403).send("Token de verificación inválido.");
+    }
+  }
+
+  // 2. Solo permitir POST para las interacciones del asistente
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido. Utilizar POST." });
   }
