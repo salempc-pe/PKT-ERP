@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Settings, LogOut, Menu, Building, Shield } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, Menu, Building, Shield, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -7,6 +7,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import VeloLogo from '../../components/VeloLogo';
 import ErrorBoundary from '../../components/ErrorBoundary';
+import AiAssistantDrawer from '../../components/AiAssistantDrawer';
 
 import { 
   getAccessibleModules, 
@@ -22,6 +23,7 @@ export default function ClientLayout() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const { user, logout, isImpersonating, stopImpersonation } = useAuth();
   const { isDark } = useTheme();
 
@@ -247,6 +249,20 @@ export default function ClientLayout() {
           </ErrorBoundary>
         </div>
       </main>
+
+      {/* Botón Flotante del Asistente de IA */}
+      <button 
+        onClick={() => setIsAssistantOpen(true)}
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border border-[#a38cff]/20 bg-gradient-to-br from-[#6B4FD8] to-[#a38cff] text-[#002150] group"
+        title="Abrir Asistente de IA"
+        aria-label="Asistente de IA"
+      >
+        <Sparkles size={24} className="group-hover:rotate-12 transition-transform duration-300" />
+      </button>
+
+      {/* Drawer del Asistente de IA */}
+      <AiAssistantDrawer isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+
     </div>
     </>
   );
