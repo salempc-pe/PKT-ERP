@@ -1,0 +1,85 @@
+/* ==========================================================================
+   Estilos de AiActionCard (Tarjeta de Confirmación Táctil IA)
+   ========================================================================== */
+
+.ai-action-card {
+  background-color: var(--color-surface-container);
+  border-color: var(--color-outline-variant);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+
+/* Efectos visuales de estados */
+.ai-action-card.confirmed {
+  border-color: rgba(107, 79, 216, 0.3);
+  background-color: color-mix(in srgb, #6B4FD8 5%, var(--color-surface-container));
+}
+
+.ai-action-card.cancelled {
+  border-color: rgba(239, 68, 68, 0.2);
+  opacity: 0.75;
+}
+
+.ai-card-title h4 {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--color-on-surface);
+}
+
+/* Botones de acción */
+.ai-btn-primary {
+  background-color: #6B4FD8;
+  color: #002150;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(107, 79, 216, 0.2);
+}
+
+.ai-btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.ai-btn-primary:active {
+  transform: translateY(0);
+}
+
+.ai-btn-secondary {
+  background-color: var(--color-surface-container-low);
+  color: var(--color-on-surface-variant);
+  border: 1px solid var(--color-outline-variant);
+  transition: all 0.2s;
+}
+
+.ai-btn-secondary:hover {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface);
+}
+
+/* Tabla de desgloses de cotización */
+.ai-table-container {
+  background-color: var(--color-surface-container-low);
+  border-color: var(--color-outline-variant);
+}
+
+.ai-table-container th {
+  color: var(--color-on-surface-variant);
+  opacity: 0.7;
+}
+
+.border-color-mix {
+  border-color: color-mix(in srgb, var(--color-outline-variant) 30%, transparent);
+}
+
+/* Spinner de carga */
+.ai-spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid rgba(107, 79, 216, 0.2);
+  border-top-color: #6B4FD8;
+  border-radius: 50%;
+  animation: ai-spin 0.8s linear infinite;
+}
+
+@keyframes ai-spin {
+  to { transform: rotate(360deg); }
+}
