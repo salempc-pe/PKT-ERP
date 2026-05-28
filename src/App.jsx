@@ -27,7 +27,6 @@ import SetupPassword from './modules/SetupPassword';
 import ActivityLogs from './modules/admin/ActivityLogs';
 import ModuleRoute from './components/ModuleRoute';
 import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
-import FeedbackButton from './components/FeedbackButton';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -126,7 +125,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
-        <FeedbackButton />
       </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
