@@ -29,6 +29,8 @@ import ModuleRoute from './components/ModuleRoute';
 import AdminBillingModule from './modules/admin/billing/AdminBillingModule';
 import ErrorBoundary from './components/ErrorBoundary';
 
+import AdminWhatsappSimulator from './modules/admin/whatsapp/AdminWhatsappSimulator';
+
 function App() {
   useEffect(() => {
     const handleGesture = (e) => {
@@ -118,6 +120,7 @@ function App() {
               <Route path="clients" element={<AdminClients />} />
               <Route path="sales" element={<AdminBillingModule />} />
               <Route path="logs" element={<ActivityLogs />} />
+              <Route path="whatsapp" element={<AdminWhatsappSimulator />} />
             </Route>
             <Route path="/login" element={<Navigate to="/" replace />} />
             

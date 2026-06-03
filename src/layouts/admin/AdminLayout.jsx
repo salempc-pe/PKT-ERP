@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, CreditCard, Blocks, HelpCircle, LogOut, Bell, Settings, FileText, Activity, Sun, Moon, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import VeloLogo from '../../components/VeloLogo';
@@ -90,6 +90,15 @@ export default function AdminLayout() {
           >
             <Activity size={20} />
             <span>Auditoría / Logs</span>
+          </Link>
+
+          <Link 
+            to="/admin/whatsapp" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm"
+            style={isActive('/admin/whatsapp') ? activeStyle : { color: 'var(--color-on-surface-variant)' }}
+          >
+            <MessageSquare size={20} />
+            <span>Simulador WhatsApp</span>
           </Link>
         </nav>
         
