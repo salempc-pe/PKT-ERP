@@ -112,6 +112,9 @@ service cloud.firestore {
       match /inventory_transactions/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
+      match /material_settings/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
       
       // Ventas y Facturación
       match /invoices/{docId} {
@@ -161,6 +164,9 @@ service cloud.firestore {
       match /realEstateInvestors/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
+      match /realEstateDistricts/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
       
       // Bodega / Warehouse
       match /warehouse_stock/{docId} {
@@ -170,8 +176,14 @@ service cloud.firestore {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
       
-      // Nóminas: Empleados
+      // Nóminas: Empleados e Integraciones
       match /employees/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /attendances/{docId} {
+        allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
+      }
+      match /loans/{docId} {
         allow read, write: if request.auth != null && (getUserOrg() == orgId || isSuperAdmin());
       }
 
