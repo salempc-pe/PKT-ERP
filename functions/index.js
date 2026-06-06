@@ -3,6 +3,7 @@ const { initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const { getAssistantModel } = require("./assistant");
 const { getChatHistory, saveChatMessage } = require("./sessions");
+const { resolveUserProfileByPhone, processWhatsappBinding } = require("./profiles");
 const toolsList = require("./tools");
 
 // Inicializar la aplicación de administración de Firebase
@@ -50,16 +51,74 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
   }
 
   try {
-    const { message, sessionId, organizationId, userId } = req.body;
+    let message = "";
+    let sessionId = "";
+    let organizationId = "";
+    let userId = "";
+    let isWhatsapp = false;
+    let phoneNumber = "";
 
-    // Validación exhaustiva de parámetros
-    if (!message || !sessionId || !organizationId || !userId) {
-      return res.status(400).json({
-        error: "Parámetros insuficientes. Se requiere 'message', 'sessionId', 'organizationId' y 'userId'."
-      });
+    // 1. Detectar si la petición proviene de WhatsApp (Meta Cloud API Webhook)
+    if (req.body.object === "whatsapp_business_account" || (req.body.entry && req.body.entry[0]?.changes[0]?.value?.messages)) {
+      isWhatsapp = true;
+      const messageData = req.body.entry[0].changes[0].value.messages[0];
+      phoneNumber = messageData.from; // Número de WhatsApp remitente
+      message = messageData.text?.body || "";
+
+      // Buscar si el número está vinculado a algún usuario registrado en el ERP
+      const userProfile = await resolveUserProfileByPhone(phoneNumber);
+
+      if (!userProfile) {
+        // CASO A: Remitente no vinculado
+        const code = message.trim();
+
+        // Evaluar si intentó enviar un código de vinculación de 6 dígitos
+        if (/^\d{6}$/.test(code)) {
+          try {
+            const linkedProfile = await processWhatsappBinding(phoneNumber, code);
+            return res.status(200).json({
+              role: "assistant",
+              text: `¡Vinculación exitosa! 🎉 Hola ${linkedProfile.name}, tu número de WhatsApp ha sido vinculado de forma segura a tu cuenta en Veló ERP. A partir de ahora, puedes pedirme consultar stocks, registrar ventas o egresar materiales.`,
+              suggestions: ["¿Qué puedo hacer?", "Ver stock de palas"]
+            });
+          } catch (bindingError) {
+            return res.status(200).json({
+              role: "assistant",
+              text: `❌ Error al vincular: ${bindingError.message} Por favor, genera un nuevo código OTP desde Ajustes de Perfil > Vincular WhatsApp en tu portal web e inténtalo nuevamente.`,
+              suggestions: ["Intentar de nuevo"]
+            });
+          }
+        } else {
+          // Si no es un código de 6 dígitos, disparar el flujo de bienvenida
+          return res.status(200).json({
+            role: "assistant",
+            text: "¡Hola! Bienvenido a Veló AI, el asistente inteligente de Veló ERP. 🤖\n\nPara poder gestionar tu negocio desde aquí, necesito que vincules tu número telefónico. Sigue estos simples pasos:\n1. Ingresa a tu ERP en la web.\n2. Ve a Configuración (Ajustes de Perfil) > Asistente de IA & WhatsApp.\n3. Presiona 'Generar Código'.\n4. Envíame el código de 6 dígitos resultante en tu siguiente mensaje.",
+            suggestions: ["¿Qué es Veló ERP?"]
+          });
+        }
+      }
+
+      // CASO B: Remitente ya vinculado
+      organizationId = userProfile.organizationId;
+      userId = userProfile.uid || userProfile.id;
+      sessionId = `whatsapp_session_${phoneNumber}`; // Sesión persistente por número
+
+    } else {
+      // 2. Provenir del cliente web del ERP
+      const bodyData = req.body;
+      message = bodyData.message;
+      sessionId = bodyData.sessionId;
+      organizationId = bodyData.organizationId;
+      userId = bodyData.userId;
+
+      if (!message || !sessionId || !organizationId || !userId) {
+        return res.status(400).json({
+          error: "Parámetros insuficientes. Se requiere 'message', 'sessionId', 'organizationId' y 'userId'."
+        });
+      }
     }
 
-    // 1. Obtener historial reciente de chat aplicando reglas de multi-tenant
+    // 2. Obtener historial reciente de chat aplicando reglas de multi-tenant
     let history = [];
     try {
       history = await getChatHistory(sessionId, organizationId);
@@ -74,16 +133,15 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
       parts: [{ text: message }]
     });
 
-    // 2. Obtener el modelo de Gemini configurado con las herramientas de negocio
+    // 3. Obtener el modelo de Gemini configurado con las herramientas de negocio
     const model = getAssistantModel(toolsList);
 
     // Formatear el historial de chat para la API de Gemini
-    // Gemini espera un array de objetos con 'role' ('user' o 'model') y 'parts'
     const chat = model.startChat({
       history: history
     });
 
-    // 3. Enviar el mensaje del usuario a la API de Gemini
+    // 4. Enviar el mensaje del usuario a la API de Gemini
     const result = await chat.sendMessage(message);
     const response = result.response;
 
@@ -91,7 +149,7 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
     let actionPayload = null;
     let suggestions = ["¿Qué más puedes hacer?", "Ver stock de palas", "Crear una cotización"];
 
-    // 4. Analizar si Gemini invocó alguna herramienta mediante Function Calling
+    // 5. Analizar si Gemini invocó alguna herramienta mediante Function Calling
     const functionCalls = response.functionCalls ? response.functionCalls() : [];
 
     if (functionCalls && functionCalls.length > 0) {
@@ -101,7 +159,7 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
       // Procesar la herramienta de forma inteligente
       if (name === "queryStock") {
         const { productName } = args;
-        responseText = `Entendido. He verificado en el sistema y para '${productName}' tenemos disponible un stock saludable de 24 unidades en el Almacén Principal. ¿Deseas que registre una salida o prepare una cotización con este material?`;
+        responseText = `Entendido. He verificado en el sistema y para '${productName}' tenemos disponible un stock saludable de 24 unidades en el Almacén Principal. ¿Deseas que prepare una cotización con este material?`;
         actionPayload = {
           type: "QUERY_STOCK",
           payload: {
@@ -122,7 +180,7 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
               productId: `prod-${idx + 1}`,
               name: p.name,
               quantity: p.quantity,
-              price: 45.00 // Precio estimado por defecto
+              price: 45.00
             })),
             total: products.reduce((acc, p) => acc + (p.quantity * 45.00), 0)
           }
@@ -142,11 +200,10 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
         suggestions = ["Confirmar egreso", "Editar cantidad", "Cancelar egreso"];
       }
     } else {
-      // Si no invocó herramientas, leer la respuesta directa de texto plano
       responseText = response.text ? response.text() : "Lo siento, he tenido dificultades procesando esta petición. ¿Podrías reformularla?";
     }
 
-    // 5. Guardar la respuesta estructurada de la IA en la sesión de Firestore
+    // 6. Guardar la respuesta estructurada de la IA en la sesión de Firestore
     const assistantMessage = {
       role: "assistant",
       text: responseText,
@@ -160,7 +217,7 @@ exports.velóAssistantEndpoint = onRequest({ cors: true }, async (req, res) => {
 
     await saveChatMessage(sessionId, organizationId, userId, assistantMessage);
 
-    // 6. Responder de forma exitosa al cliente
+    // 7. Responder de forma exitosa
     return res.status(200).json(assistantMessage);
 
   } catch (error) {

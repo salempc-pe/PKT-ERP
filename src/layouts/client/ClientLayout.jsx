@@ -1,13 +1,14 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { LayoutDashboard, Settings, LogOut, Menu, Building, Shield, Sparkles } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import VeloLogo from '../../components/VeloLogo';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import AiAssistantDrawer from '../../components/AiAssistantDrawer';
+
+const AiAssistantDrawer = lazy(() => import('../../components/AiAssistantDrawer'));
 
 import { 
   getAccessibleModules, 
@@ -24,6 +25,7 @@ export default function ClientLayout() {
   const isActive = (path) => location.pathname === path;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [hasAssistantBeenOpened, setHasAssistantBeenOpened] = useState(false);
   const { user, logout, isImpersonating, stopImpersonation } = useAuth();
   const { isDark } = useTheme();
 
@@ -60,6 +62,12 @@ export default function ClientLayout() {
 
     return () => unsub();
   }, [user]);
+
+  useEffect(() => {
+    if (isAssistantOpen) {
+      setHasAssistantBeenOpened(true);
+    }
+  }, [isAssistantOpen]);
 
   const moduleTitles = {
     '/client/dashboard': 'Dashboard',
@@ -261,7 +269,11 @@ export default function ClientLayout() {
       </button>
 
       {/* Drawer del Asistente de IA */}
-      <AiAssistantDrawer isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+      <Suspense fallback={null}>
+        {hasAssistantBeenOpened && (
+          <AiAssistantDrawer isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+        )}
+      </Suspense>
 
     </div>
     </>
