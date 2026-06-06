@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, History, User, Clock, Eye, RefreshCcw } from 'lucide-react';
+import { X, FileClock, User, Clock, Eye, RefreshCcw } from 'lucide-react';
 
 export default function HistoryModal({ isOpen, onClose, appointments, contacts, onView, onStatusUpdate }) {
   if (!isOpen) return null;
@@ -21,11 +21,11 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
+      <div className="bg-[var(--color-surface-variant)] w-full max-w-2xl border border-[var(--color-outline-variant)] rounded-3xl shadow-lg relative animate-in zoom-in duration-300">
         
         <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)] rounded-t-3xl">
            <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
-             <History size={16} className="text-[var(--color-primary)]" /> Registro de Citas
+             <FileClock size={16} className="text-[var(--color-primary)]" /> Registro de Citas
            </h3>
            <button onClick={onClose} className="text-[var(--color-on-surface-variant)] hover:text-white">
              <X size={16}/>
@@ -35,7 +35,7 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
         <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar space-y-4">
           {historyAppointments.length === 0 ? (
             <div className="text-center py-12">
-              <History size={48} className="mx-auto text-[var(--color-outline-variant)] mb-4 opacity-20" />
+              <FileClock size={48} className="mx-auto text-[var(--color-outline-variant)] mb-4 opacity-20" />
               <p className="text-[var(--color-on-surface-variant)]">No hay citas registradas.</p>
             </div>
           ) : (
@@ -68,7 +68,8 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
               return (
                 <div 
                   key={appt.id} 
-                  className="group relative overflow-hidden bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] p-4 rounded-2xl flex justify-between items-center gap-4 transition-all duration-300 hover:bg-[var(--color-surface-container-high)] hover:-translate-y-0.5"
+                  onClick={() => onView(appt)}
+                  className={`group relative overflow-hidden bg-[var(--color-surface-container)]/70 backdrop-blur-md border p-4 rounded-2xl flex justify-between items-center gap-4 transition-all duration-300 cursor-pointer shadow-[0_12px_24px_-4px_rgba(0,0,0,0.3),_inset_0_1.5px_1.5px_rgba(255,255,255,0.08)] hover:shadow-[0_15px_30px_-8px_rgba(0,0,0,0.4),_inset_0_2px_2px_rgba(255,255,255,0.12)] hover:bg-[var(--color-surface-container-high)]/95 hover:-translate-y-0.5 hover:scale-[1.008] ${appt.status === 'CANCELLED' ? 'border-red-500/40 hover:border-red-500/60' : 'border-[var(--color-outline-variant)]/80 hover:border-[#6B4FD8]/60'}`}
                 >
                   {/* Background Glow */}
                   <div 
@@ -103,18 +104,11 @@ export default function HistoryModal({ isOpen, onClose, appointments, contacts, 
                     </span>
                     <div className="flex items-center gap-1">
                       <button 
-                        onClick={() => onStatusUpdate(appt.id, 'PENDING')}
-                        className="p-2 hover:bg-amber-500/10 text-amber-500 rounded-xl transition-all active:scale-90"
+                        onClick={(e) => { e.stopPropagation(); onStatusUpdate(appt.id, 'PENDING'); }}
+                        className="p-2 bg-amber-500/10 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 hover:border-amber-500/50 rounded-xl transition-all duration-300 shadow-[0_3px_8px_rgba(245,158,11,0.2),_inset_0_1px_1px_rgba(255,255,255,0.08)] hover:shadow-[0_6px_14px_rgba(245,158,11,0.28),_inset_0_1.5px_1.5px_rgba(255,255,255,0.15)] hover:-translate-y-0.5 hover:scale-108 active:scale-95"
                         title="Restaurar a pendiente"
                       >
                         <RefreshCcw size={18} />
-                      </button>
-                      <button 
-                        onClick={() => onView(appt)}
-                        className="p-2 hover:bg-blue-500/10 text-blue-400 rounded-xl transition-all active:scale-90"
-                        title="Ver detalles"
-                      >
-                        <Eye size={18} />
                       </button>
                     </div>
                   </div>

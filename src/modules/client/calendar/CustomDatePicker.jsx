@@ -2,7 +2,19 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, X } from 'lucide-react';
 
 export default function CustomDatePicker({ selectedDate, onChange, onClose }) {
-  const [currentDate, setCurrentDate] = useState(selectedDate ? new Date(selectedDate + 'T12:00:00') : new Date());
+  const parseInitialDate = (dateStr) => {
+    if (!dateStr) return new Date();
+    try {
+      const cleanStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+      const parsed = new Date(cleanStr + 'T12:00:00');
+      if (!isNaN(parsed.getTime())) return parsed;
+    } catch (e) {
+      // Fallback
+    }
+    return new Date();
+  };
+
+  const [currentDate, setCurrentDate] = useState(parseInitialDate(selectedDate));
   
   const months = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -97,10 +109,10 @@ export default function CustomDatePicker({ selectedDate, onChange, onClose }) {
       </div>
 
       <div className="grid grid-cols-7 gap-1">
-        {Array(firstDay).fill(null).map((_, i) => (
+        {Array(isNaN(firstDay) || firstDay < 0 ? 0 : firstDay).fill(null).map((_, i) => (
           <div key={`empty-${i}`} />
         ))}
-        {Array(daysInMonth).fill(null).map((_, i) => {
+        {Array(isNaN(daysInMonth) || daysInMonth < 0 ? 30 : daysInMonth).fill(null).map((_, i) => {
           const day = i + 1;
           const selected = isSelected(day);
           const current = isToday(day);
@@ -112,7 +124,7 @@ export default function CustomDatePicker({ selectedDate, onChange, onClose }) {
               className={`
                 h-9 w-9 text-xs font-bold rounded-xl transition-all
                 ${selected 
-                  ? 'bg-[#6B4FD8] text-[#001b5c] scale-110' 
+                  ? 'bg-[#6B4FD8] text-[#001b5c] scale-110 shadow-lg shadow-[#6B4FD8]/20' 
                   : current
                   ? 'bg-[var(--color-primary-container)] text-[var(--color-primary)] border border-[var(--color-primary)]/20'
                   : 'hover:bg-[var(--color-surface-variant)] text-[var(--color-on-surface)]'}

@@ -27,6 +27,8 @@ export default function EventModal({
   const [resourceId, setResourceId] = useState('');
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('PENDING');
+  const [syncGoogleCalendar, setSyncGoogleCalendar] = useState(false);
+  const [syncPhone, setSyncPhone] = useState('+51 948 537 030');
   const [error, setError] = useState('');
 
   // Sync internal states when appointment or modal opens
@@ -53,6 +55,8 @@ export default function EventModal({
         setResourceId(appointment.resourceId || '');
         setNotes(appointment.notes || '');
         setStatus(appointment.status || 'PENDING');
+        setSyncGoogleCalendar(appointment.syncGoogleCalendar || false);
+        setSyncPhone(appointment.syncPhone || '+51 948 537 030');
       } else {
         // Reset for new
         setTitle('');
@@ -66,6 +70,8 @@ export default function EventModal({
         setResourceId('');
         setNotes('');
         setStatus('PENDING');
+        setSyncGoogleCalendar(false);
+        setSyncPhone('+51 948 537 030');
       }
       setIsDatePickerOpen(false);
     }
@@ -101,7 +107,9 @@ export default function EventModal({
         clientId,
         resourceId,
         notes,
-        status
+        status,
+        syncGoogleCalendar,
+        syncPhone
       });
       onClose();
     } catch (err) {
@@ -118,15 +126,44 @@ export default function EventModal({
 
   const formatDisplayDate = (d) => {
     if (!d) return "Seleccionar fecha";
-    const [year, month, day] = d.split('-');
-    const dateObj = new Date(year, month - 1, day);
-    return dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    try {
+      const cleanDateStr = d.includes('T') ? d.split('T')[0] : d;
+      const parts = cleanDateStr.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        const day = parseInt(parts[2]);
+        const dateObj = new Date(year, month - 1, day);
+        if (!isNaN(dateObj.getTime())) {
+          return dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+      }
+      const fallbackObj = new Date(d);
+      if (!isNaN(fallbackObj.getTime())) {
+        return fallbackObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+      }
+    } catch (e) {
+      console.warn("Error parsing date in formatDisplayDate:", d, e);
+    }
+    return "Seleccionar fecha";
+  };
+
+  const maskPhone = (phoneStr) => {
+    if (!phoneStr) return '';
+    const parts = phoneStr.trim().split(/\s+/);
+    if (parts.length >= 3) {
+      return `${parts[0]} ${parts[1]} ••• •••`;
+    }
+    if (phoneStr.length > 6) {
+      return phoneStr.substring(0, phoneStr.length - 6) + ' ••• •••';
+    }
+    return phoneStr.replace(/\d/g, '•');
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSubmitting && onClose()}></div>
-      <div className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-2xl relative animate-in zoom-in duration-300">
+      <div className="bg-[var(--color-surface-variant)] w-full max-w-md border border-[var(--color-outline-variant)] rounded-3xl shadow-lg relative animate-in zoom-in duration-300">
         
         <div className="p-6 border-b border-[var(--color-outline-variant)] flex justify-between items-center bg-[var(--color-surface-container)] rounded-t-3xl">
            <h3 className="font-black text-[var(--color-on-surface)] uppercase tracking-wider text-sm flex items-center gap-2">
@@ -284,6 +321,40 @@ export default function EventModal({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Sincronización Google Calendar y Celular */}
+          <div className="bg-[var(--color-surface-container)]/50 p-4 rounded-2xl border border-[var(--color-outline-variant)] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-[var(--color-on-surface)] uppercase">Vincular con Google Calendar</span>
+                <span className="text-[9px] text-[var(--color-on-surface-variant)]">Notificación automática al celular</span>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  disabled={isViewOnly}
+                  checked={syncGoogleCalendar} 
+                  onChange={e => setSyncGoogleCalendar(e.target.checked)}
+                  className="sr-only peer" 
+                />
+                <div className="w-9 h-5 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-[var(--color-on-surface-variant)] after:border-[var(--color-outline-variant)] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#6B4FD8] peer-checked:after:bg-[#001b5c]"></div>
+              </label>
+            </div>
+
+            {syncGoogleCalendar && (
+              <div className="animate-in slide-in-from-top-2 duration-300">
+                <label className="text-[9px] font-bold text-[var(--color-on-surface-variant)] uppercase block mb-1">Número de Celular (Perú)</label>
+                <input 
+                  type="text"
+                  disabled={isViewOnly}
+                  value={isViewOnly ? maskPhone(syncPhone) : syncPhone} 
+                  onChange={e => setSyncPhone(e.target.value)}
+                  className="w-full bg-[var(--color-surface-container)] text-[var(--color-on-surface)] text-xs rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-[#6B4FD8] border border-[var(--color-outline-variant)] focus:border-[#6B4FD8] transition-all"
+                  placeholder="+51 948 537 030"
+                />
+              </div>
+            )}
           </div>
 
           <div>

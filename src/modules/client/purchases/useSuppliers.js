@@ -4,6 +4,7 @@ import {
   onSnapshot, 
   addDoc, 
   updateDoc, 
+  deleteDoc,
   doc, 
   query, 
   orderBy,
@@ -79,11 +80,22 @@ export const useSuppliers = (orgId = "default_org") => {
     }
   };
 
+  const deleteSupplier = async (supplierId) => {
+    try {
+      const supplierRef = doc(db, `organizations/${orgId}/suppliers`, supplierId);
+      return await deleteDoc(supplierRef);
+    } catch (err) {
+      console.error("Delete Error:", err);
+      throw err;
+    }
+  };
+
   return {
     suppliers,
     loading,
     error,
     addSupplier,
-    updateSupplier
+    updateSupplier,
+    deleteSupplier
   };
 };

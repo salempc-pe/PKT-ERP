@@ -1,7 +1,6 @@
 import { Calendar } from 'lucide-react';
 import DashboardCard from '../../../components/DashboardCard';
 import { useCalendar } from './useCalendar';
-import { MODULE_NAMES, MODULE_SLUGS } from '../../moduleNames';
 
 export default function CalendarDashboardCard({ orgId }) {
   const { appointments, loading } = useCalendar(orgId);
@@ -13,10 +12,10 @@ export default function CalendarDashboardCard({ orgId }) {
 
   return (
     <DashboardCard
-      title={MODULE_NAMES.calendar}
+      title="Agenda y Citas"
       description="Programación de equipo y clientes."
       icon={Calendar}
-      path={`/client/${MODULE_SLUGS.calendar}`}
+      path="/client/calendar"
       color="#ffba08"
       loading={loading}
       metrics={[

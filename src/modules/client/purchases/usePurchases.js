@@ -8,6 +8,7 @@ import {
   query, 
   orderBy,
   getDoc,
+  deleteDoc,
   serverTimestamp 
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
@@ -146,12 +147,42 @@ export const usePurchases = (orgId = "default_org") => {
     }
   };
 
+  const updatePurchase = async (purchaseId, purchaseData) => {
+    try {
+      const validatedData = PurchaseSchema.parse({
+        ...purchaseData,
+        status: purchaseData.status || "Solicitada"
+      });
+
+      const purchaseRef = doc(db, `organizations/${orgId}/purchases`, purchaseId);
+      return await updateDoc(purchaseRef, {
+        ...validatedData,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("[usePurchases] Error al actualizar compra:", err);
+      throw err;
+    }
+  };
+
+  const deletePurchase = async (purchaseId) => {
+    try {
+      const purchaseRef = doc(db, `organizations/${orgId}/purchases`, purchaseId);
+      return await deleteDoc(purchaseRef);
+    } catch (err) {
+      console.error("[usePurchases] Error al eliminar compra:", err);
+      throw err;
+    }
+  };
+
   return {
     purchases,
     loading,
     error,
     addPurchase,
+    updatePurchase,
     updatePurchaseStatus,
-    receivePurchase
+    receivePurchase,
+    deletePurchase
   };
 };

@@ -8,7 +8,8 @@ import {
   query, 
   orderBy,
   serverTimestamp,
-  deleteDoc
+  deleteDoc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
 
@@ -74,7 +75,24 @@ export const useCalendar = (orgId = "default_org") => {
     });
   };
 
-
+  const notifyWebhook = async (action, payload) => {
+    try {
+      const orgDoc = await getDoc(doc(db, "organizations", orgId));
+      const webhooks = orgDoc.data()?.settings?.calendarWebhooks;
+      
+      const url = action === 'CREATE' ? webhooks?.webhookUrlCreation : webhooks?.webhookUrlUpdate;
+      
+      if (url) {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, ...payload, timestamp: new Date().toISOString() })
+        }).catch(err => console.warn("Webhook failed:", err));
+      }
+    } catch (e) {
+      console.warn("Could not notify webhook:", e);
+    }
+  };
 
   const addAppointment = async (apptData) => {
     if (checkConflict(apptData)) {
@@ -89,6 +107,7 @@ export const useCalendar = (orgId = "default_org") => {
       createdAt: serverTimestamp()
     });
 
+    notifyWebhook('CREATE', { id: docRef.id, ...apptData });
     return docRef;
   };
 
@@ -107,7 +126,7 @@ export const useCalendar = (orgId = "default_org") => {
       updatedAt: serverTimestamp()
     });
 
-
+    notifyWebhook('UPDATE', { id: apptId, ...newData });
   };
 
   const deleteAppointment = async (apptId) => {
