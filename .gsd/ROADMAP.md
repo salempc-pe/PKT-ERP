@@ -1192,4 +1192,17 @@
 - [ ] El build de producción se genera perfectamente sin advertencias de Vite.
 - [ ] El tiempo de respuesta de la IA (Gemini API) es óptimo y la UX es impecable.
 
+---
+
+### Phase 69: Rediseño del Módulo de Agenda
+**Status**: ⬜ Not Started
+**Objective**: Reconstruir el módulo de agenda desde cero con secciones Personal y de Empresa, vista de lista estilo agenda física de papel, calendario mensual alternable y flujo de creación adaptativo por rol.
+**Depends on**: Phase 68
+
+**Tasks**:
+- [ ] TBD (run /plan 69 to create)
+
+**Verification**:
+- TBD
+
 
