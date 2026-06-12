@@ -3,12 +3,12 @@
 @theme {
   --font-display: "Outfit", sans-serif;
   --font-body: "Inter", sans-serif;
-  --color-primary: #6B4FD8;
+  --color-primary: #2E8B57;
   --color-on-primary: #FFFFFF;
-  --color-primary-container: #ede9fb;
-  --color-on-primary-container: #22005d;
+  --color-primary-container: #E2ECE9;
+  --color-on-primary-container: #123524;
   
-  --color-secondary: #2E8B57;
+  --color-secondary: #6B4FD8;
   --color-on-secondary: #FFFFFF;
   
   --color-tertiary: #e28ce9;
@@ -80,7 +80,7 @@ input, textarea, [contenteditable="true"], input *, textarea * {
 
 :root {
   /* Dark Mode Defaults (Variables mapped to Brand Guide) */
-  --color-primary: #6B4FD8;
+  --color-primary: #2E8B57;
   --color-background: #1A1A1A;
   --color-surface: #1A1A1A;
   --color-on-surface: #F7F7F5;
