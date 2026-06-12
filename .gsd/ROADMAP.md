@@ -1195,14 +1195,19 @@
 ---
 
 ### Phase 69: Rediseño del Módulo de Agenda
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Reconstruir el módulo de agenda desde cero con secciones Personal y de Empresa, vista de lista estilo agenda física de papel, calendario mensual alternable y flujo de creación adaptativo por rol.
 **Depends on**: Phase 68
 
 **Tasks**:
-- [ ] TBD (run /plan 69 to create)
+- [x] Eliminar componentes obsoletos (`CustomDatePicker`, `EventModal`, `HistoryModal`, `IntegrationsModal`, `ResourcesModal`)
+- [x] Reescribir el hook `useCalendar.js` con filtrado reactivo Personal vs. Empresa
+- [x] Crear el nuevo componente unificado `AgendaModal.jsx` para creación y edición adaptativa
+- [x] Reconstruir la UI en `CalendarModule.jsx` con diseño estilo papel físico (margen y viñetas) y vista de cuadrícula mensual alternable
+- [x] Validar que el proyecto compila correctamente en producción (`npm run build`)
 
 **Verification**:
-- TBD
+- [x] Compilación de Vite exitosa transformando los 1995 módulos sin errores.
+- [x] Comportamiento adaptativo por rol e invisibilidad cruzada de eventos personales implementada.
 
 
