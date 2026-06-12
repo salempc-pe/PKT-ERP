@@ -312,88 +312,86 @@ export default function CalendarModule() {
                     </span>
                   </div>
 
-                  {/* Lista de eventos del día */}
-                  <div className="space-y-3 pl-2">
-                    {groupedEvents[dateStr].map(appt => {
-                      const isCompleted = appt.status === 'DONE';
-                      return (
-                        <div 
-                          key={appt.id}
-                          className="group flex items-start justify-between gap-4 p-3.5 bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]/60 hover:border-[#6B4FD8]/40 rounded-xl transition-all duration-300 shadow-sm"
-                        >
-                          <div className="flex items-start gap-3 min-w-0">
-                            {/* Toggle status checkbox */}
-                            <button
-                              onClick={() => handleToggleStatus(appt)}
-                              className="text-[#6B4FD8] hover:scale-110 active:scale-95 transition-transform mt-0.5 shrink-0"
-                              title={isCompleted ? "Marcar pendiente" : "Marcar completada"}
-                            >
-                              {isCompleted ? (
-                                <CheckCircle size={18} className="fill-[#6B4FD8] text-[var(--color-surface-container)]" />
-                              ) : (
-                                <Circle size={18} />
-                              )}
-                            </button>
-
-                            {/* Event details */}
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className={`text-xs font-bold transition-colors ${
-                                  isCompleted 
-                                    ? 'line-through text-[var(--color-on-surface-variant)]/60 font-semibold' 
-                                    : 'text-[var(--color-on-surface)]'
-                                }`}>
-                                  {appt.title}
-                                </span>
-                                
-                                {/* Hora */}
-                                <span className="text-[10px] font-semibold text-[var(--color-on-surface-variant)] bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]/40 px-2 py-0.5 rounded-md">
-                                  {formatTime12h(appt.time)}
-                                </span>
-
-                                {/* Badge Personal vs Empresa */}
-                                {appt.type === 'company' ? (
-                                  <span className="text-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-black uppercase">
-                                    Empresa
-                                  </span>
+                  {/* Una sola tarjeta dividida para todos los eventos del día */}
+                  <div className="pl-2">
+                    <div className="bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)]/60 rounded-2xl shadow-sm divide-y divide-[var(--color-outline-variant)]/40 overflow-hidden">
+                      {groupedEvents[dateStr].map(appt => {
+                        const isCompleted = appt.status === 'DONE';
+                        return (
+                          <div 
+                            key={appt.id}
+                            className="group flex items-start justify-between gap-4 p-4 hover:bg-[var(--color-surface-container-high)]/60 transition-all duration-300"
+                          >
+                            <div className="flex items-start gap-3 min-w-0">
+                              {/* Toggle status checkbox */}
+                              <button
+                                onClick={() => handleToggleStatus(appt)}
+                                className="text-[#6B4FD8] hover:scale-110 active:scale-95 transition-transform mt-0.5 shrink-0"
+                                title={isCompleted ? "Marcar pendiente" : "Marcar completada"}
+                              >
+                                {isCompleted ? (
+                                  <CheckCircle size={18} className="fill-[#6B4FD8] text-[var(--color-surface-container)]" />
                                 ) : (
-                                  <span className="text-[8px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded-full font-black uppercase">
-                                    Personal
+                                  <Circle size={18} />
+                                )}
+                              </button>
+
+                              {/* Event details */}
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className={`text-xs font-bold transition-colors ${
+                                    isCompleted 
+                                      ? 'line-through text-[var(--color-on-surface-variant)]/60 font-semibold' 
+                                      : 'text-[var(--color-on-surface)]'
+                                  }`}>
+                                    {appt.title}
                                   </span>
+                                  
+                                  {/* Hora */}
+                                  <span className="text-[10px] font-semibold text-[var(--color-on-surface-variant)] bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]/40 px-2 py-0.5 rounded-md">
+                                    {formatTime12h(appt.time)}
+                                  </span>
+
+                                  {/* Badge Personal vs Empresa */}
+                                  {appt.type === 'company' && (
+                                    <span className="text-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-black uppercase">
+                                      Empresa
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {appt.description && (
+                                  <p className={`text-xs mt-1 text-[var(--color-on-surface-variant)] leading-relaxed ${
+                                    isCompleted ? 'line-through opacity-50' : ''
+                                  }`}>
+                                    {appt.description}
+                                  </p>
                                 )}
                               </div>
-                              
-                              {appt.description && (
-                                <p className={`text-xs mt-1 text-[var(--color-on-surface-variant)] leading-relaxed ${
-                                  isCompleted ? 'line-through opacity-50' : ''
-                                }`}>
-                                  {appt.description}
-                                </p>
-                              )}
                             </div>
-                          </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-2 opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => handleOpenEditModal(appt)}
-                              className="p-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500 hover:text-white rounded-lg transition-all"
-                              title="Editar evento"
-                            >
-                              <Edit2 size={12} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteEvent(appt.id)}
-                              className="p-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white rounded-lg transition-all"
-                              title="Eliminar evento"
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          </div>
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => handleOpenEditModal(appt)}
+                                className="p-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500 hover:text-white rounded-lg transition-all"
+                                title="Editar evento"
+                              >
+                                <Edit2 size={12} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteEvent(appt.id)}
+                                className="p-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white rounded-lg transition-all"
+                                title="Eliminar evento"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
 
-                        </div>
-                      );
-                    })}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
 
                 </div>
@@ -578,11 +576,11 @@ export default function CalendarModule() {
 
                       <div className="flex items-center gap-2 flex-wrap text-[9px] font-semibold text-[var(--color-on-surface-variant)]">
                         <span>{formatTime12h(appt.time)}</span>
-                        <span>•</span>
-                        {appt.type === 'company' ? (
-                          <span className="text-blue-400 font-bold uppercase">Empresa</span>
-                        ) : (
-                          <span className="text-purple-400 font-bold uppercase">Personal</span>
+                        {appt.type === 'company' && (
+                          <>
+                            <span>•</span>
+                            <span className="text-blue-400 font-bold uppercase">Empresa</span>
+                          </>
                         )}
                       </div>
 
