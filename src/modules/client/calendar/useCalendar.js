@@ -8,14 +8,12 @@ import {
   query, 
   orderBy,
   serverTimestamp,
-  deleteDoc,
-  getDoc
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
 
-export const useCalendar = (orgId = "default_org") => {
+export const useCalendar = (orgId = "default_org", currentUserId = null) => {
   const [appointments, setAppointments] = useState([]);
-  const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -29,104 +27,46 @@ export const useCalendar = (orgId = "default_org") => {
     const qAppts = query(apptsRef, orderBy("date", "asc"));
 
     const unsubAppts = onSnapshot(qAppts, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAppointments(data);
-    }, (err) => {
-      setError(err.message);
-    });
+      const allData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Filtrado en cliente: Mostrar eventos de empresa (company) O personales (personal) creados por el usuario actual
+      const filtered = allData.filter(appt => {
+        if (appt.type === "company") return true;
+        if (appt.type === "personal" && appt.userId === currentUserId) return true;
+        // Fallback para datos heredados sin campo 'type': se tratan como corporativos por compatibilidad
+        if (!appt.type) return true;
+        return false;
+      });
 
-    const resourcesRef = collection(db, `organizations/${orgId}/resources`);
-    const qRes = query(resourcesRef, orderBy("name", "asc"));
-
-    const unsubRes = onSnapshot(qRes, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setResources(data);
+      setAppointments(filtered);
       setLoading(false);
     }, (err) => {
+      console.error("Error fetching appointments:", err);
       setError(err.message);
       setLoading(false);
     });
 
     return () => {
       unsubAppts();
-      unsubRes();
     };
-  }, [orgId]);
-
-  // --- Appointments Logic ---
-
-  const checkConflict = (apptData, apptId = null) => {
-    if (!apptData.resourceId) return false;
-
-    const start = new Date(`${apptData.date}T${apptData.time}`);
-    const duration = parseInt(apptData.duration || 60);
-    const end = new Date(start.getTime() + duration * 60000);
-
-    return appointments.some(existing => {
-      if (existing.id === apptId) return false; // Ignorar el mismo evento en caso de edición
-      if (existing.resourceId !== apptData.resourceId) return false;
-      if (existing.status === 'CANCELLED' || existing.status === 'DONE') return false;
-
-      const eStart = new Date(`${existing.date}T${existing.time}`);
-      const eDuration = parseInt(existing.duration || 60);
-      const eEnd = new Date(eStart.getTime() + eDuration * 60000);
-
-      return start < eEnd && end > eStart;
-    });
-  };
-
-  const notifyWebhook = async (action, payload) => {
-    try {
-      const orgDoc = await getDoc(doc(db, "organizations", orgId));
-      const webhooks = orgDoc.data()?.settings?.calendarWebhooks;
-      
-      const url = action === 'CREATE' ? webhooks?.webhookUrlCreation : webhooks?.webhookUrlUpdate;
-      
-      if (url) {
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, ...payload, timestamp: new Date().toISOString() })
-        }).catch(err => console.warn("Webhook failed:", err));
-      }
-    } catch (e) {
-      console.warn("Could not notify webhook:", e);
-    }
-  };
+  }, [orgId, currentUserId]);
 
   const addAppointment = async (apptData) => {
-    if (checkConflict(apptData)) {
-      throw new Error("El recurso seleccionado ya está ocupado en ese horario.");
-    }
-
     const apptsRef = collection(db, `organizations/${orgId}/appointments`);
     const docRef = await addDoc(apptsRef, {
       ...apptData,
       status: apptData.status || "PENDING",
-      duration: apptData.duration || 60,
       createdAt: serverTimestamp()
     });
-
-    notifyWebhook('CREATE', { id: docRef.id, ...apptData });
     return docRef;
   };
 
   const updateAppointment = async (apptId, newData) => {
-    // Si se cambia fecha, hora, duración o recurso, verificar conflictos
-    const current = appointments.find(a => a.id === apptId);
-    const merged = { ...current, ...newData };
-    
-    if (checkConflict(merged, apptId)) {
-      throw new Error("El recurso seleccionado ya está ocupado en ese horario.");
-    }
-
     const apptRef = doc(db, `organizations/${orgId}/appointments`, apptId);
     await updateDoc(apptRef, {
       ...newData,
       updatedAt: serverTimestamp()
     });
-
-    notifyWebhook('UPDATE', { id: apptId, ...newData });
   };
 
   const deleteAppointment = async (apptId) => {
@@ -134,39 +74,12 @@ export const useCalendar = (orgId = "default_org") => {
     return await deleteDoc(apptRef);
   };
 
-  // --- Resources Logic ---
-
-  const addResource = async (resData) => {
-    const resRef = collection(db, `organizations/${orgId}/resources`);
-    return await addDoc(resRef, {
-      ...resData,
-      createdAt: serverTimestamp()
-    });
-  };
-
-  const updateResource = async (resId, newData) => {
-    const resRef = doc(db, `organizations/${orgId}/resources`, resId);
-    return await updateDoc(resRef, {
-      ...newData,
-      updatedAt: serverTimestamp()
-    });
-  };
-
-  const deleteResource = async (resId) => {
-    const resRef = doc(db, `organizations/${orgId}/resources`, resId);
-    return await deleteDoc(resRef);
-  };
-
   return {
     appointments,
-    resources,
     loading,
     error,
     addAppointment,
     updateAppointment,
-    deleteAppointment,
-    addResource,
-    updateResource,
-    deleteResource
+    deleteAppointment
   };
 };
